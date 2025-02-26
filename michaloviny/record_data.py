@@ -2,23 +2,37 @@ from __future__ import print_function
 
 from datetime import datetime
 
-from robolab_turtlebot import Turtlebot, sleep
+from robolab_turtlebot import Turtlebot, sleep, Rate
 
-from scipy.io import savemat
 import numpy as np
 import os
+import cv2
 
-# initialize turlebot
-turtle = Turtlebot(rgb=True, depth=True, pc=True)
+BUTTON_NAMES = ['Button0', 'Button1', 'Button2']
+STATE = ['RELEASED', 'PRESSED']
+WINDOW = 'image'
 
-# sleep 2 set to receive images
-sleep(2)
-
-save_dir = datetime.today().strftime("%Y-%m-%d-%H-%M-%S")
+save_dir = datetime.today().strftime('%Y-%m-%d_%H-%M-%S') 
 os.makedirs(save_dir, exist_ok=True)
 
-img = turtle.get_rgb_image()
-np.save(os.path.join(save_dir, datetime.today().strftime("%Y-%m-%d-%H-%M-%S") + '.npy'), img)
-turtle.play_sound()
+def button_cb(msg):
+    print('Button: {} {}'.format(BUTTON_NAMES[msg.button], STATE[msg.state]))
+    if STATE[msg.state] == 'PRESSED':
+        img_name = datetime.today().strftime('%Y-%m-%d_%H-%M-%S') + '.npy'
+        img = turtle.get_rgb_image()
+        np.save(save_dir + '/' + img_name, img)
+        print('Image saved as {}'.format(os.path.join(save_dir, img_name)))
+        turtle.play_sound()
+        cv2.imshow(WINDOW, img)
+        cv2.waitKey(1000)
 
-print('Data saved in {}'.format(save_dir))
+
+if __name__ == '__main__':
+    cv2.namedWindow(WINDOW)
+    turtle = Turtlebot(rgb=True, depth=True, pc=True)
+    
+    print("waiting for button event")
+    turtle.register_button_event_cb(button_cb)
+
+    while not turtle.is_shutting_down():
+        rate = Rate(1)
