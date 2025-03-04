@@ -32,10 +32,13 @@ class ObjectData:
         self.coords = coords
 
     def __repr__(self) -> str:
-        return f"{self.label}: Pos {self.coords}m, Distance {self.distance:.2f}m"
+        x = self.coords[0]
+        y = self.coords[1]
+        z = self.coords[2]
+        return f"{self.label}: Pos ({x:.2f}, {y:.2f}, {z:.2f})m, Distance {self.distance:.2f}m"
 
 
-def generate_top_down_view(objects):
+def generate_top_down_view(objects: list[ObjectData]) -> np.ndarray:
     """
     Generates a top-down visualization of objects and returns an image.
     """
@@ -52,25 +55,28 @@ def generate_top_down_view(objects):
         img_y = img_size - (int((y - Y_MIN) * scale_y) + margin)
         return img_x, img_y
 
-    for x, y, obj_type in objects:
+    for object in objects:
+        x = object.coords[0]
+        y = object.coords[1]
+        z = self.coords[2]
         img_x, img_y = convert_coords(x, y)
-        if obj_type == "blue":
+        if object.label == "blue":
             color = (255, 0, 0)
-        elif obj_type == "green":
+        elif object.label == "green":
             color = (0, 255, 0)
-        elif obj_type == "red":
+        elif object.label == "red":
             color = (0, 0, 255)
-        elif obj_type == "ball_y":
+        elif object.label == "ball_y":
             color = (44, 208, 250)
-        elif obj_type == "ball_r":
+        elif object.label == "ball_r":
             color = (44, 85, 250)
         else:
-            print(f"Unknown object type: {obj_type}")
+            print(f"Unknown object type: {object.label}")
             color = (135, 135, 135)
         cv2.circle(img, (img_x, img_y), 20, color, -1)
         cv2.putText(
             img,
-            f"({x:.1f}, {y:.1f})",
+            f"({x:.2f},{y:.2f}, {z:.2f}) m",
             (img_x + 25, img_y),
             cv2.FONT_HERSHEY_SIMPLEX,
             0.5,
@@ -103,9 +109,11 @@ def generate_anotation(
         img = result.plot()
     for detected_object in detected_objects:
         x, y = detected_object.lower_left
+        x_pos = object.coords[0]
+        y_pos = object.coords[1]
         cv2.putText(
             img,
-            f"c:({x:.1f}, {y:.1f})m; d:{detected_object.distance:.1f}m",
+            f"c:({x_pos:.2f}, {y_pos:.2f})m; d:{detected_object.distance:.1f}m",
             (int(x), int(y - detected_object.height) - 10),
             cv2.FONT_HERSHEY_SIMPLEX,
             0.5,
@@ -164,6 +172,9 @@ def get_coords(
         :,
     ]
     median_coords = np.median(region, axis=(0, 1))
+
+    # insert transformation of coords
+
     return median_coords
 
 
@@ -176,8 +187,8 @@ def detect_objects(model: YOLO, turtle: Turtlebot) -> list[ObjectData]:
     Processes images from a Turtlebot's camera and Returns array of detected Objects with their coords.
     """
     img_rgb = turtle.get_rgb_image()
-    img_depth = turtle.get_depth_image()
     point_cloud = turtle.get_point_cloud()
+    img_depth = turtle.get_depth_image()
     if img_rgb is None or img_depth is None or point_cloud is None:
         return []
     results = model(img_rgb)
