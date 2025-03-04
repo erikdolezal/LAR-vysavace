@@ -5,7 +5,6 @@ from robolab_turtlebot import Turtlebot, sleep, Rate
 import numpy as np
 from ultralytics import YOLO
 import cv2
-import matplotlib.pyplot as plt
 
 WINDOW = "image"
 MODEL_PATH = "best_ones/v11n_120.pt"
@@ -95,16 +94,18 @@ def generate_top_down_view(objects):
 
 
 def generate_anotation(
-    img: np.ndarray, detected_objects: list[ObjectData]
+    img: np.ndarray, results, detected_objects: list[ObjectData]
 ) -> np.ndarray:
     """
     Generates anotations on image.
     """
+    for result in results:
+        img = result.plot()
     for detected_object in detected_objects:
         x, y = detected_object.lower_left
         cv2.putText(
             img,
-            f"c:{x:.1f}, {y:.1f}m; {detected_object.distance:.1f}m",
+            f"c:({x:.1f}, {y:.1f})m; d:{detected_object.distance:.1f}m",
             (int(x), int(y - detected_object.height) - 10),
             cv2.FONT_HERSHEY_SIMPLEX,
             0.5,
@@ -118,7 +119,6 @@ def show(img_cam, space):
     """
     Shows the camera image and top-down view.
     """
-    img = np.concatenate((img_cam, space), axis=1)
 
     h1, w1, c1 = img_cam.shape
     h2, w2, c2 = space.shape
@@ -133,7 +133,7 @@ def show(img_cam, space):
         :w2,
     ] = space
 
-    cv2.imshow(WINDOW, img)
+    cv2.imshow(WINDOW, out_image)
     cv2.waitKey(1)
 
 
@@ -183,7 +183,6 @@ def detect_objects(model: YOLO, turtle: Turtlebot) -> list[ObjectData]:
     results = model(img_rgb)
     detected_objects = []
     for result in results:
-        img_cam = result.plot()
         for box in result.boxes.data:
             x1, y1, x2, y2, confidence, cls = box.tolist()
             label = result.names[int(cls)]
@@ -196,7 +195,7 @@ def detect_objects(model: YOLO, turtle: Turtlebot) -> list[ObjectData]:
                 ObjectData(label, lower_left, width, height, distance, coords)
             )
 
-    img_cam = generate_anotation(img_cam, detected_objects)
+    img_cam = generate_anotation(result, detected_objects)
     space = generate_top_down_view(detected_objects)
     show(img_cam, space)
     return detected_objects
