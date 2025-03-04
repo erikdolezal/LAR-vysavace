@@ -58,7 +58,7 @@ def generate_top_down_view(objects: list[ObjectData]) -> np.ndarray:
     for object in objects:
         x = object.coords[0]
         y = object.coords[1]
-        z = self.coords[2]
+        z = object.coords[2]
         img_x, img_y = convert_coords(x, y)
         if object.label == "blue":
             color = (255, 0, 0)
