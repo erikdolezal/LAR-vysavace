@@ -99,18 +99,18 @@ def generate_top_down_view(objects: list[ObjectData]) -> np.ndarray:
     return img
 
 
-def generate_anotation(
-    img: np.ndarray, results, detected_objects: list[ObjectData]
-) -> np.ndarray:
+def generate_anotation(results, detected_objects: list[ObjectData]) -> np.ndarray:
     """
     Generates anotations on image.
     """
+    img = np.zeros((640, 480, 3), dtype=np.uint8)
     for result in results:
         img = result.plot()
+
     for detected_object in detected_objects:
         x, y = detected_object.lower_left
-        x_pos = object.coords[0]
-        y_pos = object.coords[1]
+        x_pos = detected_object.coords[0]
+        y_pos = detected_object.coords[1]
         cv2.putText(
             img,
             f"c:({x_pos:.2f}, {y_pos:.2f})m; d:{detected_object.distance:.1f}m",
@@ -206,7 +206,7 @@ def detect_objects(model: YOLO, turtle: Turtlebot) -> list[ObjectData]:
                 ObjectData(label, lower_left, width, height, distance, coords)
             )
 
-    img_cam = generate_anotation(result, detected_objects)
+    img_cam = generate_anotation(results, detected_objects)
     space = generate_top_down_view(detected_objects)
     show(img_cam, space)
     return detected_objects
