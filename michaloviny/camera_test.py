@@ -6,6 +6,9 @@ import numpy as np
 from ultralytics import YOLO
 import cv2
 
+SHOW_TOP_DOWN_VIEW = True
+
+
 WINDOW = "image"
 MODEL_PATH = "best_ones/v11n_120.pt"
 DISTANCE_PERCENTILE = 80
@@ -76,7 +79,7 @@ def generate_top_down_view(objects: list[ObjectData]) -> np.ndarray:
         cv2.circle(img, (img_x, img_y), 20, color, -1)
         cv2.putText(
             img,
-            f"({x:.2f},{y:.2f}, {z:.2f}) m",
+            f"({x:.2f}, {y:.2f}, {z:.2f}) m",
             (img_x + 25, img_y),
             cv2.FONT_HERSHEY_SIMPLEX,
             0.5,
@@ -207,8 +210,11 @@ def detect_objects(model: YOLO, turtle: Turtlebot) -> list[ObjectData]:
             )
 
     img_cam = generate_anotation(results, detected_objects)
-    space = generate_top_down_view(detected_objects)
-    show(img_cam, space)
+    if SHOW_TOP_DOWN_VIEW:
+        space = generate_top_down_view(detected_objects)
+        show(img_cam, space)
+    else:
+        cv2.imshow(WINDOW, img_cam)
     return detected_objects
 
 
