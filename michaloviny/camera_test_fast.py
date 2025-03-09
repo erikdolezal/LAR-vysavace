@@ -125,6 +125,7 @@ def detect_objects(model: YOLO, turtle: Turtlebot, R_x: np.ndarray) -> list[Obje
 
     #img_cam = generate_anotation(results, detected_objects)
     #cv2.imshow(WINDOW, img_cam)
+    #cv2.waitKey(1)
     return detected_objects
 
 
