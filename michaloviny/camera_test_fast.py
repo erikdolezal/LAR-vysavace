@@ -10,7 +10,7 @@ import cv2
 CAMERA_ANGLE = -20
 
 WINDOW = "image"
-MODEL_PATH = 'best_ones/v8n_120e_160p.pt'
+MODEL_PATH = 'best_ones/v11n_120e_160p.pt'
 DISTANCE_PERCENTILE = 80
 HALF_COORD_BOX = 2
 
