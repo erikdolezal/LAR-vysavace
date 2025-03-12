@@ -1,5 +1,4 @@
 from __future__ import print_function
-from math import nan
 
 from robolab_turtlebot import Turtlebot, sleep, Rate
 
