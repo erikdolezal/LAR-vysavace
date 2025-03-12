@@ -7,10 +7,10 @@ from ultralytics import YOLO
 import cv2
 
 
-CAMERA_ANGLE = -20
+CAMERA_ANGLE = 20
 
 WINDOW = "image"
-MODEL_PATH = 'best_ones/v11n_120e_160p.pt'
+MODEL_PATH = "best_ones/v11n_120e_160p.pt"
 DISTANCE_PERCENTILE = 80
 HALF_COORD_BOX = 2
 
@@ -61,8 +61,6 @@ def generate_anotation(results, detected_objects: list[ObjectData]) -> np.ndarra
     return img
 
 
-
-
 def get_coords(
     point_cloud: np.ndarray, x1: int, y1: int, x2: int, y2: int, R_x: np.ndarray
 ) -> np.ndarray:
@@ -79,21 +77,25 @@ def get_coords(
     median_coords = np.median(region, axis=(0, 1))
 
     coords = R_x @ median_coords
-    
+
     return coords
+
 
 def get_correction_matrix(angle_degrees):
     """
     Generates a correction matrix to adjust for a given camera tilt angle.
     """
     theta = np.radians(angle_degrees)
-    R_x = np.array([
-        [1, 0, 0],
-        [0, np.cos(theta), -np.sin(theta)],
-        [0, np.sin(theta), np.cos(theta)]
-    ])
+    R_x = np.array(
+        [
+            [1, 0, 0],
+            [0, np.cos(theta), -np.sin(theta)],
+            [0, np.sin(theta), np.cos(theta)],
+        ]
+    )
 
     return R_x
+
 
 def load_yolo_model(model_path=MODEL_PATH) -> YOLO:
     return YOLO(model_path)
@@ -123,11 +125,10 @@ def detect_objects(model: YOLO, turtle: Turtlebot, R_x: np.ndarray) -> list[Obje
                 ObjectData(label, lower_left, width, height, coords)
             )
 
-    #img_cam = generate_anotation(results, detected_objects)
-    #cv2.imshow(WINDOW, img_cam)
-    #cv2.waitKey(1)
+    # img_cam = generate_anotation(results, detected_objects)
+    # cv2.imshow(WINDOW, img_cam)
+    # cv2.waitKey(1)
     return detected_objects
-
 
 
 if __name__ == "__main__":
