@@ -17,6 +17,9 @@ R_PILLAR = 0.02
 R_BALL = 0.08
 
 
+label_map = {"green": 0, "red": 1, "blue": 2, "ball_y": 3, "ball_r": 3}
+
+
 class ObjectData:
     def __init__(
         self,
@@ -150,6 +153,19 @@ class Camera:
             cv2.imshow(WINDOW, img_cam)
             cv2.waitKey(1)
         return detected_objects
+
+    def get_np_objects(self):
+        """
+        Detect objects and parse them into numpy array.
+        """
+        objects = self.detect_objects()
+        data = []
+        for obj in objects:
+            num_label = label_map.get(obj.label, -1)
+            if num_label != -1:
+                y, x = obj.coords[1], obj.coords[0]
+                data.append([y, x, num_label])
+        return np.array(data)
 
 
 if __name__ == "__main__":
