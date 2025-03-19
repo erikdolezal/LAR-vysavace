@@ -13,7 +13,7 @@ class Odometry:
     def update_and_get_delta(self):
         odo_new = turtle.get_odometry()
         odo_old = self.last_odometry
-        self.last_odometry = new_odo
+        self.last_odometry = odo_new
         return odo_old, odo_new
 
 
