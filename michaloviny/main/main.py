@@ -11,10 +11,10 @@ class Odometry:
         self.last_odometry = turtle.get_odometry()
 
     def update_and_get_delta(self):
-        new_odo = turtle.get_odometry()
-        delta = new_odo - self.last_odometry
+        odo_new = turtle.get_odometry()
+        odo_old = self.last_odometry
         self.last_odometry = new_odo
-        return delta
+        return odo_old, odo_new
 
 
 if __name__ == "__main__":
@@ -25,5 +25,5 @@ if __name__ == "__main__":
     while not turtle.is_shutting_down():
         objects = camera.get_np_objects()
         slam.update_from_detections(percep_data=objects)
-        odo_delta = odo.update_and_get_delta()
-        slam.predict(odo_delta)
+        odo_old, odo_new = odo.update_and_get_delta()
+        slam.predict(odo_old, odo_new)
