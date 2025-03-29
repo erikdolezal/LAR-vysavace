@@ -2,7 +2,7 @@ import numpy as np
 from enum import IntEnum
 from scipy.linalg import block_diag
 from geometry import global_to_local, local_to_global, rotate_points
-from scipy.spatial import cdist
+from scipy.spatial.distance import cdist
 
 class DataClasses(IntEnum):
     """
@@ -14,7 +14,9 @@ class DataClasses(IntEnum):
     BALL = 3
 
 config = {
-    "pairing_distance" : 0.5
+    "pairing_distance" : 0.5,
+    "detection_var": 0.15,
+    "position_var": 0.5,
 }
 
 
@@ -25,7 +27,7 @@ class UKF_SLAM():
     def __init__(self, x_size :int, alpha :float, beta :float, kappa :float):
         self.x = np.zeros(x_size)
         self.P = np.eye(x_size)
-        self.data_cls = np.zeros((0, 1))
+        self.data_cls = np.zeros((0))
         self.landmarks = np.zeros((0, 3)) # x, y, class
         self.alpha = alpha
         self.beta = beta
@@ -65,18 +67,23 @@ class UKF_SLAM():
         x[:,:3] += u
         return x
 
-    def predict(self, u):
+    def predict(self, u, old_u):
         """
         Predict step
         u : odometry
+        old_u : previous odometry
         """
+        delta_theta = np.tan(np.arctan(u[2] - old_u[2]))
+        delta_pos = np.hstack((rotate_points(u[:2] - old_u[:2], -u[2]), delta_theta))
+        
         # compute sigma points
         sigmas = self.sigma_points(self.x, self.P)
 
         # pass sigma points through state transition function
-        self.sigmas_f = self.f(sigmas, u)
         R = np.array([[np.cos(self.x[2]), np.sin(self.x[2])],
                       [-np.sin(self.x[2]), np.cos(self.x[2])]])
+        delta_pos[:2] = rotate_points(delta_pos[:2], self.x[2])
+        self.sigmas_f = self.f(sigmas, delta_pos)
         # compute unscented transform
         # mean
         self.x = np.dot(self.Wm, self.sigmas_f)
@@ -91,7 +98,7 @@ class UKF_SLAM():
         self.P = cov_difference.T
         # add process noise
         F = block_diag(R, 1, np.zeros((self.n - 3, self.n - 3)))
-        Qc = np.diag(np.hstack(([0.1, 0.1, 0.1], np.zeros(self.n - 3))))
+        Qc = np.diag(np.hstack(([config["position_var"]]*3, np.zeros(self.n - 3))))
         Q = F @ Qc @ F.T
         self.P += Q
     
@@ -144,23 +151,11 @@ class UKF_SLAM():
         z[:,1] = np.arctan2(detections[:,1], detections[:,0])
         return z.flatten()
     
-    def h_detections(self, x, matched_detections):
-        """
-        Measurement function for detections
-        x : state
-        """
-        out = np.zeros((0,matched_detections.shape[0]))
-        for sigma in x:
-            local_detections = global_to_local(sigma[3:].reshape(-1,2), sigma[:3])[matched_detections]
-            out = np.vstack((out, local_detections))
-        return out
-        
-    
     def data_association(self, percep_data):
         """
         Perform data association
         """
-        local_landmarks = np.hstack((global_to_local(self.x[3:].reshape(-1,2), self.x[:3]), self.data_cls))
+        local_landmarks = np.hstack((global_to_local(self.x[3:].reshape(-1,2).copy(), self.x[:3]), np.expand_dims(self.data_cls, axis=1)))
         diff_matrix = np.array([[1,0,0],[0,1,0],[0,0,1e6]])
         dist_mat = cdist(percep_data@diff_matrix.T, local_landmarks[:,:3] @ diff_matrix.T)
         closest_cones = np.empty((0))
@@ -174,19 +169,40 @@ class UKF_SLAM():
 
     
     def update_from_detections(self, percep_data):
-        closest_cones, percep_data_mask = self.data_association(percep_data)
-        percep_data_cls = percep_data[:,2]
-        lidar_percep_data = self.detections_to_lidar(percep_data[percep_data_mask, :2])
-        matched_detections = closest_cones[percep_data_mask]
-        def h(x):
-            out = np.zeros((0,matched_detections.shape[0]))
-            for sigma in x:
-                local_detections = global_to_local(sigma[3:].reshape(-1,2), sigma[:3])[matched_detections]
-                out = np.vstack((out, local_detections))
-            return out
+        if self.landmarks.shape[0] > 0:
+            closest_cones, percep_data_mask = self.data_association(percep_data)
+            percep_data_cls = percep_data[:,2]
+            lidar_percep_data = self.detections_to_lidar(percep_data[percep_data_mask, :2])
+            matched_detections = closest_cones[percep_data_mask]
+            if matched_detections.shape[0] > 0:
+                def h(x):
+                    out = np.zeros((0,matched_detections.shape[0]*2))
+                    for sigma in x:
+                        local_detections = global_to_local(sigma[3:].reshape(-1,2).copy(), sigma[:3])[matched_detections]
+                        out = np.vstack((out, self.detections_to_lidar(local_detections)))
+                    return out
+                R = np.eye(lidar_percep_data.shape[0])*config["detection_var"]
+                self.update(lidar_percep_data, h, R)
+            new_percep_data = local_to_global(percep_data[~percep_data_mask].copy(), self.x[:3])[:,:2]
+            new_percep_data_cls = percep_data_cls[~percep_data_mask]
+        else:
+            new_percep_data = local_to_global(percep_data.copy(), self.x[:3])[:, :2]
+            new_percep_data_cls = percep_data[:,2]
 
+        self.data_cls = np.hstack((self.data_cls, new_percep_data_cls))
+        self.x = np.hstack((self.x, new_percep_data.flatten()))
 
+        self.kappa = 3*self.x.shape[0] 
+        self.P = block_diag(self.P, np.eye(new_percep_data.shape[0]*2)*0.5)
+        self.landmarks = np.hstack((self.x[3:].reshape(-1,2), np.expand_dims(self.data_cls, axis=1)))   
 
-
-        self.landmarks = np.hstack((self.x[3:].reshape(-1,2), self.data_cls))   
+        self.n = self.x.shape[0]
+        # compute weights for sigma points
+        self.lambda_ = self.alpha**2 * (self.n + self.kappa) - self.n
+        # mean weights
+        self.Wm = np.full(2*self.n + 1, 1/(2*(self.n + self.lambda_))) 
+        self.Wm[0] = self.lambda_/(self.n + self.lambda_)
+        # covariance weights
+        self.Wc = np.full(2*self.n + 1, 1/(2*(self.n + self.lambda_)))
+        self.Wc[0] = self.lambda_/(self.n + self.lambda_) + (1 - self.alpha**2 + self.beta)
 
