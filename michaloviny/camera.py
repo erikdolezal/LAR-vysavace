@@ -5,13 +5,14 @@ from robolab_turtlebot import Turtlebot, sleep, Rate
 import numpy as np
 from ultralytics import YOLO
 import cv2
+import time
 
 
 SHOW = False
 
 CAMERA_ANGLE = 10
 WINDOW = "image"
-MODEL_PATH = "best_ones/v11n_120e_160p.pt"
+MODEL_PATH = "michaloviny/best_ones/v11n_120e_160p.pt"
 HALF_COORD_BOX = 2
 R_PILLAR = 0.02
 R_BALL = 0.08
@@ -129,28 +130,50 @@ class Camera:
         """
         Processes images from a Turtlebot's camera and Returns array of detected Objects with their coords.
         """
+        st = time.perf_counter()
+        #self.turtle.wait_for_rgb_image()
         img_rgb = self.turtle.get_rgb_image()
-        point_cloud = self.turtle.get_point_cloud()
-        if img_rgb is None or point_cloud is None:
+        depth_image = self.turtle.get_depth_image().copy()
+        rgb_k = np.linalg.inv(self.turtle.get_rgb_K())
+        depth_k = self.turtle.get_depth_K()
+        #point_cloud = self.turtle.get_point_cloud()
+        if img_rgb is None or depth_image is None:
             return []
         results = self.model(img_rgb)
         detected_objects = []
+        K = depth_k @ rgb_k
+        #print(K)
         for result in results:
             for box in result.boxes.data:
                 x1, y1, x2, y2, confidence, cls = box.tolist()
                 if confidence < 0.3:
                     continue
+                hom_coords = np.array([[(x1 + x2)/2, (y1 + y2)/2, 1]])
+                world_coords = hom_coords @ rgb_k.T
+                #print(hom_cords @ rgb_k.T)
+                pic_coords = np.array([[x1, y1, 1], [x2, y2, 1]])
                 label = result.names[int(cls)]
                 lower_left = int(x1), int(y2)
                 height = int(y2 - y1)
                 width = int(x2 - x1)
-                coords = self.get_coords(label, point_cloud, x1, y1, x2, y2)
+                depth_coords = pic_coords @ K.T
+                median_distance = np.median(depth_image[int(depth_coords[0,1]):int(depth_coords[1,1]), int(depth_coords[0,0]):int(depth_coords[1,0])])
+                distance = np.average(depth_image[int(depth_coords[0,1]):int(depth_coords[1,1]), int(depth_coords[0,0]):int(depth_coords[1,0])], weights = np.exp(-(depth_image[int(depth_coords[0,1]):int(depth_coords[1,1]), int(depth_coords[0,0]):int(depth_coords[1,0])] - median_distance)**2/100))
+                world_coords *= distance/np.linalg.norm(world_coords[0])
+
+                depth_image[int(depth_coords[0,1]):int(depth_coords[1,1]), int(depth_coords[0,0]):int(depth_coords[1,0])] = distance
+
+                #print(depth_coords, world_coords)
+                coords = self.adjust_coords(label, self.R_x @ world_coords[0, [0,2,1]]/1000)
+                #coords = self.get_coords(label, point_cloud, x1, y1, x2, y2)
+                #print(depth_image.shape, img_rgb.shape, distance, x1, x2, y1, y2)
                 detected_objects.append(
                     ObjectData(label, lower_left, width, height, confidence, coords)
                 )
+        #print("detect time:", time.perf_counter() - st)
         if SHOW:
             img_cam = self.generate_anotation(results, detected_objects)
-            cv2.imshow(WINDOW, img_cam)
+            cv2.imshow(WINDOW, depth_image)
             cv2.waitKey(1)
         return detected_objects
 
@@ -164,15 +187,15 @@ class Camera:
             num_label = label_map.get(obj.label, -1)
             if num_label != -1:
                 y, x = obj.coords[1], obj.coords[0]
-                data.append([y, x, num_label])
+                data.append([y, -x, num_label])
         return np.array(data)
 
 
 if __name__ == "__main__":
-    turtle = Turtlebot(rgb=True, depth=False, pc=True)
+    turtle = Turtlebot(rgb=True, depth=True, pc=True)
     camera = Camera(turtle)
     while not turtle.is_shutting_down():
-        detected_objects = camera.detect_objects()
+        detected_objects = camera.get_np_objects()
         for detected_object in detected_objects:
             print(detected_object)
         print("-" * 20)

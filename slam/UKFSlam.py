@@ -1,7 +1,7 @@
 import numpy as np
 from enum import IntEnum
 from scipy.linalg import block_diag
-from geometry import global_to_local, local_to_global, rotate_points
+from slam.geometry import global_to_local, local_to_global, rotate_points
 from scipy.spatial.distance import cdist
 
 class DataClasses(IntEnum):
@@ -15,8 +15,8 @@ class DataClasses(IntEnum):
 
 config = {
     "pairing_distance" : 0.5,
-    "detection_var": 0.15,
-    "position_var": 0.5,
+    "detection_var": 1,
+    "position_var": 0.05,
 }
 
 
@@ -26,7 +26,7 @@ class UKF_SLAM():
     """
     def __init__(self, x_size :int, alpha :float, beta :float, kappa :float):
         self.x = np.zeros(x_size)
-        self.P = np.eye(x_size)
+        self.P = np.eye(x_size)*0.01
         self.data_cls = np.zeros((0))
         self.landmarks = np.zeros((0, 3)) # x, y, class
         self.alpha = alpha
