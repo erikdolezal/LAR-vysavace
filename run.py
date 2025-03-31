@@ -2,7 +2,7 @@ from slam.UKFSlam import UKF_SLAM, DataClasses
 from slam.geometry import local_to_global, global_to_local, rotate_points
 from robolab_turtlebot import Turtlebot, sleep, Rate
 from multiprocessing import Process, Queue, Event
-from michaloviny.camera import Camera
+from michaloviny.camera import Camera, OnnxCamera
 import numpy as np
 import matplotlib.pyplot as plt
 import time
@@ -23,24 +23,27 @@ class Odometry:
 class VelocityControl:
     def __init__(self, turtle):
         self.turtle = turtle
+        self.velocity = 0
         self.max_acc = 0.1 # m/s^2
         self.max_ang_acc = 0.1 # rad/s^2
-        self.max_speed = 0.1 # m/s
-        self.max_ang_speed = 2 # rad/s
+        self.max_speed = 2 # m/s
+        self.max_ang_speed = 4 # rad/s
         self.last_cmd = (0, 0)
+        self.ang_p = 5
     
-    def cmd_velocity(self, position, target_position):
-        target = global_to_local(np.expand_dims(target_position[:2], axis=0), position)[0]
-        ang_velocity = np.arctan2(target[1], target[0])
-        velocity = target[0]
+    def cmd_velocity(self, position, target_position, dt):
+        target = global_to_local(np.expand_dims(target_position[:2].copy(), axis=0), position)[0]
+        ang_velocity = np.arctan2(target[1], target[0])*self.ang_p
+        self.velocity = target[0]
         if np.linalg.norm(target) < 0.1:
-            velocity = 0
+            self.velocity = 0
             ang_velocity = target_position[2] - position[2]
-            if abs(target_position[2] - position[2]) < np.deg2rad(0.3):
-                ang_velocity = 0
-        velocity = np.clip(velocity, -self.max_speed, self.max_speed)
+            #if abs(target_position[2] - position[2]) < np.deg2rad(0.3):
+            #    ang_velocity = 0
+        self.velocity = np.clip(np.clip(self.velocity, self.velocity - dt*self.max_acc, self.velocity + dt*self.max_acc), 
+                                -self.max_speed, self.max_speed)
         ang_velocity = np.clip(ang_velocity, -self.max_ang_speed, self.max_ang_speed)
-        return velocity, ang_velocity
+        return self.velocity, ang_velocity
     
 class MainControl:
     def __init__(self):
@@ -66,29 +69,46 @@ class MainControl:
 
     def run(self):
         self.turtle.register_bumper_event_cb(self.bumper_callback)
-        camera = Camera(self.turtle)
+        camera = OnnxCamera("michaloviny/best_ones/v11n_120e_160p.onnx", verbose=False, cam_K=self.turtle.get_rgb_K(), depth_K=self.turtle.get_depth_K(), conf_thresh=0.35)
         slam = UKF_SLAM(x_size=3, alpha=0.001, beta=2, kappa=0)
         odo = Odometry(self.turtle)
         slam_poses = np.zeros((0,3))
         rate = Rate(FREQUENCY)
+        target = np.array([1, -0.1,0])
+        ball = target
+        last_time = time.perf_counter()
         while not self.turtle.is_shutting_down():
             if self.end_event.is_set():
                 break
             st = time.perf_counter()
-            objects = camera.get_np_objects()
+            img = self.turtle.get_rgb_image()
+            depth_img = self.turtle.get_depth_image()
+            objects = camera.get_detections(img, depth_img)
             print(f"camera time {(time.perf_counter() - st)*1000:.1f} ms")
+            #print(objects[objects[:,2] == 3])
+            if np.any(objects[:,2] == 3):
+                ball[:2] = local_to_global(objects[objects[:,2] == 3, :2].copy(), slam.x[:3])[0]
             st = time.perf_counter()
 
             odo_old, odo_new = odo.update_and_get_delta()
             print(odo_old, odo_new)
             slam.predict(odo_new, odo_old)
             if objects.shape[0] > 0:
-                print(objects)
-                objects = objects[objects[:,2] == DataClasses.RED]
+                #print(objects)
+                #objects = objects[objects[:,2] == DataClasses.RED]
+                objects = objects[objects[:,2] > 0.1]
                 slam.update_from_detections(percep_data=objects)
             print(f"slam time {(time.perf_counter() - st)*1000:.1f} ms")
             slam_poses = np.vstack((slam_poses, slam.x[:3]))
-            v_lin, v_ang = self.velocity_control.cmd_velocity(slam.x[:3], np.array([1,0.,0]))
+            # timedelta calc
+            actual_time = time.perf_counter()
+            timedelta = actual_time - last_time
+            last_time = actual_time
+            
+            v_lin, v_ang = self.velocity_control.cmd_velocity(slam.x[:3], ball, timedelta)
+            if np.linalg.norm(slam.x[:3] - ball) < 0.4:
+                print("mission end")
+                break
             print(f"velocity {v_lin} {v_ang}")
             self.turtle.cmd_velocity(v_lin, v_ang)
             rate.sleep()

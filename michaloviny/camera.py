@@ -46,10 +46,11 @@ def xyxy2xywh(x):
     return y
 
 class OnnxCamera:
-    def __init__(self, model_path, conf_thresh=0.3, verbose=False, cam_K, depth_K):
+    def __init__(self, model_path, cam_K, depth_K, conf_thresh=0.25, verbose=False):
         self.cam_K = np.linalg.inv(cam_K)
         self.depth_K = np.linalg.inv(depth_K)
         self.cam_to_depth = depth_K @ np.linalg.inv(cam_K)
+        self.cam_to_depth[0,2] -= 10
         self.verbose = verbose
         self.conf_thresh = conf_thresh
         self.model = ort.InferenceSession(model_path)
@@ -66,20 +67,21 @@ class OnnxCamera:
         if SHOW:
             cv2.namedWindow(WINDOW)
             cv2.namedWindow("depth")
-        self.class_map = {3:0, 2:2, 1:1, 4:4, 0:3}
+        self.class_map = {3:0, 2:2, 1:3, 4:1, 0:3}
 
     def detect(self, image):
         start = time.perf_counter()
-        input_image = cv2.resize(image, (self.input_shape[2], self.input_shape[3]))
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        image /= 255.0  # Normalize to [0, 1]
+        input_image = cv2.resize(image, (self.input_shape[2], self.input_shape[3]))
         input_image = np.transpose(input_image, (2, 0, 1))
         input_image = np.expand_dims(input_image, axis=0)
         input_image = input_image.astype(np.float32) / 255.0
         preprocess_time = time.perf_counter() - start
+
         start = time.perf_counter()
         pred = self.model.run([self.output_name], {self.input_name: input_image})[0]
         inference_time = time.perf_counter() - start
+
         start = time.perf_counter()
         cls_prob = softmax(pred[0, 4:,:])
         data_cls = np.argmax(cls_prob, axis=0)
@@ -91,6 +93,7 @@ class OnnxCamera:
         results[:,[0,2]] = results[:,[0,2]] * image.shape[1] / self.input_shape[2]
         results[:,[1,3]] = results[:,[1,3]] * image.shape[0] / self.input_shape[3]
         postprocess_time = time.perf_counter() - start
+
         if self.verbose:
             print(f"Preprocess time: {preprocess_time*1000:.1f} ms Inference time: {inference_time*1000:.1f} ms Postprocess time: {postprocess_time*1000:.1f} ms")
         
@@ -117,17 +120,20 @@ class OnnxCamera:
             x1, y1, x2, y2 = pred[i, :4]
             hom_coords = np.array([[x1, y1, 1], [x2, y2, 1]])
             depth_coords = hom_coords @ self.cam_to_depth.T
-            median_distance = np.median(depth_image[int(depth_coords[0,1]):int(depth_coords[1,1]), int(depth_coords[0,0]):int(depth_coords[1,0])])
+            median_distance = np.median(depth_image[int(depth_coords[0,1]):int(depth_coords[1,1]), int(depth_coords[0,0]):int(depth_coords[1,0])])/1000
+            #median_distance = np.average(depth_image[int(depth_coords[0,1]):int(depth_coords[1,1]), int(depth_coords[0,0]):int(depth_coords[1,0])], 
+            #                            weights = np.exp(-(depth_image[int(depth_coords[0,1]):int(depth_coords[1,1]), int(depth_coords[0,0]):int(depth_coords[1,0])] - median_distance)**2/100))/1000
             distances[i] = median_distance
             world_coords[i] = (self.R_x @ (np.array([*xywh_preds[i, [0,1]], 1]) @ self.cam_K.T))[[0, 2, 1]]
             world_coords[i,:2] *= median_distance / np.linalg.norm(world_coords[i])
-            world_coords[i, 2] = self.class_map[pred[i, 4]]
+            world_coords[i, 2] = self.class_map[pred[i, 5]]
             world_coords[i] = self.adjust_coords(world_coords[i])
+            world_coords[i, 0], world_coords[i, 1] = world_coords[i, 1], -world_coords[i, 0]
             if SHOW:
                 x, y = x1, y2
                 cv2.putText(
                     image,
-                    f"({world_coords[i, 0]:.2f}, {world_coords[i, 1]:.2f}) m",
+                    f"({world_coords[i, 0]:.2f}, {world_coords[i, 1]:.2f}) m {world_coords[i,2]} {pred[i, 4]*100:.1f} %",
                     (int(x), int(y - xywh_preds[i, 3]) - 30),
                     cv2.FONT_HERSHEY_SIMPLEX,
                     0.5,
@@ -150,7 +156,7 @@ class OnnxCamera:
                 )
                 cv2.putText(
                     depth_copy,
-                    f"({distances[i][0]:.2f}) m",
+                    f"({distances[i][0]:.2f}) m {world_coords[i,2]} {pred[i, 4]*100:.1f} %",
                     (int(depth_coords[0, 0]), int(depth_coords[0, 1] - 10)),
                     cv2.FONT_HERSHEY_SIMPLEX,
                     0.5,
@@ -161,9 +167,9 @@ class OnnxCamera:
             cv2.imshow("depth", depth_copy)
             cv2.imshow(WINDOW, image)
             cv2.waitKey(1)
-        world_coords[:, 0], world_coords[:, 1] = world_coords[:, 1], -world_coords[:, 0]
-        print(f"world coords: {world_coords}")
-        print(f"distances: {distances}")
+        if self.verbose:
+            print(f"world coords: {np.hstack((world_coords, np.expand_dims(pred[:,4], axis=1)))}")
+            print(f"distances: {distances}")
         return world_coords
 
 
@@ -339,10 +345,25 @@ class Camera:
 
 
 if __name__ == "__main__":
+    from ultralytics import YOLO
+
+    # Load a model
+    #model = YOLO("yolo11n.pt")  # load an official model
+    #model = YOLO("michaloviny/best_ones/v11n_120e_160p.pt")  # load a custom trained model
+    ## Export the model
+    #model.export(format="onnx")
+    #exit(0)
     turtle = Turtlebot(rgb=True, depth=True, pc=True)
-    camera = Camera(turtle)
+    print("Turtle init")
+    camera = OnnxCamera("michaloviny/best_ones/v11n_120e_160p.onnx", verbose=True, cam_K=turtle.get_rgb_K(), depth_K=turtle.get_depth_K(), conf_thresh=0.25)
+    print("cam init")
     while not turtle.is_shutting_down():
-        detected_objects = camera.get_np_objects()
-        for detected_object in detected_objects:
-            print(detected_object)
-        print("-" * 20)
+        img = turtle.get_rgb_image()
+        depth_img = turtle.get_depth_image()
+        camera.get_detections(img, depth_img)
+    #camera = Camera(turtle)
+    #while not turtle.is_shutting_down():
+    #    detected_objects = camera.get_np_objects()
+    #    for detected_object in detected_objects:
+    #        print(detected_object)
+    #    print("-" * 20)
