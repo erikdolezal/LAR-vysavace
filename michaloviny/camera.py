@@ -112,7 +112,7 @@ class OnnxCamera:
         world_coords = np.zeros((pred.shape[0], 3))
         xywh_preds = xyxy2xywh(pred[:, :4])
         distances = np.zeros((pred.shape[0], 1))
-        depth_copy = depth_image.copy()
+        depth_copy = depth_image.copy()/np.max(depth_image)
         for i in range(pred.shape[0]):
             x1, y1, x2, y2 = pred[i, :4]
             hom_coords = np.array([[x1, y1, 1], [x2, y2, 1]])
@@ -145,7 +145,7 @@ class OnnxCamera:
                     depth_copy,
                     (int(depth_coords[0, 0]), int(depth_coords[0, 1])),
                     (int(depth_coords[1, 0]), int(depth_coords[1, 1])),
-                    (255, 0, 0),
+                    1,
                     2,
                 )
                 cv2.putText(
@@ -154,7 +154,7 @@ class OnnxCamera:
                     (int(depth_coords[0, 0]), int(depth_coords[0, 1] - 10)),
                     cv2.FONT_HERSHEY_SIMPLEX,
                     0.5,
-                    (0, 255, 255),
+                    1,
                     2,
                 )
         if SHOW:
