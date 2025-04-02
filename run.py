@@ -3,6 +3,7 @@ from slam.geometry import local_to_global, global_to_local, rotate_points
 from robolab_turtlebot import Turtlebot, sleep, Rate
 from multiprocessing import Process, Queue, Event
 from michaloviny.camera import Camera, OnnxCamera
+from planning.PathPlanning import PathPlanning
 import numpy as np
 import matplotlib.pyplot as plt
 import time
@@ -59,6 +60,8 @@ class MainControl:
 
         self.end_event = Event()
         self.velocity_control = VelocityControl(self.turtle)
+        
+        self.path_planning = PathPlanning()
 
     
     def bumper_callback(self, msg):
@@ -104,8 +107,8 @@ class MainControl:
             actual_time = time.perf_counter()
             timedelta = actual_time - last_time
             last_time = actual_time
-            
-            v_lin, v_ang = self.velocity_control.cmd_velocity(slam.x[:3], ball, timedelta)
+            point_togo = self.path_planning.CreatPath(np.vstack([slam.landmarks, slam.x[:3]], ball), test_alg=False)
+            v_lin, v_ang = self.velocity_control.cmd_velocity(slam.x[:3], point_togo, timedelta)
             if np.linalg.norm(slam.x[:3] - ball) < 0.4:
                 print("mission end")
                 break
