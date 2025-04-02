@@ -11,7 +11,7 @@ import time
 import torch
 import torchvision
 
-SHOW = False
+SHOW = True
 
 CAMERA_ANGLE = 10
 WINDOW = "image"

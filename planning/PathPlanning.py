@@ -1,5 +1,5 @@
 import numpy as np
-from PathPlanningConfig import *
+from planning.PathPlanningConfig import *
 
 class Planning:
     def __init__(self):
