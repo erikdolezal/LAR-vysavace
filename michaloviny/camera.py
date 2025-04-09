@@ -22,6 +22,7 @@ R_BALL = 0.08
 
 
 label_map = {"green": 0, "red": 1, "blue": 2, "ball_y": 3, "ball_r": 3}
+cls_to_col = {0: (0, 255, 0), 1: (0,0,255), 2: (255,0,0), 3:(255,255,255)}
 
 def softmax(x):
     e_x = np.exp(x - np.max(x))
@@ -133,7 +134,7 @@ class OnnxCamera:
                 x, y = x1, y2
                 cv2.putText(
                     image,
-                    f"({world_coords[i, 0]:.2f}, {world_coords[i, 1]:.2f}) m {world_coords[i,2]} {pred[i, 4]*100:.1f} %",
+                    f"({world_coords[i, 0]:.2f}, {world_coords[i, 1]:.2f}) m",
                     (int(x), int(y - xywh_preds[i, 3]) - 30),
                     cv2.FONT_HERSHEY_SIMPLEX,
                     0.5,
@@ -144,7 +145,7 @@ class OnnxCamera:
                     image,
                     (int(x1), int(y1)),
                     (int(x2), int(y2)),
-                    (0, 255, 0),
+                    cls_to_col[world_coords[i, 2]],
                     2,
                 )
                 cv2.rectangle(
@@ -156,7 +157,7 @@ class OnnxCamera:
                 )
                 cv2.putText(
                     depth_copy,
-                    f"({distances[i][0]:.2f}) m {world_coords[i,2]} {pred[i, 4]*100:.1f} %",
+                    f"({distances[i][0]:.2f}) m",
                     (int(depth_coords[0, 0]), int(depth_coords[0, 1] - 10)),
                     cv2.FONT_HERSHEY_SIMPLEX,
                     0.5,
@@ -345,20 +346,28 @@ class Camera:
 
 
 if __name__ == "__main__":
-    from ultralytics import YOLO
+    #from ultralytics import YOLO
+    import os
 
     # Load a model
     #model = YOLO("yolo11n.pt")  # load an official model
-    #model = YOLO("michaloviny/best_ones/v11n_120e_160p.pt")  # load a custom trained model
-    ## Export the model
-    #model.export(format="onnx")
+    #folder = "michaloviny/best_ones/"
+    #files = [a for a in os.listdir(folder) if '.pt' in a and 'v11' in a and '160p' in a]
+    #print(files)
+    #for model_path in files:
+    #    model_path = folder + model_path
+    #    model = YOLO(model_path)  # load a custom trained model
+    #    # Export the model
+    #    model.export(format="onnx")
     #exit(0)
     turtle = Turtlebot(rgb=True, depth=True, pc=True)
     print("Turtle init")
-    camera = OnnxCamera("michaloviny/best_ones/v11n_120e_160p.onnx", verbose=True, cam_K=turtle.get_rgb_K(), depth_K=turtle.get_depth_K(), conf_thresh=0.25)
+    camera = OnnxCamera("michaloviny/best_ones/v11n_v2_300e_160p.onnx", verbose=True, cam_K=turtle.get_rgb_K(), depth_K=turtle.get_depth_K(), conf_thresh=0.25)
     print("cam init")
     while not turtle.is_shutting_down():
+        st = time.perf_counter()
         img = turtle.get_rgb_image()
+        print("image grab time ", time.perf_counter() - st)
         depth_img = turtle.get_depth_image()
         camera.get_detections(img, depth_img)
     #camera = Camera(turtle)

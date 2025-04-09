@@ -23,12 +23,9 @@ def button_cb(msg):
         np.save(save_dir + '/' + img_name, img)
         print('Image saved as {}'.format(os.path.join(save_dir, img_name)))
         turtle.play_sound()
-        cv2.imshow(WINDOW, img)
-        cv2.waitKey(1000)
 
 
 if __name__ == '__main__':
-    cv2.namedWindow(WINDOW)
     turtle = Turtlebot(rgb=True, depth=True, pc=True)
     
     print("waiting for button event")
