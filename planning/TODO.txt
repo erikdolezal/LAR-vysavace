@@ -1,0 +1,4 @@
+-> hledani
+-> vice micu cheack, prumernovat hodnotu
+-> kontrola poctu kulezek a davat si na to kurva poroz
+-> dokoncit planning asi 
