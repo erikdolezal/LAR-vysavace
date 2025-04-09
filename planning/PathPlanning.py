@@ -138,7 +138,7 @@ class Planning:
             if distance < min_distance:
                 min_distance = distance
                 shortest_inter = intersection
-                            
+        print(f"start {start}, shortest_inter {shortest_inter}, end {end}")          
         return np.array([start, shortest_inter, end])
     
     def GenerateShootPath(self):

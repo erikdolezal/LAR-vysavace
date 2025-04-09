@@ -84,6 +84,7 @@ class MainControl:
         print("waiting for start")
         slam_poses = np.zeros((1,3))
         rate = Rate(FREQUENCY)
+        points = np.zeros((1,2))
         target = np.array([1, -0.1,0])
         ball = target
         last_time = time.perf_counter()
@@ -107,11 +108,7 @@ class MainControl:
             print(odo_old, odo_new)
             self.slam.predict(odo_new, odo_old)
             if objects.shape[0] > 0:
-                #print(objects)
-                #objects = objects[objects[:,2] == DataClasses.RED]
-                #objects = objects[objects[:,2] != 3]
-                #objects = objects[objects[:,0] > 0.1]
-                self.slam.update_from_detections(percep_data=objects)
+                self.slam.update_from_detections(objects, st)
             print(f"slam time {(time.perf_counter() - st)*1000:.1f} ms")
             slam_poses = np.vstack((slam_poses, self.slam.x[:3]))
             # timedelta calc
@@ -120,16 +117,17 @@ class MainControl:
             last_time = actual_time
             pos_robot = np.append(self.slam.x[:2], [4])
             print(np.vstack([self.slam.landmarks, pos_robot]))
-            point_togo = self.path_planning.CreatPath(np.vstack([self.slam.landmarks, pos_robot, np.array([*ball[:2], 3])]), test_alg=False)
-            print(point_togo)
+            #point_togo = self.path_planning.CreatPath(np.vstack([self.slam.landmarks, pos_robot, np.array([*ball[:2], 3])]), test_alg=False)
+            #print(point_togo)
+            #points = np.vstack((points, point_togo))
             #v_lin, v_ang = self.velocity_control.cmd_velocity(self.slam.x[:3], point_togo, timedelta)
             v_lin, v_ang = self.velocity_control.cmd_velocity(self.slam.x[:3], ball, timedelta)
-            if np.linalg.norm(self.slam.x[:3] - ball) < 0.3:
+            if np.linalg.norm(self.slam.x[:3] - ball) < 0.4:
                 print("mission end")
                 break
             print(f"velocity {v_lin} {v_ang}")
             self.turtle.cmd_velocity(v_lin, v_ang)
-            #rate.sleep()
+            rate.sleep()
         self.turtle.cmd_velocity(0,0)
         fig = plt.figure(figsize=(10, 10))
         ax = fig.add_subplot(111)
@@ -140,8 +138,9 @@ class MainControl:
         ax.set_xlim(-4, 4)
         ax.set_ylim(-4, 4)
         ax.plot(slam_poses[0,0], slam_poses[0,1], 'ro', label="Start")
-        ax.plot(slam_poses[:,0], slam_poses[:,1], label="SLAM")
         ax.plot(slam_poses[-1,0], slam_poses[-1,1], 'go', label="End")
+        ax.plot(slam_poses[:,0], slam_poses[:,1], '.', label="SLAM", c='orange')
+        ax.plot(*points.T, c='violet', label='path')
         blue_mask = self.slam.landmarks[:,2] == DataClasses.BLUE
         ax.plot(self.slam.landmarks[blue_mask,0], self.slam.landmarks[blue_mask,1], '.', c="blue", label="Blue cones")
         green_mask = self.slam.landmarks[:,2] == DataClasses.GREEN
