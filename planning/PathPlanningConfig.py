@@ -15,3 +15,13 @@ class DataClasses(IntEnum):
     BLUE = 2
     BALL = 3
     TURTLE = 4
+
+
+class ErrorCodes(IntEnum):
+    OK_ERR = 0
+    MORE_BLUE_ERR = 1
+    NO_BALL_ERR = 2
+    BALL_STUCK_ERR = 3
+    NO_SHOOT_ERR = 4
+    NO_RORBOT_ERR = 5
+    ZERO_BLUE_ERR = 6
