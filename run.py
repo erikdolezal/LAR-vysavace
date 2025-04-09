@@ -109,7 +109,8 @@ class MainControl:
             if objects.shape[0] > 0:
                 #print(objects)
                 #objects = objects[objects[:,2] == DataClasses.RED]
-                objects = objects[objects[:,2] > 0.1]
+                #objects = objects[objects[:,2] != 3]
+                #objects = objects[objects[:,0] > 0.1]
                 self.slam.update_from_detections(percep_data=objects)
             print(f"slam time {(time.perf_counter() - st)*1000:.1f} ms")
             slam_poses = np.vstack((slam_poses, self.slam.x[:3]))
@@ -119,11 +120,11 @@ class MainControl:
             last_time = actual_time
             pos_robot = np.append(self.slam.x[:2], [4])
             print(np.vstack([self.slam.landmarks, pos_robot]))
-            point_togo = self.path_planning.CreatPath(np.vstack([self.slam.landmarks, pos_robot]), test_alg=False)
+            point_togo = self.path_planning.CreatPath(np.vstack([self.slam.landmarks, pos_robot, np.array([*ball[:2], 3])]), test_alg=False)
             print(point_togo)
             #v_lin, v_ang = self.velocity_control.cmd_velocity(self.slam.x[:3], point_togo, timedelta)
             v_lin, v_ang = self.velocity_control.cmd_velocity(self.slam.x[:3], ball, timedelta)
-            if np.linalg.norm(self.slam.x[:3] - ball) < 0.5:
+            if np.linalg.norm(self.slam.x[:3] - ball) < 0.3:
                 print("mission end")
                 break
             print(f"velocity {v_lin} {v_ang}")

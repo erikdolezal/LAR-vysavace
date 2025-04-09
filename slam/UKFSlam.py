@@ -169,6 +169,8 @@ class UKF_SLAM():
 
     
     def update_from_detections(self, percep_data):
+        percep_data = percep_data[percep_data[:,2] != DataClasses.BALL]
+        percep_data = percep_data[percep_data[:,0] > 0.1]
         if self.landmarks.shape[0] > 0:
             closest_cones, percep_data_mask = self.data_association(percep_data)
             percep_data_cls = percep_data[:,2]
