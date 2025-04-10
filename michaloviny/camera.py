@@ -11,7 +11,7 @@ import time
 import torch
 import torchvision
 
-SHOW = False
+SHOW = True
 
 CAMERA_ANGLE = 10
 WINDOW = "image"
@@ -120,15 +120,19 @@ class OnnxCamera:
         for i in range(pred.shape[0]):
             x1, y1, x2, y2 = pred[i, :4]
             hom_coords = np.array([[x1, y1, 1], [x2, y2, 1]])
+            #x, y, w, h = xywh_preds[i,:4]
+            #hom_coords = np.array([[x - w/4, y - h/8, 1], [x+w/4, y + h/8, 1]])
+
             depth_coords = hom_coords @ self.cam_to_depth.T
             median_distance = np.median(depth_image[int(depth_coords[0,1]):int(depth_coords[1,1]), int(depth_coords[0,0]):int(depth_coords[1,0])])/1000
             #median_distance = np.average(depth_image[int(depth_coords[0,1]):int(depth_coords[1,1]), int(depth_coords[0,0]):int(depth_coords[1,0])], 
             #                            weights = np.exp(-(depth_image[int(depth_coords[0,1]):int(depth_coords[1,1]), int(depth_coords[0,0]):int(depth_coords[1,0])] - median_distance)**2/100))/1000
             distances[i] = median_distance
             world_coords[i] = (self.R_x @ (np.array([*xywh_preds[i, [0,1]], 1]) @ self.cam_K.T))[[0, 2, 1]]
-            world_coords[i,:2] *= median_distance / np.linalg.norm(world_coords[i])
+            world_coords[i,:2] *= median_distance / np.linalg.norm(world_coords[i,1])
             world_coords[i, 2] = self.class_map[pred[i, 5]]
-            world_coords[i] = self.adjust_coords(world_coords[i])
+            #world_coords[i] = self.adjust_coords(world_coords[i])
+            distances[i] = np.linalg.norm(world_coords[i,:2])
             world_coords[i, 0], world_coords[i, 1] = world_coords[i, 1], -world_coords[i, 0]
             if SHOW:
                 x, y = x1, y2
@@ -362,7 +366,7 @@ if __name__ == "__main__":
     #exit(0)
     turtle = Turtlebot(rgb=True, depth=True, pc=True)
     print("Turtle init")
-    camera = OnnxCamera("michaloviny/best_ones/v11n_v2_300e_160p.onnx", verbose=True, cam_K=turtle.get_rgb_K(), depth_K=turtle.get_depth_K(), conf_thresh=0.25)
+    camera = OnnxCamera("michaloviny/best_ones/v11n_v3_300e_240p_w.onnx", verbose=True, cam_K=turtle.get_rgb_K(), depth_K=turtle.get_depth_K(), conf_thresh=0.25)
     print("cam init")
     while not turtle.is_shutting_down():
         st = time.perf_counter()

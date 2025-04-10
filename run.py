@@ -25,18 +25,18 @@ class VelocityControl:
     def __init__(self, turtle):
         self.turtle = turtle
         self.velocity = 0
-        self.max_acc = 0.1 # m/s^2
+        self.max_acc = 0.01 # m/s^2
         self.max_ang_acc = 0.1 # rad/s^2
-        self.max_speed = 4 # m/s
-        self.max_ang_speed = 4 # rad/s
+        self.max_speed = 0.4 # m/s
+        self.max_ang_speed = 0.5 # rad/s
         self.last_cmd = (0, 0)
         self.ang_p = 10
     
     def cmd_velocity(self, position, target_position, dt):
         target = global_to_local(np.expand_dims(target_position[:2].copy(), axis=0), position)[0]
         ang_velocity = np.arctan2(target[1], target[0])*self.ang_p
-        self.velocity = target[0]
-        if np.linalg.norm(target) < 0.1:
+        self.velocity = target[0] * (target[0] > 0)
+        if np.linalg.norm(target) < 0.01:
             self.velocity = 0
             ang_velocity = 0
             #ang_velocity = target_position[2] - position[2]
@@ -62,7 +62,7 @@ class MainControl:
         self.end_event = Event()
         self.start_event = Event()
         self.velocity_control = VelocityControl(self.turtle)
-        self.camera = OnnxCamera("michaloviny/best_ones/v11n_v2_300e_160p.onnx", verbose=False, cam_K=self.turtle.get_rgb_K(), depth_K=self.turtle.get_depth_K(), conf_thresh=0.30)
+        self.camera = OnnxCamera("michaloviny/best_ones/v11n_v3_300e_240p_w.onnx", verbose=False, cam_K=self.turtle.get_rgb_K(), depth_K=self.turtle.get_depth_K(), conf_thresh=0.25)
         self.slam = UKF_SLAM(x_size=3, alpha=0.001, beta=2, kappa=0)
         self.odo = Odometry(self.turtle) 
         self.path_planning = Planning()
@@ -107,6 +107,7 @@ class MainControl:
             odo_old, odo_new = self.odo.update_and_get_delta()
             print(odo_old, odo_new)
             self.slam.predict(odo_new, odo_old)
+            print(f"objects shape {objects.shape[0]}")
             if objects.shape[0] > 0:
                 self.slam.update_from_detections(objects, st)
             print(f"slam time {(time.perf_counter() - st)*1000:.1f} ms")
@@ -117,17 +118,17 @@ class MainControl:
             last_time = actual_time
             pos_robot = np.append(self.slam.x[:2], [4])
             print(np.vstack([self.slam.landmarks, pos_robot]))
-            #point_togo = self.path_planning.CreatPath(np.vstack([self.slam.landmarks, pos_robot, np.array([*ball[:2], 3])]), test_alg=False)
-            #print(point_togo)
-            #points = np.vstack((points, point_togo))
-            #v_lin, v_ang = self.velocity_control.cmd_velocity(self.slam.x[:3], point_togo, timedelta)
-            v_lin, v_ang = self.velocity_control.cmd_velocity(self.slam.x[:3], ball, timedelta)
+            point_togo = self.path_planning.create_path(np.vstack([self.slam.landmarks, np.array([*ball[:2], 3])]), pos_robot, test_alg=False)
+            print("togo", point_togo)
+            points = np.vstack((points, point_togo))
+            v_lin, v_ang = self.velocity_control.cmd_velocity(self.slam.x[:3], point_togo, timedelta)
+            #v_lin, v_ang = self.velocity_control.cmd_velocity(self.slam.x[:3], ball, timedelta)
             if np.linalg.norm(self.slam.x[:3] - ball) < 0.4:
                 print("mission end")
                 break
             print(f"velocity {v_lin} {v_ang}")
             self.turtle.cmd_velocity(v_lin, v_ang)
-            rate.sleep()
+            #rate.sleep()
         self.turtle.cmd_velocity(0,0)
         fig = plt.figure(figsize=(10, 10))
         ax = fig.add_subplot(111)
@@ -147,6 +148,7 @@ class MainControl:
         ax.plot(self.slam.landmarks[green_mask,0], self.slam.landmarks[green_mask,1], '.', c="green", label="Green cones")
         red_mask = self.slam.landmarks[:,2] == DataClasses.RED
         ax.plot(self.slam.landmarks[red_mask,0], self.slam.landmarks[red_mask,1], '.', c="red", label="Red cones")
+        ax.plot(*ball[:2], '.', label="misa no balls")
         ax.legend()
         ax.grid()
         plt.show()

@@ -14,7 +14,7 @@ class Planning:
         self.robot_pos = None
         self.time_to_shoot = False
 
-    def creat_path(self, object_pos, robot_pos, test_alg = False):
+    def create_path(self, object_pos, robot_pos, test_alg = False):
         """Returns next point in a path or robot path and ball path if test_alg is true"""
         
         next_point = None
@@ -25,6 +25,7 @@ class Planning:
         if inden_outcome == ErrorCodes.MORE_BLUE_ERR:
             return ErrorCodes.MORE_BLUE_ERR
         elif inden_outcome == ErrorCodes.NO_BALL_ERR:
+            print("Turning")
             next_point = self.turn_robot_around(self.robot_pos[:2], self.robot_pos[2], PlanningParm.ROBOT_TURN_RADIUS)
             if test_alg:
                 return np.array([self.robot_pos[:2], next_point]), np.empty((0, 2)), np.empty((0, 2)) # Returns only point for rotation
@@ -110,7 +111,9 @@ class Planning:
                 
         # TODO: what to do if there are more than 2 blue tubes
         if blue_count > 2:
-            return ErrorCodes.MORE_BLUE_ERR
+            if self.goal_targer is None:
+                self.goal_targer = self.objects[DataClasses.BLUE][0]
+            #return ErrorCodes.MORE_BLUE_ERR
         elif blue_count == 2:
             self.goal_targer = center_sum/2 # Calculates the center of the goal
         elif blue_count == 1:

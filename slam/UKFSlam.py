@@ -14,9 +14,9 @@ class DataClasses(IntEnum):
     BALL = 3
 
 config = {
-    "pairing_distance" : 0.5,
+    "pairing_distance" : 1,
     "detection_var": 1,
-    "position_var": 0.05,
+    "position_var": 0.1,
     "min_occurences": 3,
 }
 

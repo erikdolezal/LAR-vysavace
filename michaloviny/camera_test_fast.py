@@ -19,7 +19,7 @@ class ObjectData:
     def __init__(
         self,
         label: str,
-        lower_left: tuple[int, int],
+        lower_left,
         width: int,
         height: int,
         coords: np.ndarray,
@@ -37,7 +37,7 @@ class ObjectData:
         return f"{self.label}: Pos ({x:.2f}, {y:.2f}, {z:.2f})m"
 
 
-def generate_anotation(results, detected_objects: list[ObjectData]) -> np.ndarray:
+def generate_anotation(results, detected_objects) -> np.ndarray:
     """
     Generates anotations on image.
     """
@@ -101,7 +101,7 @@ def load_yolo_model(model_path=MODEL_PATH) -> YOLO:
     return YOLO(model_path)
 
 
-def detect_objects(model: YOLO, turtle: Turtlebot, R_x: np.ndarray) -> list[ObjectData]:
+def detect_objects(model: YOLO, turtle: Turtlebot, R_x: np.ndarray):
     """
     Processes images from a Turtlebot's camera and Returns array of detected Objects with their coords.
     """
