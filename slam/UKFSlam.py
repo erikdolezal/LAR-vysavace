@@ -17,6 +17,7 @@ config = {
     "pairing_distance" : 0.5,
     "detection_var": 1,
     "position_var": 0.05,
+    "min_occurences": 3,
 }
 
 
@@ -41,6 +42,7 @@ class UKF_SLAM():
         # covariance weights
         self.Wc = np.full(2*self.n + 1, 1/(2*(self.n + self.lambda_)))
         self.Wc[0] = self.lambda_/(self.n + self.lambda_) + (1 - self.alpha**2 + self.beta)
+        self.landmark_contestants = np.zeros((0,5)) # x, y, cls, seen, last_occurence
 
     def sigma_points(self, x, P):
         """
@@ -168,7 +170,9 @@ class UKF_SLAM():
         return closest_cones, percep_data_mask
 
     
-    def update_from_detections(self, percep_data):
+    def update_from_detections(self, percep_data, time):
+        percep_data = percep_data[percep_data[:,2] != DataClasses.BALL]
+        percep_data = percep_data[percep_data[:,0] > 0.1]
         if self.landmarks.shape[0] > 0:
             closest_cones, percep_data_mask = self.data_association(percep_data)
             percep_data_cls = percep_data[:,2]
@@ -183,14 +187,36 @@ class UKF_SLAM():
                     return out
                 R = np.eye(lidar_percep_data.shape[0])*config["detection_var"]
                 self.update(lidar_percep_data, h, R)
-            new_percep_data = local_to_global(percep_data[~percep_data_mask].copy(), self.x[:3])[:,:2]
+            new_percep_data = local_to_global(percep_data[~percep_data_mask].copy(), self.x[:3])[:,:3]
             new_percep_data_cls = percep_data_cls[~percep_data_mask]
         else:
-            new_percep_data = local_to_global(percep_data.copy(), self.x[:3])[:, :2]
+            new_percep_data = local_to_global(percep_data.copy(), self.x[:3])[:, :3]
             new_percep_data_cls = percep_data[:,2]
 
+        diff_matrix = np.array([[1,0,0],[0,1,0],[0,0,1e6]])
+        dist_mat = cdist(new_percep_data@diff_matrix.T, self.landmark_contestants[:,:3]@diff_matrix.T)
+        new_data_mask = np.zeros(new_percep_data.shape[0], dtype=bool)
+        if self.landmark_contestants.shape[0] > 0 and new_percep_data.shape[0] > 0:
+            closest_landmarks = np.argmin(dist_mat, axis=1)
+            new_data_mask = dist_mat[np.arange(0, new_percep_data.shape[0]), closest_landmarks] < config["pairing_distance"]
+            new_data_mask &= dist_mat[np.arange(0, new_percep_data.shape[0]), closest_landmarks] == np.min(dist_mat.T[closest_landmarks], axis=1)
+            self.landmark_contestants[closest_landmarks[new_data_mask], :2] += (new_percep_data[new_data_mask, :2] - self.landmark_contestants[closest_landmarks[new_data_mask], :2]) * np.vstack((1/ (self.landmark_contestants[closest_landmarks[new_data_mask], 3] + 1),
+                                                                                                                                                                                               1/ (self.landmark_contestants[closest_landmarks[new_data_mask], 3] + 1))).T
+            self.landmark_contestants[closest_landmarks[new_data_mask], 3] += 1
+            self.landmark_contestants[closest_landmarks[new_data_mask], 4] = time
+
+        new_contestants = np.hstack((new_percep_data[~new_data_mask], np.ones((np.sum((~new_data_mask)), 2)) * np.array([1, time])))
+        self.landmark_contestants = np.vstack((self.landmark_contestants, new_contestants))
+        self.landmark_contestants = self.landmark_contestants[time - self.landmark_contestants[:, 4] < 0.5]
+        
+        new_data_mask = self.landmark_contestants[:, 3] > config["min_occurences"]
+        new_percep_data = self.landmark_contestants[new_data_mask, :3]
+        new_percep_data_cls = new_percep_data[:,2]
+        self.landmark_contestants = self.landmark_contestants[~new_data_mask]
+        print(f"landmark contestants {self.landmark_contestants}")
+
         self.data_cls = np.hstack((self.data_cls, new_percep_data_cls))
-        self.x = np.hstack((self.x, new_percep_data.flatten()))
+        self.x = np.hstack((self.x, new_percep_data[:,:2].flatten()))
 
         self.kappa = 3*self.x.shape[0] 
         self.P = block_diag(self.P, np.eye(new_percep_data.shape[0]*2)*0.5)
