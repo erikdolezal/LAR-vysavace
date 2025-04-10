@@ -3,8 +3,10 @@ from enum import IntEnum
 class PlanningParm():
     CLEARANCE = 0.4
     SHOOT_SCALING = 10
-    SHOOT_STEPBACK = 1
+    SHOOT_STEPBACK = 0.5
     BALL_PROXIMITY = 0.3
+    HADING_CHECK = 0.0873*2
+    ROBOT_TURN_RADIUS = 0.3
         
 class DataClasses(IntEnum):
     """
@@ -14,7 +16,6 @@ class DataClasses(IntEnum):
     RED = 1
     BLUE = 2
     BALL = 3
-    TURTLE = 4
 
 
 class ErrorCodes(IntEnum):

@@ -132,15 +132,15 @@ class Simulation:
         output = np.empty((0, 3))
         for class_type in self.objects:
             if class_type == DataClasses.TURTLE:
-                for object_iter in self.objects[class_type]:
-                    output = np.vstack([output, np.array([object_iter.pos[0], object_iter.pos[1], object_iter.type])]) #TODO: add angle
+                pass
             else:
                 for object_iter in self.objects[class_type]:
-                    output = np.vstack([output, np.array([object_iter.pos[0], object_iter.pos[1], object_iter.type])])
+                    output = np.vstack([output, np.array([object_iter.pos[0] - SimParm.SIM_OFFSET, object_iter.pos[1] - SimParm.SIM_OFFSET, object_iter.type])])
         return output
     
     def planing_visual(self):
-        robot_path, shoot_path, ball_path  = self.path.CreatPath(self.get_positions(), True)
+        robot_pos = self.objects[DataClasses.TURTLE][0].get_info()[:3] - np.array([SimParm.SIM_OFFSET, SimParm.SIM_OFFSET, 0])
+        robot_path, shoot_path, ball_path  = self.path.creat_path(self.get_positions(), robot_pos, True)
         if robot_path is not None:
             self.path_robot = self.load_path(robot_path, SimParm.RED)
         else: return False
@@ -157,7 +157,7 @@ class Simulation:
         
         exit_path = Path(self, color=color)
         for point in path:
-            exit_path.add_point(point)
+            exit_path.add_point(point + np.array([SimParm.SIM_OFFSET, SimParm.SIM_OFFSET]))
             
         return exit_path
           

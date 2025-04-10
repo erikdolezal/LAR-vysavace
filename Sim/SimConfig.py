@@ -14,6 +14,7 @@ class SimParm():
     WIDTH = 1000
     HEIGHT = 1000
     SIDE_REAL = 5
+    SIM_OFFSET = 2.5
 
     #Simulator paramteres
     SIM_FPS = 100
