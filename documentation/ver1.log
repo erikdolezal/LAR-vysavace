@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (MiKTeX 24.4) (preloaded format=pdflatex 2025.2.21)  25 MAR 2025 22:39
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (MiKTeX 24.4) (preloaded format=pdflatex 2025.2.21)  12 APR 2025 14:42
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -719,25 +719,27 @@ LaTeX Font Info:    External font `lmex10' loaded for size
 \tf@toc=\write5
 \openout5 = `ver1.toc'.
 
-<pictures/label_studio.png, id=58, 1541.76pt x 747.9945pt>
+<pictures/label_studio.png, id=59, 1541.76pt x 747.9945pt>
 File: pictures/label_studio.png Graphic file (type png)
 <use pictures/label_studio.png>
-Package pdftex.def Info: pictures/label_studio.png  used on input line 62.
+Package pdftex.def Info: pictures/label_studio.png  used on input line 60.
 (pdftex.def)             Requested size: 386.95897pt x 187.72862pt.
 
 
 [1
 
 {C:/Users/bouda/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}{C:/Program Files/MiKTeX/fonts/enc/dvips/lm/lm-ec.enc}]
-<pictures/rozpoznane.jpg, id=69, 1413.28pt x 1027.84pt>
+<pictures/rozpoznane.jpg, id=74, 1156.32pt x 899.36pt>
 File: pictures/rozpoznane.jpg Graphic file (type jpg)
 <use pictures/rozpoznane.jpg>
-Package pdftex.def Info: pictures/rozpoznane.jpg  used on input line 68.
-(pdftex.def)             Requested size: 338.58632pt x 246.2475pt.
-LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 74.
- (C:\Program Files\MiKTeX\tex/latex/lm\t1lmtt.fd
-File: t1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
-)
+Package pdftex.def Info: pictures/rozpoznane.jpg  used on input line 73.
+(pdftex.def)             Requested size: 338.58632pt x 263.33276pt.
+<pictures/v11n_160p.png, id=75, 867.24pt x 650.43pt>
+File: pictures/v11n_160p.png Graphic file (type png)
+<use pictures/v11n_160p.png>
+Package pdftex.def Info: pictures/v11n_160p.png  used on input line 80.
+(pdftex.def)             Requested size: 386.95897pt x 290.21953pt.
+
 
 
 Package fancyhdr Warning: \headheight is too small (12.0pt): 
@@ -747,6 +749,12 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-3.35403pt}.
 
 [2 <./pictures/label_studio.png> <./pictures/rozpoznane.jpg>]
+<pictures/v11n_240p.png, id=84, 867.24pt x 650.43pt>
+File: pictures/v11n_240p.png Graphic file (type png)
+<use pictures/v11n_240p.png>
+Package pdftex.def Info: pictures/v11n_240p.png  used on input line 87.
+(pdftex.def)             Requested size: 386.95897pt x 290.21953pt.
+
 
 
 Package fancyhdr Warning: \headheight is too small (12.0pt): 
@@ -755,7 +763,40 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-3.35403pt}.
 
-[3] (ver1.aux)
+[3 <./pictures/v11n_160p.png> <./pictures/v11n_240p.png>]
+LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 99.
+ (C:\Program Files\MiKTeX\tex/latex/lm\t1lmtt.fd
+File: t1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
+)
+<pictures/detect.png, id=97, 966.61125pt x 715.92468pt>
+File: pictures/detect.png Graphic file (type png)
+<use pictures/detect.png>
+Package pdftex.def Info: pictures/detect.png  used on input line 112.
+(pdftex.def)             Requested size: 241.84843pt x 179.12274pt.
+<pictures/depth_detect.png, id=98, 1279.78125pt x 715.17188pt>
+File: pictures/depth_detect.png Graphic file (type png)
+<use pictures/depth_detect.png>
+Package pdftex.def Info: pictures/depth_detect.png  used on input line 118.
+(pdftex.def)             Requested size: 338.58632pt x 189.21408pt.
+
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 15.35403pt, for example:
+(fancyhdr)                \setlength{\headheight}{15.35403pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-3.35403pt}.
+
+[4 <./pictures/detect.png>]
+
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 15.35403pt, for example:
+(fancyhdr)                \setlength{\headheight}{15.35403pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-3.35403pt}.
+
+[5 <./pictures/depth_detect.png>] (ver1.aux)
  ***********
 LaTeX2e <2024-11-01> patch level 2
 L3 programming layer <2025-01-18>
@@ -764,17 +805,17 @@ Package rerunfilecheck Info: File `ver1.out' has not changed.
 (rerunfilecheck)             Checksum: 8F037B7BAE5BBFB71BF517A0D84E310A;1179.
  ) 
 Here is how much of TeX's memory you used:
- 24739 strings out of 473529
- 455307 string characters out of 5724840
- 839997 words of memory out of 5000000
- 47512 multiletter control sequences out of 15000+600000
- 608578 words of font info for 78 fonts, out of 8000000 for 9000
+ 24781 strings out of 473529
+ 456334 string characters out of 5724840
+ 841468 words of memory out of 5000000
+ 47547 multiletter control sequences out of 15000+600000
+ 612840 words of font info for 79 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 99i,11n,101p,505b,461s stack positions out of 10000i,1000n,20000p,200000b,200000s
-<C:/Program Files/MiKTeX/fonts/type1/public/lm/lmbx12.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmr12.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmr17.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmro12.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmtt12.pfb>
-Output written on ver1.pdf (3 pages, 2460640 bytes).
+ 99i,12n,101p,515b,463s stack positions out of 10000i,1000n,20000p,200000b,200000s
+<C:/Program Files/MiKTeX/fonts/type1/public/lm/lmbx12.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmr12.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmr17.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmri12.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmro12.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmtt12.pfb>
+Output written on ver1.pdf (5 pages, 3245002 bytes).
 PDF statistics:
- 111 PDF objects out of 1000 (max. 8388607)
- 17 named destinations out of 1000 (max. 500000)
- 103 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 147 PDF objects out of 1000 (max. 8388607)
+ 23 named destinations out of 1000 (max. 500000)
+ 123 words of extra memory for PDF output out of 10000 (max. 10000000)
 

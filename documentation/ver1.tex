@@ -51,30 +51,77 @@
 \section{Zadání}
 \section{Řešení}
 \subsection{Zpracování obrazu}
-Zpracování obrazu děláme pomocí konvoluční neuronové sítě \href{https://docs.ultralytics.com/models/}{YOLO}. Jako vstup používáme obraz z kamery.
+Detekci objektů děláme pomocí konvoluční neuronové sítě \href{https://docs.ultralytics.com/models/}{YOLO} (You Only Look Once). Důvodem k tomuto rozhodnutí bylo, aby náše řešení dobře zvládalo změny v osvětlení a jiné rušivé vstupy jako například špinavý žlutý míč. Segementace obrazu pomocí barev, by tak mohla být nespolehlivá. Jako vstup používáme obraz z Intel RealSense D435 kamery.
 \subsubsection{Trénování CNN}
-YOLO model jsme museli nejdříve natrénovat na rozponávání pilířů a míče. Učinili jsme tak na více než 250 obrázcích,
-které jsme pořídili pomocí kamery na robotovi. Obrázky jsme ručně anotovali pomocí programu \href{https://labelstud.io/}{Label Studio}. Anotace byli poté vyexportovány ve formátu YOLO.
-Pomocí Python kódu a knihovny od ultralytics jsme natrénovali model. Vyzkoušeli jsme verze v8 a 11. Zkoušeli jsme také různé rozlišení a počet epoch.
-Nakonec jsme vybrali model založený na YOLO11.
+YOLO model jsme museli nejdříve natrénovat na rozponávání pilířů a míče. Učinili jsme tak na více než 670 obrázcích,
+které jsme pořídili pomocí kamery na robotovi. Dalších 120 jsme použili pro validaci. Obrázky jsme ručně anotovali pomocí programu \href{https://labelstud.io/}{Label Studio}. Jak vypadá anotace je vidět v obrázku \eqref{fig:label_studio}.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{pictures/label_studio.png}
     \caption{Anotování v Label Studiu}
+    \label{fig:label_studio}	
 \end{figure}
+Pro anotaci jsme použili nastavení \textit{Object Detection with Bounding Boxes}, tedy jsme anotavali pomocí obdelníků. Zvolili jsme možnost bez rotace, všechny obdelníky mají tedy rovnoběžné strany se stranami obrazu. 
+Toto představilo problém, který jde vidět v obrázku \eqref{fig:detected_image}. Díky zakřivení obrazu z kamery, obdelníky nesedí přímo na pilíře, což byl lehce vyřešitelný problém \eqref{sec:point_cloud}. Možnost segmentace, myšleno maskou jsme zamítli z různých důvodou, např. pracné anotace. 
+Anotovaný data set byl poté vyexportován ve formátu YOLO.
+Pomocí Python kódu a knihovny od \href{https://docs.ultralytics.com/}{Ultralitics} jsme natrénovali model. Vyzkoušeli jsme YOLO verze v8 a 11. Ukázalo se, že verze 11 je mnohem přesnější, zvláště při změně osvětlení. 
+Protože detekce musí probíhat rychle, zkoušeli jsme modeli 11s a 11n. I když by měl být model 11s přesnější, byl pro naše použití již moc pamalý. 
+Běžel déle než 50ms. Pro model 11n jsme zkoušeli i různé rozlišení. Rozlišení 160p a 240p bylo zpracováno dostatečně rychle a s uspokojivími výsledky. Oba modely byly natrénované na 300 epochách.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\textwidth]{pictures/rozpoznane.jpg}
-    \caption{Rozpoznané objekty}
-    \label{fig:example_image}
+    \caption{Rozpoznané objekty pomocí YOLO 11n při rozlišení 240p}
+    \label{fig:detected_image}
 \end{figure}
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{pictures/v11n_160p.png}
+    \caption{Normalizovaná matice záměn pro model 11n 160p}
+    \label{fig:confusion_matrix_160p}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{pictures/v11n_240p.png}
+    \caption{Normalizovaná matice záměn pro model 11n 240p}
+    \label{fig:confusion_matrix_240p}
+\end{figure}
+
+Model 160p \eqref{fig:confusion_matrix_160p} je v některých podmínkách znatelně horší oproti 240p \eqref{fig:confusion_matrix_240p} v rozpoznávání modrých pilířů.
+To může způsobit velké problémy, protože modré pilíře tvoří branku. Nejčastějším objektem, který byl zaměněn s pozadím, je zelený pilíř. Který, když je detekován navíc, minimálně překaží úspěšnému vyřešení problému.
+V obrázku \eqref{fig:detected_image} si ještě můžeme všimnout, že model dobře zvládá rozpoznávání objektů, které mají zaměnitelné barvy nebo tvar s objekty, které detekuje.
+Model například rozpoznal míč, když je z čísti za pilířem, nebo objekty když jsou ve stínu pod stolem.
+
 \subsubsection{Rozpoznávání obrazu}
-Na robotovi zajišťuje rozpoznávání class \texttt{Camera}. Třída má metodu \texttt{detect objects}, která získá obraz z kamery a vrací seznam objektů. Seznam objektů vracíme pro potřeby SLAM jako numpy array poloha x, poloha y, objekt. Poloha x, y je poloha relativně k robotovi v prostoru.
+K rozpoznávání použiváme buď model YOLO 11n při rozlišení 160p nebo při 240p v závislosti na prostředí a pokud více benefitujeme z rychlejší detekce nebo její přesnosti.
+Na robotovi zajišťuje rozpoznávání class \texttt{Camera}. Třída má metodu \texttt{get detections}, která získá obraz z kamery. 
+Seznam objektů vracíme pro potřeby SLAM jako numpy array poloha x, poloha y, objekt. Poloha x, y je poloha relativně k robotovi v prostoru. K detekci nepoužíváme knihovnu YOLO. 
+
+Samotné rozpoznávání ale neběží pomocí YOLO. Model nejdříve konvertujeme do \href{https://onnx.ai/}{ONNX} (Open Neural Network Exchange). Důvodem pro toto rozhodnutí je dlouhá doba, kdy YOLO knihovna zpracovála obraz. ONNX to zvládá rychleji z části díky tomu, že je optimalizovaná pro spouštění na procesoru.
+Toto ale přineslo spoustu výzev, protože YOLO knihovna řešila spoustu věci za nás. Museli jsme naimplementovat počítaní pravděpodobností detekce pomocí softmax. 
+Také pomocí Non-Maximum Suppression z knihovny TorchVision řešíme odstranění duplicitních detekcí. A samozřejmostí je nepracování s detekcemi, které nedosahují nějaké hranice jistoty.
 
 \subsubsection{Pozice objektů v prostoru}
-Polohu objektů určujeme pomocí point cloudu z depth kamery. Vybereme body, které jsou ve středu obdelníku, který ohraničuje náš objekt. Z jednotlivých souřadnic je udělán medián, který je následně přenásoben maticí, která koriguje pro nahnutí kamery na robotovi. Se souřadnicí osy z již dále nepracujeme.
+\label{sec:point_cloud}
+Z počátku jsme využívali k určování pozice objektů point cloud, který jsme získali z kamery.
+To se ukázalo jako velice časově náročné. Proto jsme se rozhodli, že budeme počítat pozici objektů přímo z hloubkové kamery.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{pictures/detect.png}
+    \caption{Obrázek z RGB kamery s rozpoznanými objekty}
+    \label{fig:detect}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{pictures/depth_detect.png}
+    \caption{Obrázek z hloubkové kamery s rozpoznanými objekty}
+    \label{fig:depth_detect}
+\end{figure}
+Hloubková kamera vrací pouze pixeli s hloubkou. Aby byla poloha objektů spočítána co nejrychleji, pracujeme pouze s pixeli z hloubkové kamery \eqref{fig:depth_detect}, které jsou detekovány jako objekty pomocí RGB kamery \eqref{fig:detect}.
+Nejdříve vytvoříme transformační matici, která převadí mezi souřadnicemi kamery a hloubkové kamery. Poté se vypočítá median souřadnicí v bounding boxu, což řeší problém s obdelníky přesně nepasujícími na detekované objekty.
+Vyřešíme také 10 stupňový sklon kamery a pomocí K matice převedeme souřadnice z pixelů na reálné souřadnice. Za souřadnice detekce se také přidá třída objektu.
 
 \subsection{SLAM}
 \subsection{Plánování}

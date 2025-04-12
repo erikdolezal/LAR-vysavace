@@ -347,6 +347,7 @@ INPUT .\pictures\label_studio.png
 INPUT .\pictures\label_studio.png
 INPUT C:\Users\bouda\AppData\Local\MiKTeX\fonts\map\pdftex\pdftex.map
 INPUT C:\Program Files\MiKTeX\fonts\enc\dvips\lm\lm-ec.enc
+INPUT C:\Program Files\MiKTeX\fonts\tfm\public\lm\ec-lmri12.tfm
 INPUT .\pictures\rozpoznane.jpg
 INPUT .\pictures\rozpoznane.jpg
 INPUT .\pictures\rozpoznane.jpg
@@ -354,11 +355,39 @@ INPUT .\pictures\rozpoznane.jpg
 INPUT .\pictures\rozpoznane.jpg
 INPUT .\pictures\rozpoznane.jpg
 INPUT .\pictures\rozpoznane.jpg
+INPUT .\pictures\v11n_160p.png
+INPUT .\pictures\v11n_160p.png
+INPUT .\pictures\v11n_160p.png
+INPUT .\pictures\v11n_160p.png
+INPUT .\pictures\v11n_160p.png
+INPUT .\pictures\v11n_160p.png
+INPUT .\pictures\v11n_160p.png
+INPUT C:\Program Files\MiKTeX\fonts\tfm\public\lm\ec-lmro12.tfm
+INPUT .\pictures\v11n_240p.png
+INPUT .\pictures\v11n_240p.png
+INPUT .\pictures\v11n_240p.png
+INPUT .\pictures\v11n_240p.png
+INPUT .\pictures\v11n_240p.png
+INPUT .\pictures\v11n_240p.png
+INPUT .\pictures\v11n_240p.png
 INPUT C:\Program Files\MiKTeX\tex\latex\lm\t1lmtt.fd
 INPUT C:\Program Files\MiKTeX\tex\latex\lm\t1lmtt.fd
 INPUT C:\Program Files\MiKTeX\tex\latex\lm\t1lmtt.fd
 INPUT C:\Program Files\MiKTeX\fonts\tfm\public\lm\ec-lmtt12.tfm
-INPUT C:\Program Files\MiKTeX\fonts\tfm\public\lm\ec-lmro12.tfm
+INPUT .\pictures\detect.png
+INPUT .\pictures\detect.png
+INPUT .\pictures\detect.png
+INPUT .\pictures\detect.png
+INPUT .\pictures\detect.png
+INPUT .\pictures\detect.png
+INPUT .\pictures\detect.png
+INPUT .\pictures\depth_detect.png
+INPUT .\pictures\depth_detect.png
+INPUT .\pictures\depth_detect.png
+INPUT .\pictures\depth_detect.png
+INPUT .\pictures\depth_detect.png
+INPUT .\pictures\depth_detect.png
+INPUT .\pictures\depth_detect.png
 INPUT ver1.aux
 INPUT .\ver1.out
 INPUT .\ver1.out
@@ -368,6 +397,8 @@ INPUT C:\Program Files\MiKTeX\fonts\type1\public\lm\lmr12.pfb
 INPUT C:\Program Files\MiKTeX\fonts\type1\public\lm\lmr12.pfb
 INPUT C:\Program Files\MiKTeX\fonts\type1\public\lm\lmr17.pfb
 INPUT C:\Program Files\MiKTeX\fonts\type1\public\lm\lmr17.pfb
+INPUT C:\Program Files\MiKTeX\fonts\type1\public\lm\lmri12.pfb
+INPUT C:\Program Files\MiKTeX\fonts\type1\public\lm\lmri12.pfb
 INPUT C:\Program Files\MiKTeX\fonts\type1\public\lm\lmro12.pfb
 INPUT C:\Program Files\MiKTeX\fonts\type1\public\lm\lmro12.pfb
 INPUT C:\Program Files\MiKTeX\fonts\type1\public\lm\lmtt12.pfb
