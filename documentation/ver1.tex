@@ -38,7 +38,7 @@
 \presetkeys{todonotes}{inline}{}
 
 
-\title{LAR}
+\title{Řešení úkolu pro TurtleBot s detekcí objektů a SLAM}
 \author{Michal Bouda, Erik Doležal, Ondřej Váňa}
 \date{\today}
 
@@ -49,7 +49,19 @@
 \tableofcontents
 
 \section{Zadání}
+Úkolem práce je napsat řešení pro úkol, kde má dát Roomba TurtleBot gól do branky označené modrými pilíři.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{pictures/map.png}
+    \caption{Rozložení objektů v prostoru (ze zedání)}
+    \label{fig:map}	
+\end{figure}
+Rozložení problému je vidět na obrázku \eqref{fig:map}. Robot má za úkol najít míč a ten poté dostat mezi modré pilíře, které jsou od sebe vzdálené minimálně 700 mm. Míč je vzdálen od osy branky maximálně c = 300 mm.
+Míč se bude nacházet v minimální vzdálenosti a = 500 mmod brány a bude nejdále b = 2m. TurtleBot bude na začátku umístěn od středu míče ve vzdálenosti d = 0,7 m až e = 2,5 m.
+V prostoru před branou se mohou vyskytovat překážky v podobě zelených a červených pilířů. Za bránou může být neomezený počet pilířů.
+
 \section{Řešení}
+Naše řešení jsme rozdělili na tři hlavní části. První část je zpracování obrazu, druhá část je SLAM a třetí část je plánování a pohyb robota. Tyto části běží v hlavní smyčce programu. Při řešení problému bylo využíváno nástroje GitHub Copilat pro jednoduché úkony pro zrychlení práce.
 \subsection{Zpracování obrazu}
 Detekci objektů děláme pomocí konvoluční neuronové sítě \href{https://docs.ultralytics.com/models/}{YOLO} (You Only Look Once). Důvodem k tomuto rozhodnutí bylo, aby náše řešení dobře zvládalo změny v osvětlení a jiné rušivé vstupy jako například špinavý žlutý míč. Segementace obrazu pomocí barev, by tak mohla být nespolehlivá. Jako vstup používáme obraz z Intel RealSense D435 kamery.
 \subsubsection{Trénování CNN}
@@ -65,7 +77,7 @@ Pro anotaci jsme použili nastavení \textit{Object Detection with Bounding Boxe
 Toto představilo problém, který jde vidět v obrázku \eqref{fig:detected_image}. Díky zakřivení obrazu z kamery, obdelníky nesedí přímo na pilíře, což byl lehce vyřešitelný problém \eqref{sec:point_cloud}. Možnost segmentace, myšleno maskou jsme zamítli z různých důvodou, např. pracné anotace. 
 Anotovaný data set byl poté vyexportován ve formátu YOLO.
 Pomocí Python kódu a knihovny od \href{https://docs.ultralytics.com/}{Ultralitics} jsme natrénovali model. Vyzkoušeli jsme YOLO verze v8 a 11. Ukázalo se, že verze 11 je mnohem přesnější, zvláště při změně osvětlení. 
-Protože detekce musí probíhat rychle, zkoušeli jsme modeli 11s a 11n. I když by měl být model 11s přesnější, byl pro naše použití již moc pamalý. 
+Protože detekce musí probíhat rychle, zkoušeli jsme modeli 11s a 11n. I když je model 11s přesnější, byl pro naše použití již moc pamalý. 
 Běžel déle než 50ms. Pro model 11n jsme zkoušeli i různé rozlišení. Rozlišení 160p a 240p bylo zpracováno dostatečně rychle a s uspokojivími výsledky. Oba modely byly natrénované na 300 epochách.
 
 \begin{figure}[H]

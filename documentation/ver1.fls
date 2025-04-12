@@ -337,6 +337,15 @@ INPUT C:\Program Files\MiKTeX\fonts\tfm\public\amsfonts\symbols\msbm10.tfm
 INPUT C:\Program Files\MiKTeX\fonts\tfm\public\amsfonts\symbols\msbm10.tfm
 INPUT C:\Program Files\MiKTeX\fonts\tfm\public\amsfonts\symbols\msbm7.tfm
 OUTPUT ver1.toc
+INPUT .\pictures\map.png
+INPUT .\pictures\map.png
+INPUT .\pictures\map.png
+INPUT .\pictures\map.png
+INPUT .\pictures\map.png
+INPUT .\pictures\map.png
+INPUT .\pictures\map.png
+INPUT C:\Users\bouda\AppData\Local\MiKTeX\fonts\map\pdftex\pdftex.map
+INPUT C:\Program Files\MiKTeX\fonts\enc\dvips\lm\lm-ec.enc
 INPUT C:\Program Files\MiKTeX\fonts\tfm\public\lm\ec-lmbx12.tfm
 INPUT .\pictures\label_studio.png
 INPUT .\pictures\label_studio.png
@@ -345,24 +354,22 @@ INPUT .\pictures\label_studio.png
 INPUT .\pictures\label_studio.png
 INPUT .\pictures\label_studio.png
 INPUT .\pictures\label_studio.png
-INPUT C:\Users\bouda\AppData\Local\MiKTeX\fonts\map\pdftex\pdftex.map
-INPUT C:\Program Files\MiKTeX\fonts\enc\dvips\lm\lm-ec.enc
 INPUT C:\Program Files\MiKTeX\fonts\tfm\public\lm\ec-lmri12.tfm
-INPUT .\pictures\rozpoznane.jpg
-INPUT .\pictures\rozpoznane.jpg
-INPUT .\pictures\rozpoznane.jpg
-INPUT .\pictures\rozpoznane.jpg
-INPUT .\pictures\rozpoznane.jpg
-INPUT .\pictures\rozpoznane.jpg
-INPUT .\pictures\rozpoznane.jpg
-INPUT .\pictures\v11n_160p.png
-INPUT .\pictures\v11n_160p.png
-INPUT .\pictures\v11n_160p.png
-INPUT .\pictures\v11n_160p.png
-INPUT .\pictures\v11n_160p.png
-INPUT .\pictures\v11n_160p.png
-INPUT .\pictures\v11n_160p.png
 INPUT C:\Program Files\MiKTeX\fonts\tfm\public\lm\ec-lmro12.tfm
+INPUT .\pictures\rozpoznane.jpg
+INPUT .\pictures\rozpoznane.jpg
+INPUT .\pictures\rozpoznane.jpg
+INPUT .\pictures\rozpoznane.jpg
+INPUT .\pictures\rozpoznane.jpg
+INPUT .\pictures\rozpoznane.jpg
+INPUT .\pictures\rozpoznane.jpg
+INPUT .\pictures\v11n_160p.png
+INPUT .\pictures\v11n_160p.png
+INPUT .\pictures\v11n_160p.png
+INPUT .\pictures\v11n_160p.png
+INPUT .\pictures\v11n_160p.png
+INPUT .\pictures\v11n_160p.png
+INPUT .\pictures\v11n_160p.png
 INPUT .\pictures\v11n_240p.png
 INPUT .\pictures\v11n_240p.png
 INPUT .\pictures\v11n_240p.png
