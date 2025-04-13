@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (MiKTeX 24.4) (preloaded format=pdflatex 2025.2.21)  12 APR 2025 15:19
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (MiKTeX 24.4) (preloaded format=pdflatex 2025.2.21)  13 APR 2025 10:28
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -729,7 +729,7 @@ Package pdftex.def Info: pictures/map.png  used on input line 55.
 [1
 
 {C:/Users/bouda/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}{C:/Program Files/MiKTeX/fonts/enc/dvips/lm/lm-ec.enc} <./pictures/map.png>]
-<pictures/label_studio.png, id=73, 1541.76pt x 747.9945pt>
+<pictures/label_studio.png, id=74, 1541.76pt x 747.9945pt>
 File: pictures/label_studio.png Graphic file (type png)
 <use pictures/label_studio.png>
 Package pdftex.def Info: pictures/label_studio.png  used on input line 72.
@@ -744,12 +744,12 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-3.35403pt}.
 
 [2 <./pictures/label_studio.png>]
-<pictures/rozpoznane.jpg, id=86, 1156.32pt x 899.36pt>
+<pictures/rozpoznane.jpg, id=87, 1156.32pt x 899.36pt>
 File: pictures/rozpoznane.jpg Graphic file (type jpg)
 <use pictures/rozpoznane.jpg>
 Package pdftex.def Info: pictures/rozpoznane.jpg  used on input line 85.
 (pdftex.def)             Requested size: 338.58632pt x 263.33276pt.
-<pictures/v11n_160p.png, id=87, 867.24pt x 650.43pt>
+<pictures/v11n_160p.png, id=88, 867.24pt x 650.43pt>
 File: pictures/v11n_160p.png Graphic file (type png)
 <use pictures/v11n_160p.png>
 Package pdftex.def Info: pictures/v11n_160p.png  used on input line 92.
@@ -764,7 +764,7 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-3.35403pt}.
 
 [3 <./pictures/rozpoznane.jpg>]
-<pictures/v11n_240p.png, id=92, 867.24pt x 650.43pt>
+<pictures/v11n_240p.png, id=93, 867.24pt x 650.43pt>
 File: pictures/v11n_240p.png Graphic file (type png)
 <use pictures/v11n_240p.png>
 Package pdftex.def Info: pictures/v11n_240p.png  used on input line 99.
@@ -826,9 +826,9 @@ Here is how much of TeX's memory you used:
  47555 multiletter control sequences out of 15000+600000
  612840 words of font info for 79 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 99i,12n,101p,515b,463s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 99i,12n,101p,581b,463s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <C:/Program Files/MiKTeX/fonts/type1/public/lm/lmbx12.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmr12.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmr17.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmri12.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmro12.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmtt12.pfb>
-Output written on ver1.pdf (6 pages, 3350223 bytes).
+Output written on ver1.pdf (6 pages, 3350284 bytes).
 PDF statistics:
  156 PDF objects out of 1000 (max. 8388607)
  25 named destinations out of 1000 (max. 500000)
