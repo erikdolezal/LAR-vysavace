@@ -4,11 +4,11 @@ class PlanningParm():
     CLEARANCE = 0.4
     SHOOT_SCALING = 2
     SHOOT_STEPBACK = 0.5
-    BALL_PROXIMITY = 0.3
+    BALL_PROXIMITY = 0.25
     HADING_CHECK = 0.0873*2
     ROBOT_TURN_RADIUS = 0.3
     GOAL_POX = 0.7
-    SHOOT_ALIGNMENT = 0.05
+    SHOOT_ALIGNMENT = 0.2
     GOAL_CHECK = 0.05
         
 class DataClasses(IntEnum):

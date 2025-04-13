@@ -1,19 +1,13 @@
-from __future__ import print_function
-
-from robolab_turtlebot import Turtlebot, sleep, Rate
-
 import numpy as np
-from ultralytics import YOLO
 import cv2
-import time
 import onnxruntime as ort
 import time
 import torch
 import torchvision
 
-SHOW = True
+SHOW = False
 
-CAMERA_ANGLE = 10
+CAMERA_ANGLE = 0
 WINDOW = "image"
 MODEL_PATH = "michaloviny/best_ones/v11n_120e_160p.pt"
 HALF_COORD_BOX = 2
@@ -22,7 +16,7 @@ R_BALL = 0.08
 
 
 label_map = {"green": 0, "red": 1, "blue": 2, "ball_y": 3, "ball_r": 3}
-cls_to_col = {0: (0, 255, 0), 1: (0,0,255), 2: (255,0,0), 3:(255,255,255)}
+cls_to_col = {0: (0, 255, 0), 1: (0,0,255), 2: (255,0,0), 3:(0,255,255)}
 
 def softmax(x):
     e_x = np.exp(x - np.max(x))
@@ -58,16 +52,24 @@ class OnnxCamera:
         self.input_name = self.model.get_inputs()[0].name
         self.output_name = self.model.get_outputs()[0].name
         self.input_shape = self.model.get_inputs()[0].shape
-        self.R_x = np.array(
+        #self.R_x = np.array(
+        #    [
+        #        [1, 0, 0],
+        #        [0, np.cos(np.deg2rad(CAMERA_ANGLE)), -np.sin(np.deg2rad(CAMERA_ANGLE))],
+        #        [0, np.sin(np.deg2rad(CAMERA_ANGLE)), np.cos(np.deg2rad(CAMERA_ANGLE))],
+        #    ]
+        #)
+        self.R_y = np.array(
             [
-                [1, 0, 0],
-                [0, np.cos(np.deg2rad(CAMERA_ANGLE)), -np.sin(np.deg2rad(CAMERA_ANGLE))],
-                [0, np.sin(np.deg2rad(CAMERA_ANGLE)), np.cos(np.deg2rad(CAMERA_ANGLE))],
+                [np.cos(np.deg2rad(CAMERA_ANGLE)), 0, np.sin(np.deg2rad(CAMERA_ANGLE))],
+                [0, 1, 0],
+                [-np.sin(np.deg2rad(CAMERA_ANGLE)), 0, np.cos(np.deg2rad(CAMERA_ANGLE))],
             ]
         )
         if SHOW:
             cv2.namedWindow(WINDOW)
             cv2.namedWindow("depth")
+            cv2.namedWindow("position")
         self.class_map = {3:0, 2:2, 1:3, 4:1, 0:3}
 
     def detect(self, image):
@@ -117,6 +119,11 @@ class OnnxCamera:
         xywh_preds = xyxy2xywh(pred[:, :4])
         distances = np.zeros((pred.shape[0], 1))
         depth_copy = depth_image.copy()/np.max(depth_image)
+        position = np.ones((512,512,3))
+        cv2.circle(position, (256, 512), 200, (0,0,0), 1)
+        cv2.circle(position, (256, 512), 300, (0,0,0), 1)
+        cv2.circle(position, (256, 512), 400, (0,0,0), 1)
+        cv2.circle(position, (256, 512), 500, (0,0,0), 1)
         for i in range(pred.shape[0]):
             x1, y1, x2, y2 = pred[i, :4]
             hom_coords = np.array([[x1, y1, 1], [x2, y2, 1]])
@@ -124,16 +131,18 @@ class OnnxCamera:
             #hom_coords = np.array([[x - w/4, y - h/8, 1], [x+w/4, y + h/8, 1]])
 
             depth_coords = hom_coords @ self.cam_to_depth.T
-            median_distance = np.median(depth_image[int(depth_coords[0,1]):int(depth_coords[1,1]), int(depth_coords[0,0]):int(depth_coords[1,0])])/1000
+            median_distance = np.median(depth_image[int(depth_coords[0,1]):int(depth_coords[1,1]), int(depth_coords[0,0]):int(depth_coords[1,0])])/1000 
+            median_distance += 0.04 * median_distance
             #median_distance = np.average(depth_image[int(depth_coords[0,1]):int(depth_coords[1,1]), int(depth_coords[0,0]):int(depth_coords[1,0])], 
             #                            weights = np.exp(-(depth_image[int(depth_coords[0,1]):int(depth_coords[1,1]), int(depth_coords[0,0]):int(depth_coords[1,0])] - median_distance)**2/100))/1000
             distances[i] = median_distance
-            world_coords[i] = (self.R_x @ (np.array([*xywh_preds[i, [0,1]], 1]) @ self.cam_K.T))[[0, 2, 1]]
-            world_coords[i,:2] *= median_distance / np.linalg.norm(world_coords[i,1])
+            #depth_xy = np.array([np.mean(depth_coords[:, 0]), depth_coords[1,1], 1])
+            depth_xy = np.average(depth_coords, axis=0)
+            world_coords[i] = ((depth_xy @ self.depth_K.T)[[2,0,1]])
+            world_coords[i, 1] = -world_coords[i, 1]
+            world_coords[i] *= median_distance / np.linalg.norm(world_coords[i, 0])
             world_coords[i, 2] = self.class_map[pred[i, 5]]
-            #world_coords[i] = self.adjust_coords(world_coords[i])
             distances[i] = np.linalg.norm(world_coords[i,:2])
-            world_coords[i, 0], world_coords[i, 1] = world_coords[i, 1], -world_coords[i, 0]
             if SHOW:
                 x, y = x1, y2
                 cv2.putText(
@@ -168,9 +177,12 @@ class OnnxCamera:
                     1,
                     2,
                 )
+                cv2.circle(position, (int(-world_coords[i, 1]*200) + 256, int(-world_coords[i, 0]*200) + 512), 5, cls_to_col[world_coords[i, 2]], -1)
+
         if SHOW:
-            cv2.imshow("depth", depth_copy)
-            cv2.imshow(WINDOW, image)
+            #cv2.imshow("depth", depth_copy)
+            #cv2.imshow(WINDOW, image)
+            cv2.imshow("position", position)
             cv2.waitKey(1)
         if self.verbose:
             print(f"world coords: {np.hstack((world_coords, np.expand_dims(pred[:,4], axis=1)))}")
@@ -183,6 +195,7 @@ class OnnxCamera:
 
 if __name__ == "__main__":
     #from ultralytics import YOLO
+    from robolab_turtlebot import Turtlebot
     import os
 
     # Load a model

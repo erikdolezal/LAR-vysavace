@@ -30,7 +30,7 @@ class Planning:
                 return None, None, None # Returns None if the ball is in the goal
             next_point = None
         elif inden_outcome == ErrorCodes.NO_BALL_ERR or inden_outcome == ErrorCodes.ZERO_BLUE_ERR:
-            self.time_to_shoot = False
+            print("No ball or no blue tube")
             next_point = self.turn_robot_around(self.robot_pos[:2], self.robot_pos[2], PlanningParm.ROBOT_TURN_RADIUS)
             if test_alg:
                 return np.array([self.robot_pos[:2], next_point]), np.empty((0, 2)), np.empty((0, 2)) # Returns only point for rotation
@@ -49,7 +49,7 @@ class Planning:
             if self.are_points_in_proximity(self.robot_pos[:2], shoot_path[0]) and self.same_hading(hading_v ,self.robot_pos[2]):
                 robot_destination = shoot_path[1]
                 self.time_to_shoot = True
-            elif self.are_points_in_proximity(self.robot_pos[:2], shoot_path[0]):
+            elif self.are_points_in_proximity(self.robot_pos[:2], shoot_path[0]) and not self.time_to_shoot:
                 robot_destination = shoot_path[0] + PlanningParm.SHOOT_ALIGNMENT * hading_v
                 self.time_to_shoot = True
             else:
@@ -89,7 +89,7 @@ class Planning:
         Turns the robot around by -90 degrees
         """
         
-        vector = np.array([distance * np.cos(-angle), distance * np.sin(-angle)])
+        vector = np.array([distance * np.cos(angle), distance * np.sin(angle)])
         vector = self.mat_rot(-np.pi/2, vector)
         vector = vector / np.linalg.norm(vector) * distance
         return center + vector      

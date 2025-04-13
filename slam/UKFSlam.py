@@ -15,9 +15,11 @@ class DataClasses(IntEnum):
 
 config = {
     "pairing_distance" : 1,
-    "detection_var": 1,
-    "position_var": 0.1,
+    "detection_var": 0.2,
+    "position_var": 0.02,
+    "rotation_var": 0.01,
     "min_occurences": 3,
+    "detection_timeout": 1,
 }
 
 
@@ -27,7 +29,7 @@ class UKF_SLAM():
     """
     def __init__(self, x_size :int, alpha :float, beta :float, kappa :float):
         self.x = np.zeros(x_size)
-        self.P = np.eye(x_size)*0.01
+        self.P = np.eye(x_size)*0.5
         self.data_cls = np.zeros((0))
         self.landmarks = np.zeros((0, 3)) # x, y, class
         self.alpha = alpha
@@ -100,7 +102,7 @@ class UKF_SLAM():
         self.P = cov_difference.T
         # add process noise
         F = block_diag(R, 1, np.zeros((self.n - 3, self.n - 3)))
-        Qc = np.diag(np.hstack(([config["position_var"]]*3, np.zeros(self.n - 3))))
+        Qc = np.diag(np.hstack(([config["position_var"]]*2, [config["rotation_var"]], np.zeros(self.n - 3))))
         Q = F @ Qc @ F.T
         self.P += Q
     
@@ -112,7 +114,8 @@ class UKF_SLAM():
         R : measurement noise covariance
         """
         # compute sigma points
-        sigmas = self.sigmas_f # use sigma points from predict step
+        #sigmas = self.sigmas_f # use sigma points from predict step
+        sigmas = self.sigma_points(self.x, self.P)
         
         # pass sigma points through measurement function
         sigmas_h = h(sigmas)
@@ -159,7 +162,7 @@ class UKF_SLAM():
         """
         local_landmarks = np.hstack((global_to_local(self.x[3:].reshape(-1,2).copy(), self.x[:3]), np.expand_dims(self.data_cls, axis=1)))
         diff_matrix = np.array([[1,0,0],[0,1,0],[0,0,1e6]])
-        dist_mat = cdist(percep_data@diff_matrix.T, local_landmarks[:,:3] @ diff_matrix.T)
+        dist_mat = cdist(percep_data.copy()@diff_matrix.T, local_landmarks[:,:3] @ diff_matrix.T)
         closest_cones = np.empty((0))
         percep_data_mask = np.zeros((percep_data.shape[0],), dtype=bool)
         if local_landmarks.shape[0] > 0 and percep_data.shape[0] > 0: 
@@ -169,10 +172,19 @@ class UKF_SLAM():
         
         return closest_cones, percep_data_mask
 
+    def cartesian_to_polar_variance(self, x, y, var_x, var_y):
+        r = np.sqrt(x**2 + y**2)
+        r2 = r**2
+
+        var_r = (x**2 / r2) * var_x + (y**2 / r2) * var_y
+        var_theta = (y**2 / r2**2) * var_x + (x**2 / r2**2) * var_y
+
+        return var_r, var_theta
     
     def update_from_detections(self, percep_data, time):
+        #self.P[:3, :3] += np.eye(3) * 0.05
         percep_data = percep_data[percep_data[:,2] != DataClasses.BALL]
-        percep_data = percep_data[percep_data[:,0] > 0.1]
+        #percep_data = percep_data[percep_data[:,0] > 0.2]
         if self.landmarks.shape[0] > 0:
             closest_cones, percep_data_mask = self.data_association(percep_data)
             percep_data_cls = percep_data[:,2]
@@ -182,10 +194,21 @@ class UKF_SLAM():
                 def h(x):
                     out = np.zeros((0,matched_detections.shape[0]*2))
                     for sigma in x:
-                        local_detections = global_to_local(sigma[3:].reshape(-1,2).copy(), sigma[:3])[matched_detections]
+                        local_detections = global_to_local(sigma[3:].copy().reshape(-1,2), sigma[:3])[matched_detections]
                         out = np.vstack((out, self.detections_to_lidar(local_detections)))
                     return out
-                R = np.eye(lidar_percep_data.shape[0])*config["detection_var"]
+                # Extract x, y from detections that were matched
+                matched_points = percep_data[percep_data_mask, :2]
+
+                # We'll build R per (r, theta) for each point
+                R_blocks = []
+
+                for px, py in matched_points:
+                    var_r, var_theta = self.cartesian_to_polar_variance(px, py, var_x=config["detection_var"], var_y=config["detection_var"])  # adjust variances
+                    R_blocks.append(np.diag([var_r, var_theta]))
+
+                R = block_diag(*R_blocks)
+                # Update the filter with the matched detections
                 self.update(lidar_percep_data, h, R)
             new_percep_data = local_to_global(percep_data[~percep_data_mask].copy(), self.x[:3])[:,:3]
             new_percep_data_cls = percep_data_cls[~percep_data_mask]
@@ -194,7 +217,7 @@ class UKF_SLAM():
             new_percep_data_cls = percep_data[:,2]
 
         diff_matrix = np.array([[1,0,0],[0,1,0],[0,0,1e6]])
-        dist_mat = cdist(new_percep_data@diff_matrix.T, self.landmark_contestants[:,:3]@diff_matrix.T)
+        dist_mat = cdist(new_percep_data.copy()@diff_matrix.T, self.landmark_contestants[:,:3]@diff_matrix.T)
         new_data_mask = np.zeros(new_percep_data.shape[0], dtype=bool)
         if self.landmark_contestants.shape[0] > 0 and new_percep_data.shape[0] > 0:
             closest_landmarks = np.argmin(dist_mat, axis=1)
@@ -207,7 +230,7 @@ class UKF_SLAM():
 
         new_contestants = np.hstack((new_percep_data[~new_data_mask], np.ones((np.sum((~new_data_mask)), 2)) * np.array([1, time])))
         self.landmark_contestants = np.vstack((self.landmark_contestants, new_contestants))
-        self.landmark_contestants = self.landmark_contestants[time - self.landmark_contestants[:, 4] < 0.5]
+        self.landmark_contestants = self.landmark_contestants[time - self.landmark_contestants[:, 4] < config["detection_timeout"]]
         
         new_data_mask = self.landmark_contestants[:, 3] > config["min_occurences"]
         new_percep_data = self.landmark_contestants[new_data_mask, :3]
