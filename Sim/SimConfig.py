@@ -1,4 +1,5 @@
 from enum import IntEnum
+import numpy as np
 
 class SimParm():
 
@@ -22,10 +23,12 @@ class SimParm():
 
     #Sim setup parameters
     GATE_Y_START = 1.5
-    MAX_GATE_WIDTH = 0.7
+    MAX_GATE_WIDTH = 0.65
     BALL_GATE_CENTER = 0.3
     MIN_DIS_START = 0.6
     MAX_DIS_START = 2
+    CAMERA_FOV = np.deg2rad(60)
+    FOV_LINE_LENGTH = 2000
 
     #Objects parameters
     TUBE_RADIUS = 0.05

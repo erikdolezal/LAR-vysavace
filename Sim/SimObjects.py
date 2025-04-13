@@ -55,17 +55,24 @@ class Turtle(Objects):
         line_length = self.DimToPixels(self.RADIUS) * 2
         line_end_x = self.DimToPixels(self.pos[0]) + np.cos(self.angle) * line_length
         line_end_y = self.DimToPixels(self.pos[1]) - np.sin(self.angle) * line_length
+        
+        fov_line_x1 = self.DimToPixels(self.pos[0]) + np.cos(self.angle + SimParm.CAMERA_FOV/2) * SimParm.FOV_LINE_LENGTH
+        fov_line_y1 = self.DimToPixels(self.pos[1]) - np.sin(self.angle + SimParm.CAMERA_FOV/2) * SimParm.FOV_LINE_LENGTH
+        fov_line_x2 = self.DimToPixels(self.pos[0]) + np.cos(self.angle - SimParm.CAMERA_FOV/2) * SimParm.FOV_LINE_LENGTH
+        fov_line_y2 = self.DimToPixels(self.pos[1]) - np.sin(self.angle - SimParm.CAMERA_FOV/2) * SimParm.FOV_LINE_LENGTH
 
         pygame.draw.circle(self.sim.screen, SimParm.RED, (self.DimToPixels(self.pos[0]), self.DimToPixels(self.pos[1])), self.DimToPixels(self.RADIUS))
         pygame.draw.line(self.sim.screen, SimParm.BLACK, (self.DimToPixels(self.pos[0]), self.DimToPixels(self.pos[1])), (line_end_x, line_end_y), 3)
-    
+        pygame.draw.line(self.sim.screen, SimParm.BLACK, (self.DimToPixels(self.pos[0]), self.DimToPixels(self.pos[1])), (fov_line_x1, fov_line_y1), 4)
+        pygame.draw.line(self.sim.screen, SimParm.BLACK, (self.DimToPixels(self.pos[0]), self.DimToPixels(self.pos[1])), (fov_line_x2, fov_line_y2), 4)
+            
     def move(self, velocity, angular_velocity, forward=True, clockwise=True):
         """ Move the robot accorting to given velocity and angular velocity"""
         if clockwise:
             self.angle += angular_velocity/SimParm.SIM_FPS
         else:
             self.angle -= angular_velocity/SimParm.SIM_FPS
-        self.angle = self.angle%(np.pi*2)
+        self.angle = (self.angle + np.pi) % (2 * np.pi) - np.pi
         
         if forward:
             self.pos[0] += velocity/SimParm.SIM_FPS * np.cos(self.angle)

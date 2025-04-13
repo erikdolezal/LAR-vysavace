@@ -2,11 +2,14 @@ from enum import IntEnum
 
 class PlanningParm():
     CLEARANCE = 0.4
-    SHOOT_SCALING = 10
+    SHOOT_SCALING = 2
     SHOOT_STEPBACK = 0.5
     BALL_PROXIMITY = 0.3
     HADING_CHECK = 0.0873*2
     ROBOT_TURN_RADIUS = 0.3
+    GOAL_POX = 0.7
+    SHOOT_ALIGNMENT = 0.05
+    GOAL_CHECK = 0.05
         
 class DataClasses(IntEnum):
     """
@@ -24,5 +27,6 @@ class ErrorCodes(IntEnum):
     NO_BALL_ERR = 2
     BALL_STUCK_ERR = 3
     NO_SHOOT_ERR = 4
-    NO_RORBOT_ERR = 5
+    NO_ROBOT_ERR = 5
     ZERO_BLUE_ERR = 6
+    IS_GOAL_ERR = 7

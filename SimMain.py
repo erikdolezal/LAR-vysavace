@@ -61,7 +61,7 @@ class Simulation:
         pos = np.empty(2)
         iter = 0
         while iter < count:
-            pos = np.array([random.uniform(0, SimParm.SIDE_REAL), random.uniform(SimParm.GATE_Y_START, SimParm.SIDE_REAL)])
+            pos = np.array([random.uniform(0, SimParm.SIDE_REAL), random.uniform(SimParm.GATE_Y_START+SimParm.MAX_DIS_START, SimParm.SIDE_REAL)])
             if self.check_collisions(pos, 0.5) == False:
                 iter+=1
                 self.objects[DataClasses.GREEN].append(Tube(self, DataClasses.GREEN, pos[0], pos[1], SimParm.GREEN))
@@ -138,19 +138,39 @@ class Simulation:
                     output = np.vstack([output, np.array([object_iter.pos[0] - SimParm.SIM_OFFSET, object_iter.pos[1] - SimParm.SIM_OFFSET, object_iter.type])])
         return output
     
+    def is_in_fov(self, objects, robot_pos, robot_angle):
+        """
+        Check if the objects are in the field of view of the robot
+        """
+        positions = objects[:, :2]      # (N, 2)
+
+        vecs_to_objects = positions - robot_pos
+        angles_to_objects = -np.arctan2(vecs_to_objects[:, 1], vecs_to_objects[:, 0])
+        angle_diffs = np.abs(angles_to_objects - robot_angle)
+        within_fov = angle_diffs <= SimParm.CAMERA_FOV / 2
+
+        visible = within_fov
+        return objects[visible]
+    
     def planing_visual(self):
+        """
+        Run the planning algorithm and visualize the path
+        """
+        
         robot_pos = self.objects[DataClasses.TURTLE][0].get_info()[:3] - np.array([SimParm.SIM_OFFSET, SimParm.SIM_OFFSET, 0])
-        robot_path, shoot_path, ball_path  = self.path.creat_path(self.get_positions(), robot_pos, True)
+        objects_in_fov = self.is_in_fov(self.get_positions(), robot_pos[:2], robot_pos[2])
+        robot_path, shoot_path, ball_path  = self.path.create_path(objects_in_fov, robot_pos, True)
+        
         if robot_path is not None:
             self.path_robot = self.load_path(robot_path, SimParm.RED)
-        else: return False
+        else: 
+            return True
         if shoot_path is not None:
             self.path_shoot = self.load_path(shoot_path, SimParm.BLUE)
-        else: return False
         if ball_path is not None:
             self.path_ball = self.load_path(ball_path, SimParm.YELLOW)
-        else: return False
-        return True
+            
+        return False
     
     def load_path(self, path, color):
         """Loads the path from a given path"""
@@ -163,12 +183,12 @@ class Simulation:
           
     def main(self):
         running = True
+        
+        # Set up the simulation - generate objects
         self.generate_gate()
         self.generate_ball()
         self.generate_tube(2)
         self.generate_turtle()
-        #Moving logic
-            # TODO
             
         while running:
             for event in pygame.event.get():
@@ -178,7 +198,9 @@ class Simulation:
                 running = False
             
             self.sim_update()
-            self.planing_visual()
+            if self.planing_visual():
+                print("Mission accomplished - ended with a goal!")
+                running = False
             self.redraw_everything()
             self.maual_movement()
             self.clock.tick(100)
