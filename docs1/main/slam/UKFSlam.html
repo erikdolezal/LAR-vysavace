@@ -1,0 +1,711 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.6">
+<title>main.slam.UKFSlam API documentation</title>
+<meta name="description" content="">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>main.slam.UKFSlam</code></h1>
+</header>
+<section id="section-intro">
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="main.slam.UKFSlam.DataClasses"><code class="flex name class">
+<span>class <span class="ident">DataClasses</span></span>
+<span>(</span><span>*args, **kwds)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DataClasses(IntEnum):
+    &#34;&#34;&#34;
+    Enum for data classes
+    &#34;&#34;&#34;
+
+    GREEN = 0
+    RED = 1
+    BLUE = 2
+    BALL = 3</code></pre>
+</details>
+<div class="desc"><p>Enum for data classes</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>enum.IntEnum</li>
+<li>builtins.int</li>
+<li>enum.ReprEnum</li>
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="main.slam.UKFSlam.DataClasses.BALL"><code class="name">var <span class="ident">BALL</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="main.slam.UKFSlam.DataClasses.BLUE"><code class="name">var <span class="ident">BLUE</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="main.slam.UKFSlam.DataClasses.GREEN"><code class="name">var <span class="ident">GREEN</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="main.slam.UKFSlam.DataClasses.RED"><code class="name">var <span class="ident">RED</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="main.slam.UKFSlam.UKF_SLAM"><code class="flex name class">
+<span>class <span class="ident">UKF_SLAM</span></span>
+<span>(</span><span>x_size: int, alpha: float, beta: float, kappa: float)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class UKF_SLAM:
+    &#34;&#34;&#34;
+    Unscented Kalman Filter for estimating speed of the car
+    &#34;&#34;&#34;
+
+    def __init__(self, x_size: int, alpha: float, beta: float, kappa: float):
+        self.x = np.zeros(x_size)
+        self.P = np.eye(x_size) * 0.5
+        self.data_cls = np.zeros((0))
+        self.landmarks = np.zeros((0, 3))  # x, y, class
+        self.alpha = alpha
+        self.beta = beta
+        self.kappa = kappa
+        self.n = x_size
+        # compute weights for sigma points
+        self.lambda_ = self.alpha**2 * (self.n + self.kappa) - self.n
+        # mean weights
+        self.Wm = np.full(2 * self.n + 1, 1 / (2 * (self.n + self.lambda_)))
+        self.Wm[0] = self.lambda_ / (self.n + self.lambda_)
+        # covariance weights
+        self.Wc = np.full(2 * self.n + 1, 1 / (2 * (self.n + self.lambda_)))
+        self.Wc[0] = self.lambda_ / (self.n + self.lambda_) + (1 - self.alpha**2 + self.beta)
+        self.landmark_contestants = np.zeros((0, 5))  # x, y, cls, seen, last_occurence
+
+    def sigma_points(self, x, P):
+        &#34;&#34;&#34;
+        Compute sigma points
+        x : mean
+        P : covariance
+        &#34;&#34;&#34;
+        # square root of (self.n + self.lambda_)*P
+        U = np.linalg.cholesky((self.n + self.lambda_) * P).T
+        # sigma points
+        sigmas = np.zeros((2 * self.n + 1, self.n))
+        sigmas[0] = x.flatten()
+        sigmas[1: self.n + 1] = x + U
+        sigmas[self.n + 1:] = x - U
+
+        return sigmas
+
+    def f(self, x, u):
+        &#34;&#34;&#34;
+        State transition function
+        x : state
+        u : control input
+        &#34;&#34;&#34;
+        x[:, :3] += u
+        return x
+
+    def predict(self, u, old_u):
+        &#34;&#34;&#34;
+        Predict step
+        u : odometry
+        old_u : previous odometry
+        &#34;&#34;&#34;
+        delta_theta = np.tan(np.arctan(u[2] - old_u[2]))
+        delta_pos = np.hstack((rotate_points(u[:2] - old_u[:2], -u[2]), delta_theta))
+
+        # compute sigma points
+        sigmas = self.sigma_points(self.x, self.P)
+
+        # pass sigma points through state transition function
+        R = np.array([[np.cos(self.x[2]), np.sin(self.x[2])], [-np.sin(self.x[2]), np.cos(self.x[2])]])
+        delta_pos[:2] = rotate_points(delta_pos[:2], self.x[2])
+        self.sigmas_f = self.f(sigmas, delta_pos)
+        # compute unscented transform
+        # mean
+        self.x = np.dot(self.Wm, self.sigmas_f)
+
+        # reziduals from mean
+        y = self.sigmas_f[1:] - self.x  # for n &gt; 0
+        y0 = np.expand_dims(self.sigmas_f[0] - self.x, axis=0)  # for n = 0
+        # change in covariance matrix due to transformation
+        cov_difference = self.Wc[1] * y.T @ y + self.Wc[0] * y0.T @ y0
+        # rewrite covariance matrix
+        self.P = cov_difference
+        self.P = cov_difference.T
+        # add process noise
+        F = block_diag(R, 1, np.zeros((self.n - 3, self.n - 3)))
+        Qc = np.diag(np.hstack(([config[&#34;position_var&#34;]] * 2, [config[&#34;rotation_var&#34;]], np.zeros(self.n - 3))))
+        Q = F @ Qc @ F.T
+        self.P += Q
+
+    def update(self, z, h, R):
+        &#34;&#34;&#34;
+        Update step
+        z : measurement
+        h : measurement function - returns in the same shape as z
+        R : measurement noise covariance
+        &#34;&#34;&#34;
+        # compute sigma points
+        # sigmas = self.sigmas_f # use sigma points from predict step
+        sigmas = self.sigma_points(self.x, self.P)
+
+        # pass sigma points through measurement function
+        sigmas_h = h(sigmas)
+
+        # compute mean and covariance of transformed sigma points
+        z_mean = np.dot(self.Wm, sigmas_h)
+
+        # compute measurement covariance
+        z_diff = sigmas_h[1:] - z_mean
+        z_diff_0 = np.expand_dims(sigmas_h[0] - z_mean, axis=0)
+        Pzz = self.Wc[1] * z_diff.T @ z_diff + self.Wc[0] * z_diff_0.T @ z_diff_0 + R
+
+        # compute cross covariance
+        x_diff = sigmas[1:] - self.x
+        x_diff_0 = np.expand_dims(sigmas[0] - self.x, axis=0)
+        Pxz = self.Wc[1] * x_diff.T @ z_diff + self.Wc[0] * x_diff_0.T @ z_diff_0
+
+        # compute Kalman gain
+        K = Pxz @ np.linalg.inv(Pzz)
+
+        # update state and covariance
+        self.x += K @ (z - z_mean)
+        self.P -= K @ Pzz @ K.T
+
+        return self.x, self.P
+
+    def detections_to_lidar(self, detections):
+        &#34;&#34;&#34;
+        Convert detections to lidar measurements
+        input:
+        detections : array x, y coordinates
+        output:
+        z : array of measurements dist, angle
+        &#34;&#34;&#34;
+
+        z = np.zeros((len(detections), 2))
+        z[:, 0] = np.linalg.norm(detections, axis=1)
+        z[:, 1] = np.arctan2(detections[:, 1], detections[:, 0])
+        return z.flatten()
+
+    def data_association(self, percep_data):
+        &#34;&#34;&#34;
+        Perform data association
+        &#34;&#34;&#34;
+        local_landmarks = np.hstack(
+            (global_to_local(self.x[3:].reshape(-1, 2).copy(), self.x[:3]), np.expand_dims(self.data_cls, axis=1))
+        )
+        diff_matrix = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1e6]])
+        dist_mat = cdist(percep_data.copy() @ diff_matrix.T, local_landmarks[:, :3] @ diff_matrix.T)
+        closest_cones = np.empty((0))
+        percep_data_mask = np.zeros((percep_data.shape[0],), dtype=bool)
+        if local_landmarks.shape[0] &gt; 0 and percep_data.shape[0] &gt; 0:
+            closest_cones = np.argmin(dist_mat, axis=1)
+            percep_data_mask = dist_mat[np.arange(0, percep_data.shape[0]), closest_cones] &lt; config[&#34;pairing_distance&#34;]
+            percep_data_mask &amp;= dist_mat[np.arange(0, percep_data.shape[0]), closest_cones] == np.min(
+                dist_mat.T[closest_cones], axis=1
+            )
+        return closest_cones, percep_data_mask
+
+    def cartesian_to_polar_variance(self, x, y, var_x, var_y):
+        r = np.sqrt(x**2 + y**2)
+        r2 = r**2
+
+        var_r = (x**2 / r2) * var_x + (y**2 / r2) * var_y
+        var_theta = (y**2 / r2**2) * var_x + (x**2 / r2**2) * var_y
+
+        return var_r, var_theta
+
+    def update_from_detections(self, percep_data, time):
+        # self.P[:3, :3] += np.eye(3) * 0.05
+        percep_data = percep_data[percep_data[:, 2] != DataClasses.BALL]
+        # percep_data = percep_data[percep_data[:,0] &gt; 0.2]
+        if self.landmarks.shape[0] &gt; 0:
+            closest_cones, percep_data_mask = self.data_association(percep_data)
+            percep_data_cls = percep_data[:, 2]
+            # lidar_percep_data = self.detections_to_lidar(percep_data[percep_data_mask, :2])
+            matched_detections = closest_cones[percep_data_mask]
+            if matched_detections.shape[0] &gt; 0:
+
+                def h(x):
+                    out = np.zeros((0, matched_detections.shape[0] * 2))
+                    for sigma in x:
+                        local_detections = global_to_local(sigma[3:].copy().reshape(-1, 2), sigma[:3])[
+                            matched_detections
+                        ]
+                        out = np.vstack((out, local_detections.flatten()))
+                        # out = np.vstack((out, self.detections_to_lidar(local_detections)))
+                    return out
+
+                R = np.diag(np.ones((matched_detections.shape[0] * 2)) * config[&#34;detection_var&#34;])
+                self.update(percep_data[percep_data_mask, :2].flatten(), h, R)
+            new_percep_data = local_to_global(percep_data[~percep_data_mask].copy(), self.x[:3])[:, :3]
+            new_percep_data_cls = percep_data_cls[~percep_data_mask]
+        else:
+            new_percep_data = local_to_global(percep_data.copy(), self.x[:3])[:, :3]
+            new_percep_data_cls = percep_data[:, 2]
+
+        diff_matrix = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1e6]])
+        dist_mat = cdist(new_percep_data.copy() @ diff_matrix.T, self.landmark_contestants[:, :3] @ diff_matrix.T)
+        new_data_mask = np.zeros(new_percep_data.shape[0], dtype=bool)
+        if self.landmark_contestants.shape[0] &gt; 0 and new_percep_data.shape[0] &gt; 0:
+            closest_landmarks = np.argmin(dist_mat, axis=1)
+            new_data_mask = (
+                dist_mat[np.arange(0, new_percep_data.shape[0]), closest_landmarks] &lt; config[&#34;pairing_distance&#34;]
+            )
+            new_data_mask &amp;= dist_mat[np.arange(0, new_percep_data.shape[0]), closest_landmarks] == np.min(
+                dist_mat.T[closest_landmarks], axis=1
+            )
+            self.landmark_contestants[closest_landmarks[new_data_mask], :2] += (
+                new_percep_data[new_data_mask, :2] - self.landmark_contestants[closest_landmarks[new_data_mask], :2]
+            ) * np.vstack(
+                (
+                    1 / (self.landmark_contestants[closest_landmarks[new_data_mask], 3] + 1),
+                    1 / (self.landmark_contestants[closest_landmarks[new_data_mask], 3] + 1),
+                )
+            ).T
+            self.landmark_contestants[closest_landmarks[new_data_mask], 3] += 1
+            self.landmark_contestants[closest_landmarks[new_data_mask], 4] = time
+
+        new_contestants = np.hstack(
+            (new_percep_data[~new_data_mask], np.ones((np.sum((~new_data_mask)), 2)) * np.array([1, time]))
+        )
+        self.landmark_contestants = np.vstack((self.landmark_contestants, new_contestants))
+        self.landmark_contestants = self.landmark_contestants[
+            time - self.landmark_contestants[:, 4] &lt; config[&#34;detection_timeout&#34;]
+        ]
+
+        new_data_mask = self.landmark_contestants[:, 3] &gt; config[&#34;min_occurences&#34;]
+        new_percep_data = self.landmark_contestants[new_data_mask, :3]
+        new_percep_data_cls = new_percep_data[:, 2]
+        self.landmark_contestants = self.landmark_contestants[~new_data_mask]
+        print(f&#34;landmark contestants {self.landmark_contestants}&#34;)
+
+        self.data_cls = np.hstack((self.data_cls, new_percep_data_cls))
+        self.x = np.hstack((self.x, new_percep_data[:, :2].flatten()))
+
+        self.kappa = 3 * self.x.shape[0]
+        self.P = block_diag(self.P, np.eye(new_percep_data.shape[0] * 2) * 0.5)
+        self.landmarks = np.hstack((self.x[3:].reshape(-1, 2), np.expand_dims(self.data_cls, axis=1)))
+
+        self.n = self.x.shape[0]
+        # compute weights for sigma points
+        self.lambda_ = self.alpha**2 * (self.n + self.kappa) - self.n
+        # mean weights
+        self.Wm = np.full(2 * self.n + 1, 1 / (2 * (self.n + self.lambda_)))
+        self.Wm[0] = self.lambda_ / (self.n + self.lambda_)
+        # covariance weights
+        self.Wc = np.full(2 * self.n + 1, 1 / (2 * (self.n + self.lambda_)))
+        self.Wc[0] = self.lambda_ / (self.n + self.lambda_) + (1 - self.alpha**2 + self.beta)</code></pre>
+</details>
+<div class="desc"><p>Unscented Kalman Filter for estimating speed of the car</p></div>
+<h3>Methods</h3>
+<dl>
+<dt id="main.slam.UKFSlam.UKF_SLAM.cartesian_to_polar_variance"><code class="name flex">
+<span>def <span class="ident">cartesian_to_polar_variance</span></span>(<span>self, x, y, var_x, var_y)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def cartesian_to_polar_variance(self, x, y, var_x, var_y):
+    r = np.sqrt(x**2 + y**2)
+    r2 = r**2
+
+    var_r = (x**2 / r2) * var_x + (y**2 / r2) * var_y
+    var_theta = (y**2 / r2**2) * var_x + (x**2 / r2**2) * var_y
+
+    return var_r, var_theta</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="main.slam.UKFSlam.UKF_SLAM.data_association"><code class="name flex">
+<span>def <span class="ident">data_association</span></span>(<span>self, percep_data)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def data_association(self, percep_data):
+    &#34;&#34;&#34;
+    Perform data association
+    &#34;&#34;&#34;
+    local_landmarks = np.hstack(
+        (global_to_local(self.x[3:].reshape(-1, 2).copy(), self.x[:3]), np.expand_dims(self.data_cls, axis=1))
+    )
+    diff_matrix = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1e6]])
+    dist_mat = cdist(percep_data.copy() @ diff_matrix.T, local_landmarks[:, :3] @ diff_matrix.T)
+    closest_cones = np.empty((0))
+    percep_data_mask = np.zeros((percep_data.shape[0],), dtype=bool)
+    if local_landmarks.shape[0] &gt; 0 and percep_data.shape[0] &gt; 0:
+        closest_cones = np.argmin(dist_mat, axis=1)
+        percep_data_mask = dist_mat[np.arange(0, percep_data.shape[0]), closest_cones] &lt; config[&#34;pairing_distance&#34;]
+        percep_data_mask &amp;= dist_mat[np.arange(0, percep_data.shape[0]), closest_cones] == np.min(
+            dist_mat.T[closest_cones], axis=1
+        )
+    return closest_cones, percep_data_mask</code></pre>
+</details>
+<div class="desc"><p>Perform data association</p></div>
+</dd>
+<dt id="main.slam.UKFSlam.UKF_SLAM.detections_to_lidar"><code class="name flex">
+<span>def <span class="ident">detections_to_lidar</span></span>(<span>self, detections)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def detections_to_lidar(self, detections):
+    &#34;&#34;&#34;
+    Convert detections to lidar measurements
+    input:
+    detections : array x, y coordinates
+    output:
+    z : array of measurements dist, angle
+    &#34;&#34;&#34;
+
+    z = np.zeros((len(detections), 2))
+    z[:, 0] = np.linalg.norm(detections, axis=1)
+    z[:, 1] = np.arctan2(detections[:, 1], detections[:, 0])
+    return z.flatten()</code></pre>
+</details>
+<div class="desc"><p>Convert detections to lidar measurements
+input:
+detections : array x, y coordinates
+output:
+z : array of measurements dist, angle</p></div>
+</dd>
+<dt id="main.slam.UKFSlam.UKF_SLAM.f"><code class="name flex">
+<span>def <span class="ident">f</span></span>(<span>self, x, u)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def f(self, x, u):
+    &#34;&#34;&#34;
+    State transition function
+    x : state
+    u : control input
+    &#34;&#34;&#34;
+    x[:, :3] += u
+    return x</code></pre>
+</details>
+<div class="desc"><p>State transition function
+x : state
+u : control input</p></div>
+</dd>
+<dt id="main.slam.UKFSlam.UKF_SLAM.predict"><code class="name flex">
+<span>def <span class="ident">predict</span></span>(<span>self, u, old_u)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def predict(self, u, old_u):
+    &#34;&#34;&#34;
+    Predict step
+    u : odometry
+    old_u : previous odometry
+    &#34;&#34;&#34;
+    delta_theta = np.tan(np.arctan(u[2] - old_u[2]))
+    delta_pos = np.hstack((rotate_points(u[:2] - old_u[:2], -u[2]), delta_theta))
+
+    # compute sigma points
+    sigmas = self.sigma_points(self.x, self.P)
+
+    # pass sigma points through state transition function
+    R = np.array([[np.cos(self.x[2]), np.sin(self.x[2])], [-np.sin(self.x[2]), np.cos(self.x[2])]])
+    delta_pos[:2] = rotate_points(delta_pos[:2], self.x[2])
+    self.sigmas_f = self.f(sigmas, delta_pos)
+    # compute unscented transform
+    # mean
+    self.x = np.dot(self.Wm, self.sigmas_f)
+
+    # reziduals from mean
+    y = self.sigmas_f[1:] - self.x  # for n &gt; 0
+    y0 = np.expand_dims(self.sigmas_f[0] - self.x, axis=0)  # for n = 0
+    # change in covariance matrix due to transformation
+    cov_difference = self.Wc[1] * y.T @ y + self.Wc[0] * y0.T @ y0
+    # rewrite covariance matrix
+    self.P = cov_difference
+    self.P = cov_difference.T
+    # add process noise
+    F = block_diag(R, 1, np.zeros((self.n - 3, self.n - 3)))
+    Qc = np.diag(np.hstack(([config[&#34;position_var&#34;]] * 2, [config[&#34;rotation_var&#34;]], np.zeros(self.n - 3))))
+    Q = F @ Qc @ F.T
+    self.P += Q</code></pre>
+</details>
+<div class="desc"><p>Predict step
+u : odometry
+old_u : previous odometry</p></div>
+</dd>
+<dt id="main.slam.UKFSlam.UKF_SLAM.sigma_points"><code class="name flex">
+<span>def <span class="ident">sigma_points</span></span>(<span>self, x, P)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def sigma_points(self, x, P):
+    &#34;&#34;&#34;
+    Compute sigma points
+    x : mean
+    P : covariance
+    &#34;&#34;&#34;
+    # square root of (self.n + self.lambda_)*P
+    U = np.linalg.cholesky((self.n + self.lambda_) * P).T
+    # sigma points
+    sigmas = np.zeros((2 * self.n + 1, self.n))
+    sigmas[0] = x.flatten()
+    sigmas[1: self.n + 1] = x + U
+    sigmas[self.n + 1:] = x - U
+
+    return sigmas</code></pre>
+</details>
+<div class="desc"><p>Compute sigma points
+x : mean
+P : covariance</p></div>
+</dd>
+<dt id="main.slam.UKFSlam.UKF_SLAM.update"><code class="name flex">
+<span>def <span class="ident">update</span></span>(<span>self, z, h, R)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def update(self, z, h, R):
+    &#34;&#34;&#34;
+    Update step
+    z : measurement
+    h : measurement function - returns in the same shape as z
+    R : measurement noise covariance
+    &#34;&#34;&#34;
+    # compute sigma points
+    # sigmas = self.sigmas_f # use sigma points from predict step
+    sigmas = self.sigma_points(self.x, self.P)
+
+    # pass sigma points through measurement function
+    sigmas_h = h(sigmas)
+
+    # compute mean and covariance of transformed sigma points
+    z_mean = np.dot(self.Wm, sigmas_h)
+
+    # compute measurement covariance
+    z_diff = sigmas_h[1:] - z_mean
+    z_diff_0 = np.expand_dims(sigmas_h[0] - z_mean, axis=0)
+    Pzz = self.Wc[1] * z_diff.T @ z_diff + self.Wc[0] * z_diff_0.T @ z_diff_0 + R
+
+    # compute cross covariance
+    x_diff = sigmas[1:] - self.x
+    x_diff_0 = np.expand_dims(sigmas[0] - self.x, axis=0)
+    Pxz = self.Wc[1] * x_diff.T @ z_diff + self.Wc[0] * x_diff_0.T @ z_diff_0
+
+    # compute Kalman gain
+    K = Pxz @ np.linalg.inv(Pzz)
+
+    # update state and covariance
+    self.x += K @ (z - z_mean)
+    self.P -= K @ Pzz @ K.T
+
+    return self.x, self.P</code></pre>
+</details>
+<div class="desc"><p>Update step
+z : measurement
+h : measurement function - returns in the same shape as z
+R : measurement noise covariance</p></div>
+</dd>
+<dt id="main.slam.UKFSlam.UKF_SLAM.update_from_detections"><code class="name flex">
+<span>def <span class="ident">update_from_detections</span></span>(<span>self, percep_data, time)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def update_from_detections(self, percep_data, time):
+    # self.P[:3, :3] += np.eye(3) * 0.05
+    percep_data = percep_data[percep_data[:, 2] != DataClasses.BALL]
+    # percep_data = percep_data[percep_data[:,0] &gt; 0.2]
+    if self.landmarks.shape[0] &gt; 0:
+        closest_cones, percep_data_mask = self.data_association(percep_data)
+        percep_data_cls = percep_data[:, 2]
+        # lidar_percep_data = self.detections_to_lidar(percep_data[percep_data_mask, :2])
+        matched_detections = closest_cones[percep_data_mask]
+        if matched_detections.shape[0] &gt; 0:
+
+            def h(x):
+                out = np.zeros((0, matched_detections.shape[0] * 2))
+                for sigma in x:
+                    local_detections = global_to_local(sigma[3:].copy().reshape(-1, 2), sigma[:3])[
+                        matched_detections
+                    ]
+                    out = np.vstack((out, local_detections.flatten()))
+                    # out = np.vstack((out, self.detections_to_lidar(local_detections)))
+                return out
+
+            R = np.diag(np.ones((matched_detections.shape[0] * 2)) * config[&#34;detection_var&#34;])
+            self.update(percep_data[percep_data_mask, :2].flatten(), h, R)
+        new_percep_data = local_to_global(percep_data[~percep_data_mask].copy(), self.x[:3])[:, :3]
+        new_percep_data_cls = percep_data_cls[~percep_data_mask]
+    else:
+        new_percep_data = local_to_global(percep_data.copy(), self.x[:3])[:, :3]
+        new_percep_data_cls = percep_data[:, 2]
+
+    diff_matrix = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1e6]])
+    dist_mat = cdist(new_percep_data.copy() @ diff_matrix.T, self.landmark_contestants[:, :3] @ diff_matrix.T)
+    new_data_mask = np.zeros(new_percep_data.shape[0], dtype=bool)
+    if self.landmark_contestants.shape[0] &gt; 0 and new_percep_data.shape[0] &gt; 0:
+        closest_landmarks = np.argmin(dist_mat, axis=1)
+        new_data_mask = (
+            dist_mat[np.arange(0, new_percep_data.shape[0]), closest_landmarks] &lt; config[&#34;pairing_distance&#34;]
+        )
+        new_data_mask &amp;= dist_mat[np.arange(0, new_percep_data.shape[0]), closest_landmarks] == np.min(
+            dist_mat.T[closest_landmarks], axis=1
+        )
+        self.landmark_contestants[closest_landmarks[new_data_mask], :2] += (
+            new_percep_data[new_data_mask, :2] - self.landmark_contestants[closest_landmarks[new_data_mask], :2]
+        ) * np.vstack(
+            (
+                1 / (self.landmark_contestants[closest_landmarks[new_data_mask], 3] + 1),
+                1 / (self.landmark_contestants[closest_landmarks[new_data_mask], 3] + 1),
+            )
+        ).T
+        self.landmark_contestants[closest_landmarks[new_data_mask], 3] += 1
+        self.landmark_contestants[closest_landmarks[new_data_mask], 4] = time
+
+    new_contestants = np.hstack(
+        (new_percep_data[~new_data_mask], np.ones((np.sum((~new_data_mask)), 2)) * np.array([1, time]))
+    )
+    self.landmark_contestants = np.vstack((self.landmark_contestants, new_contestants))
+    self.landmark_contestants = self.landmark_contestants[
+        time - self.landmark_contestants[:, 4] &lt; config[&#34;detection_timeout&#34;]
+    ]
+
+    new_data_mask = self.landmark_contestants[:, 3] &gt; config[&#34;min_occurences&#34;]
+    new_percep_data = self.landmark_contestants[new_data_mask, :3]
+    new_percep_data_cls = new_percep_data[:, 2]
+    self.landmark_contestants = self.landmark_contestants[~new_data_mask]
+    print(f&#34;landmark contestants {self.landmark_contestants}&#34;)
+
+    self.data_cls = np.hstack((self.data_cls, new_percep_data_cls))
+    self.x = np.hstack((self.x, new_percep_data[:, :2].flatten()))
+
+    self.kappa = 3 * self.x.shape[0]
+    self.P = block_diag(self.P, np.eye(new_percep_data.shape[0] * 2) * 0.5)
+    self.landmarks = np.hstack((self.x[3:].reshape(-1, 2), np.expand_dims(self.data_cls, axis=1)))
+
+    self.n = self.x.shape[0]
+    # compute weights for sigma points
+    self.lambda_ = self.alpha**2 * (self.n + self.kappa) - self.n
+    # mean weights
+    self.Wm = np.full(2 * self.n + 1, 1 / (2 * (self.n + self.lambda_)))
+    self.Wm[0] = self.lambda_ / (self.n + self.lambda_)
+    # covariance weights
+    self.Wc = np.full(2 * self.n + 1, 1 / (2 * (self.n + self.lambda_)))
+    self.Wc[0] = self.lambda_ / (self.n + self.lambda_) + (1 - self.alpha**2 + self.beta)</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="main.slam" href="index.html">main.slam</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="main.slam.UKFSlam.DataClasses" href="#main.slam.UKFSlam.DataClasses">DataClasses</a></code></h4>
+<ul class="">
+<li><code><a title="main.slam.UKFSlam.DataClasses.BALL" href="#main.slam.UKFSlam.DataClasses.BALL">BALL</a></code></li>
+<li><code><a title="main.slam.UKFSlam.DataClasses.BLUE" href="#main.slam.UKFSlam.DataClasses.BLUE">BLUE</a></code></li>
+<li><code><a title="main.slam.UKFSlam.DataClasses.GREEN" href="#main.slam.UKFSlam.DataClasses.GREEN">GREEN</a></code></li>
+<li><code><a title="main.slam.UKFSlam.DataClasses.RED" href="#main.slam.UKFSlam.DataClasses.RED">RED</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="main.slam.UKFSlam.UKF_SLAM" href="#main.slam.UKFSlam.UKF_SLAM">UKF_SLAM</a></code></h4>
+<ul class="">
+<li><code><a title="main.slam.UKFSlam.UKF_SLAM.cartesian_to_polar_variance" href="#main.slam.UKFSlam.UKF_SLAM.cartesian_to_polar_variance">cartesian_to_polar_variance</a></code></li>
+<li><code><a title="main.slam.UKFSlam.UKF_SLAM.data_association" href="#main.slam.UKFSlam.UKF_SLAM.data_association">data_association</a></code></li>
+<li><code><a title="main.slam.UKFSlam.UKF_SLAM.detections_to_lidar" href="#main.slam.UKFSlam.UKF_SLAM.detections_to_lidar">detections_to_lidar</a></code></li>
+<li><code><a title="main.slam.UKFSlam.UKF_SLAM.f" href="#main.slam.UKFSlam.UKF_SLAM.f">f</a></code></li>
+<li><code><a title="main.slam.UKFSlam.UKF_SLAM.predict" href="#main.slam.UKFSlam.UKF_SLAM.predict">predict</a></code></li>
+<li><code><a title="main.slam.UKFSlam.UKF_SLAM.sigma_points" href="#main.slam.UKFSlam.UKF_SLAM.sigma_points">sigma_points</a></code></li>
+<li><code><a title="main.slam.UKFSlam.UKF_SLAM.update" href="#main.slam.UKFSlam.UKF_SLAM.update">update</a></code></li>
+<li><code><a title="main.slam.UKFSlam.UKF_SLAM.update_from_detections" href="#main.slam.UKFSlam.UKF_SLAM.update_from_detections">update_from_detections</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
+</footer>
+</body>
+</html>
