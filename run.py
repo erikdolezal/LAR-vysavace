@@ -67,8 +67,8 @@ class MainControl:
         self.slam = UKF_SLAM(x_size=3, alpha=0.001, beta=2, kappa=0)
         self.odo = Odometry(self.turtle) 
         self.path_planning = Planning()
-        #cv2.namedWindow("slam")
-        #cv2.resizeWindow("slam", 512, 512)
+        cv2.namedWindow("slam")
+        cv2.resizeWindow("slam", 512, 512)
     
     def bumper_callback(self, msg):
         if msg.state == 1:
@@ -163,8 +163,8 @@ class MainControl:
             if ball.shape[0] > 0:
                 cv2.circle(slam_win, (int(-ball[1]*50) + 256, int(-ball[0]*50) + 256), 5, (0, 255, 255), -1)
             cv2.line(slam_win, (int(-self.slam.x[1]*50) + 256, int(-self.slam.x[0]*50) + 256), (int(-point_togo[1]*50) + 256, int(-point_togo[0]*50) + 256), (255,0,255), 2)
-            #cv2.imshow("slam", slam_win)
-            #cv2.waitKey(1)
+            cv2.imshow("slam", slam_win)
+            cv2.waitKey(1)
 
             #rate.sleep()
         self.turtle.cmd_velocity(0,0)
