@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 24.1) (preloaded format=pdflatex 2025.4.14)  14 APR 2025 15:02
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 24.1) (preloaded format=pdflatex 2025.4.14)  14 APR 2025 20:54
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -712,27 +712,27 @@ LaTeX Font Info:    Trying to load font information for U+msb on input line 48.
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 ) (ver1.toc
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <12> on input line 4.
+(Font)              <12> on input line 3.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <8> on input line 4.
+(Font)              <8> on input line 3.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <6> on input line 4.
+(Font)              <6> on input line 3.
 )
 \tf@toc=\write5
 \openout5 = `ver1.toc'.
 
-<pictures/map.png, id=56, 480.8364pt x 452.4102pt>
+<pictures/map.png, id=67, 480.8364pt x 452.4102pt>
 File: pictures/map.png Graphic file (type png)
 <use pictures/map.png>
-Package pdftex.def Info: pictures/map.png  used on input line 55.
-(pdftex.def)             Requested size: 241.84843pt x 227.55066pt.
+Package pdftex.def Info: pictures/map.png  used on input line 56.
+(pdftex.def)             Requested size: 193.47578pt x 182.03777pt.
  [1
 
 {C:/Users/bouda/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}{C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/lm-ec.enc} <./pictures/map.png>]
-<pictures/label_studio.png, id=74, 1541.76pt x 747.9945pt>
+<pictures/label_studio.png, id=84, 1541.76pt x 747.9945pt>
 File: pictures/label_studio.png Graphic file (type png)
 <use pictures/label_studio.png>
-Package pdftex.def Info: pictures/label_studio.png  used on input line 72.
+Package pdftex.def Info: pictures/label_studio.png  used on input line 79.
 (pdftex.def)             Requested size: 386.95897pt x 187.72862pt.
 
 
@@ -742,16 +742,16 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-3.35403pt}.
 
-[2 <./pictures/label_studio.png>]
-<pictures/rozpoznane.jpg, id=87, 1156.32pt x 899.36pt>
+[2{C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/lm-rm.enc}{C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/lm-mathit.enc}]
+<pictures/rozpoznane.jpg, id=96, 1156.32pt x 899.36pt>
 File: pictures/rozpoznane.jpg Graphic file (type jpg)
 <use pictures/rozpoznane.jpg>
-Package pdftex.def Info: pictures/rozpoznane.jpg  used on input line 85.
+Package pdftex.def Info: pictures/rozpoznane.jpg  used on input line 92.
 (pdftex.def)             Requested size: 338.58632pt x 263.33276pt.
-<pictures/v11n_160p.png, id=88, 867.24pt x 650.43pt>
+<pictures/v11n_160p.png, id=97, 867.24pt x 650.43pt>
 File: pictures/v11n_160p.png Graphic file (type png)
 <use pictures/v11n_160p.png>
-Package pdftex.def Info: pictures/v11n_160p.png  used on input line 92.
+Package pdftex.def Info: pictures/v11n_160p.png  used on input line 99.
 (pdftex.def)             Requested size: 386.95897pt x 290.21953pt.
 
 
@@ -761,11 +761,11 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-3.35403pt}.
 
-[3 <./pictures/rozpoznane.jpg>]
-<pictures/v11n_240p.png, id=93, 867.24pt x 650.43pt>
+[3 <./pictures/label_studio.png> <./pictures/rozpoznane.jpg>]
+<pictures/v11n_240p.png, id=105, 867.24pt x 650.43pt>
 File: pictures/v11n_240p.png Graphic file (type png)
 <use pictures/v11n_240p.png>
-Package pdftex.def Info: pictures/v11n_240p.png  used on input line 99.
+Package pdftex.def Info: pictures/v11n_240p.png  used on input line 106.
 (pdftex.def)             Requested size: 386.95897pt x 290.21953pt.
 
 
@@ -776,19 +776,19 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-3.35403pt}.
 
 [4 <./pictures/v11n_160p.png> <./pictures/v11n_240p.png>]
-LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 111.
+LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 118.
  (C:\Users\bouda\AppData\Local\Programs\MiKTeX\tex/latex/lm\t1lmtt.fd
 File: t1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
-<pictures/detect.png, id=105, 966.61125pt x 715.92468pt>
+<pictures/detect.png, id=117, 966.61125pt x 715.92468pt>
 File: pictures/detect.png Graphic file (type png)
 <use pictures/detect.png>
-Package pdftex.def Info: pictures/detect.png  used on input line 124.
+Package pdftex.def Info: pictures/detect.png  used on input line 131.
 (pdftex.def)             Requested size: 241.84843pt x 179.12274pt.
-<pictures/depth_detect.png, id=106, 1279.78125pt x 715.17188pt>
+<pictures/depth_detect.png, id=118, 1279.78125pt x 715.17188pt>
 File: pictures/depth_detect.png Graphic file (type png)
 <use pictures/depth_detect.png>
-Package pdftex.def Info: pictures/depth_detect.png  used on input line 130.
+Package pdftex.def Info: pictures/depth_detect.png  used on input line 137.
 (pdftex.def)             Requested size: 338.58632pt x 189.21408pt.
 
 
@@ -812,20 +812,20 @@ LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-04>
  ***********
 Package rerunfilecheck Info: File `ver1.out' has not changed.
-(rerunfilecheck)             Checksum: 8F037B7BAE5BBFB71BF517A0D84E310A;1179.
+(rerunfilecheck)             Checksum: 0C327864107F51A4D4C7721E8A47ACF1;1377.
  ) 
 Here is how much of TeX's memory you used:
- 24730 strings out of 474486
- 462223 string characters out of 5743755
- 1935542 words of memory out of 5000000
- 46549 multiletter control sequences out of 15000+600000
+ 24736 strings out of 474486
+ 462305 string characters out of 5743755
+ 1936542 words of memory out of 5000000
+ 46551 multiletter control sequences out of 15000+600000
  612072 words of font info for 79 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  99i,12n,101p,590b,463s stack positions out of 10000i,1000n,20000p,200000b,200000s
-<C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmbx12.pfb><C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr12.pfb><C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr17.pfb><C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmri12.pfb><C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmro12.pfb><C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmtt12.pfb>
-Output written on ver1.pdf (6 pages, 3350352 bytes).
+<C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmbx12.pfb><C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmmi12.pfb><C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr12.pfb><C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr17.pfb><C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmri12.pfb><C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmro12.pfb><C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmtt12.pfb>
+Output written on ver1.pdf (6 pages, 3359472 bytes).
 PDF statistics:
- 156 PDF objects out of 1000 (max. 8388607)
- 25 named destinations out of 1000 (max. 500000)
- 128 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 176 PDF objects out of 1000 (max. 8388607)
+ 27 named destinations out of 1000 (max. 500000)
+ 144 words of extra memory for PDF output out of 10000 (max. 10000000)
 

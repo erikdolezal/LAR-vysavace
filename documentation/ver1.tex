@@ -49,16 +49,23 @@
 \tableofcontents
 
 \section{Zadání}
-Úkolem práce je napsat řešení pro úkol, kde má dát Roomba TurtleBot gól do branky označené modrými pilíři.
+Úkolem práce je napsat řešení úkolu, kde má Roomba TurtleBot kopnout míč do branky označené modrými pilíři.
+Rozložení problému je vidět na obrázku \eqref{fig:map}.
 \begin{figure}[H]
-    \centering
-    \includegraphics[width=0.5\textwidth]{pictures/map.png}
-    \caption{Rozložení objektů v prostoru (ze zedání)}
-    \label{fig:map}	
+\centering
+\includegraphics[width=0.4\textwidth]{pictures/map.png}
+\caption{Rozložení objektů v prostoru (ze zedání)}
+\label{fig:map}	
 \end{figure}
-Rozložení problému je vidět na obrázku \eqref{fig:map}. Robot má za úkol najít míč a ten poté dostat mezi modré pilíře, které jsou od sebe vzdálené minimálně 700 mm. Míč je vzdálen od osy branky maximálně c = 300 mm.
-Míč se bude nacházet v minimální vzdálenosti a = 500 mm od brány a bude nejdále b = 2m. TurtleBot bude na začátku umístěn od středu míče ve vzdálenosti d = 0,7 m až e = 2,5 m.
-V prostoru před brankou se mohou vyskytovat překážky v podobě zelených a červených pilířů. Za bránou může být neomezený počet pilířů.
+
+\subsection{Úloha 2}
+Robot má za úkol najít míč a ten kopnout mezi modré pilíře, které jsou od sebe vzdálené minimálně $700$ mm. Robot musí zastavit $20$ cm před brankou. Míč je vzdálen od osy branky maximálně $c = 150$ mm.
+Míč se bude nacházet v minimální vzdálenosti $a = 500$ mm od brány a bude nejdále $b = 1,5$ m. TurtleBot bude na začátku umístěn od středu míče ve vzdálenosti $d = 0,7$ m až $e = 2,5$ m.
+Za bránou může být neomezený počet pilířů.
+
+\subsection{Úloha 3}
+Od Úlohy 2 se Úloha 3 liší tím, že míč může být vzdálen od osy branky $c = 300$ mm. Vzdálenost míče od branky může být až $b = 2$ m.
+Největším rozdílem je možnost výskutu až dvou překážek před čarou. Ty jsou umístěny tak, že pokaždý existuje cesta od míe k brance o minimální šířce $600$ mm.
 
 \section{Řešení}
 Naše řešení jsme rozdělili na tři hlavní části. První část je zpracování obrazu, druhá část je SLAM a třetí část je plánování a pohyb robota. Tyto části běží v hlavní smyčce programu. Při řešení problému bylo využíváno nástroje GitHub Copilot pro jednoduché úkony pro zrychlení práce.
@@ -77,8 +84,8 @@ Pro anotaci jsme použili nastavení \textit{Object Detection with Bounding Boxe
 Toto představilo problém, který jde vidět v obrázku \eqref{fig:detected_image}. Díky zakřivení obrazu z kamery, obdelníky nesedí přímo na pilíře, což byl lehce vyřešitelný problém \eqref{sec:point_cloud}. Možnost segmentace, myšleno maskou jsme zamítli z různých důvodou, např. pracné anotace. 
 Anotovaný data set byl poté vyexportován ve formátu YOLO.
 Pomocí Python kódu a knihovny od \href{https://docs.ultralytics.com/}{Ultralitics} jsme natrénovali model. Vyzkoušeli jsme YOLO verze v8 a 11. Ukázalo se, že verze 11 je mnohem přesnější, zvláště při změně osvětlení. 
-Protože detekce musí probíhat rychle, zkoušeli jsme modeli 11s a 11n. I když je model 11s přesnější, byl pro naše použití již moc pamalý, protože běžel déle než 50ms. 
-Pro model 11n jsme zkoušeli i různé rozlišení. Rozlišení 160p a 240p bylo zpracováno dostatečně rychle a s uspokojivími výsledky. Oba modely byly natrénovany na 300 epochách.
+Protože detekce musí probíhat rychle, zkoušeli jsme modeli 11s a 11n. I když je model 11s přesnější, používáme ho jen výjimečně, protože může způsobit problémy pro SLAM svojí dlouhou časovou náročností. 
+I pro model 11n jsme zkoušeli různé rozlišení. Rozlišení 160p a 240p bylo zpracováno dostatečně rychle a s uspokojivími výsledky. Oba modely byly natrénovany na 300 epochách.
 
 \begin{figure}[H]
     \centering
@@ -101,7 +108,7 @@ Pro model 11n jsme zkoušeli i různé rozlišení. Rozlišení 160p a 240p bylo
     \label{fig:confusion_matrix_240p}
 \end{figure}
 
-Model 160p \eqref{fig:confusion_matrix_160p} je v některých podmínkách znatelně horší oproti 240p \eqref{fig:confusion_matrix_240p} v rozpoznávání modrých pilířů.
+Model 160p (Obrázek \eqref{fig:confusion_matrix_160p}) je v některých podmínkách znatelně horší oproti 240p (Obrázek \eqref{fig:confusion_matrix_240p}) v rozpoznávání modrých pilířů.
 To může způsobit velké problémy, protože modré pilíře tvoří branku. Nejčastějším objektem, který byl zaměněn s pozadím, je zelený pilíř, který, když je detekován navíc, minimálně překaží úspěšnému vyřešení problému.
 V obrázku \eqref{fig:detected_image} si ještě můžeme všimnout, že model dobře zvládá rozpoznávání objektů, které mají zaměnitelné barvy nebo tvar s objekty, které detekuje.
 Model také například rozpoznal míč, když je z části za pilířem, nebo objekty, když jsou ve stínu pod stolem.
@@ -131,9 +138,10 @@ To se ukázalo jako velice časově náročné. Proto jsme se rozhodli, že bude
     \caption{Obrázek z hloubkové kamery s rozpoznanými objekty}
     \label{fig:depth_detect}
 \end{figure}
-Hloubková kamera vrací pouze pixeli s hloubkou. Aby byla poloha objektů spočítána co nejrychleji, pracujeme pouze s pixeli z hloubkové kamery \eqref{fig:depth_detect}, které jsou detekovány jako objekty z RGB kamery \eqref{fig:detect}.
-Nejdříve vytvoříme transformační matici, která převadí mezi souřadnicemi kamery a hloubkové kamery. Poté se vypočítá median vzdáleností v bounding boxu, což řeší problém s obdelníky přesně nepasujícími na detekované objekty. Medián vzdálenosti přenásobíme konstantou 1.04, abychom korigovali nepřesnost depth kamery.
-Vyřešíme také 10 stupňový sklon kamery a pomocí K matice převedeme souřadnice z pixelů na reálné souřadnice vůči robotovi. Za souřadnice detekce se také přidá třída objektu.
+Hloubková kamera vrací pouze pixeli s hloubkou. Aby byla poloha objektů spočítána co nejrychleji, pracujeme pouze s pixeli z hloubkové kamery (Obrázek \eqref{fig:depth_detect}), které jsou detekovány jako objekty z RGB kamery (Obrázek \eqref{fig:detect}).
+Nejdříve vytvoříme transformační matici, která převadí mezi souřadnicemi kamery a hloubkové kamery. Poté se vypočítá median vzdáleností v bounding boxu, což řeší problém s obdelníky přesně nepasujícími na detekované objekty. 
+Medián vzdálenosti přenásobíme konstantou 1.04, abychom korigovali nepřesnost depth kamery.
+Pomocí K matice převedeme souřadnice z pixelů na reálné souřadnice vůči robotovi. Za souřadnice detekce se také přidá třída objektu.
 
 
 

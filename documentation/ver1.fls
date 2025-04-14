@@ -346,9 +346,9 @@ INPUT .\pictures\map.png
 INPUT .\pictures\map.png
 INPUT .\pictures\map.png
 INPUT .\pictures\map.png
+INPUT C:\Users\bouda\AppData\Local\Programs\MiKTeX\fonts\tfm\public\lm\ec-lmbx12.tfm
 INPUT C:\Users\bouda\AppData\Local\MiKTeX\fonts\map\pdftex\pdftex.map
 INPUT C:\Users\bouda\AppData\Local\Programs\MiKTeX\fonts\enc\dvips\lm\lm-ec.enc
-INPUT C:\Users\bouda\AppData\Local\Programs\MiKTeX\fonts\tfm\public\lm\ec-lmbx12.tfm
 INPUT .\pictures\label_studio.png
 INPUT .\pictures\label_studio.png
 INPUT .\pictures\label_studio.png
@@ -356,8 +356,10 @@ INPUT .\pictures\label_studio.png
 INPUT .\pictures\label_studio.png
 INPUT .\pictures\label_studio.png
 INPUT .\pictures\label_studio.png
-INPUT C:\Users\bouda\AppData\Local\Programs\MiKTeX\fonts\tfm\public\lm\ec-lmri12.tfm
 INPUT C:\Users\bouda\AppData\Local\Programs\MiKTeX\fonts\tfm\public\lm\ec-lmro12.tfm
+INPUT C:\Users\bouda\AppData\Local\Programs\MiKTeX\fonts\enc\dvips\lm\lm-rm.enc
+INPUT C:\Users\bouda\AppData\Local\Programs\MiKTeX\fonts\enc\dvips\lm\lm-mathit.enc
+INPUT C:\Users\bouda\AppData\Local\Programs\MiKTeX\fonts\tfm\public\lm\ec-lmri12.tfm
 INPUT .\pictures\rozpoznane.jpg
 INPUT .\pictures\rozpoznane.jpg
 INPUT .\pictures\rozpoznane.jpg
@@ -402,6 +404,8 @@ INPUT .\ver1.out
 INPUT .\ver1.out
 INPUT C:\Users\bouda\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmbx12.pfb
 INPUT C:\Users\bouda\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmbx12.pfb
+INPUT C:\Users\bouda\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmmi12.pfb
+INPUT C:\Users\bouda\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmmi12.pfb
 INPUT C:\Users\bouda\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmr12.pfb
 INPUT C:\Users\bouda\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmr12.pfb
 INPUT C:\Users\bouda\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmr17.pfb
