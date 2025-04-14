@@ -132,8 +132,10 @@ To se ukázalo jako velice časově náročné. Proto jsme se rozhodli, že bude
     \label{fig:depth_detect}
 \end{figure}
 Hloubková kamera vrací pouze pixeli s hloubkou. Aby byla poloha objektů spočítána co nejrychleji, pracujeme pouze s pixeli z hloubkové kamery \eqref{fig:depth_detect}, které jsou detekovány jako objekty z RGB kamery \eqref{fig:detect}.
-Nejdříve vytvoříme transformační matici, která převadí mezi souřadnicemi kamery a hloubkové kamery. Poté se vypočítá median souřadnic v bounding boxu, což řeší problém s obdelníky přesně nepasujícími na detekované objekty.
-Vyřešíme také 10 stupňový sklon kamery a pomocí K matice převedeme souřadnice z pixelů na reálné souřadnice. Za souřadnice detekce se také přidá třída objektu.
+Nejdříve vytvoříme transformační matici, která převadí mezi souřadnicemi kamery a hloubkové kamery. Poté se vypočítá median vzdáleností v bounding boxu, což řeší problém s obdelníky přesně nepasujícími na detekované objekty. Medián vzdálenosti přenásobíme konstantou 1.04, abychom korigovali nepřesnost depth kamery.
+Vyřešíme také 10 stupňový sklon kamery a pomocí K matice převedeme souřadnice z pixelů na reálné souřadnice vůči robotovi. Za souřadnice detekce se také přidá třída objektu.
+
+
 
 \subsection{SLAM}
 \subsection{Plánování}
