@@ -68,7 +68,8 @@ Od Úlohy 2 se Úloha 3 liší tím, že míč může být vzdálen od osy brank
 Největším rozdílem je možnost výskutu až dvou překážek před čarou. Ty jsou umístěny tak, že pokaždé existuje cesta od míe k brance o minimální šířce $600$ mm.
 
 \section{Řešení}
-Naše řešení jsme rozdělili na tři hlavní části. První část je zpracování obrazu, druhá část je SLAM a třetí část je plánování a pohyb robota. Tyto části běží v hlavní smyčce programu. Při řešení problému bylo využíváno nástroje GitHub Copilot pro jednoduché úkony pro zrychlení práce.
+Naše řešení jsme rozdělili na tři hlavní části. První část je zpracování obrazu, druhá část je SLAM a třetí část je plánování a pohyb robota. Tyto části běží v hlavní smyčce programu. Naše řešení je dimenzováno pro řešení třetí úlohy. Z nedostataku času pro ošetření všech možných přídapů, jsme se ale rozhodli řešit druhou úlohu. 
+Při řešení problému bylo využíváno nástroje GitHub Copilot pro jednoduché úkony pro zrychlení práce. 
 \subsection{Zpracování obrazu}
 Detekci objektů děláme pomocí konvoluční neuronové sítě \href{https://docs.ultralytics.com/models/}{YOLO} (You Only Look Once), kterou poté konvertujeme do \href{https://onnx.ai/}{ONNX}. Důvodem k použití CNN bylo, aby náše řešení dobře zvládalo změny v osvětlení a jiné rušivé vstupy jako například špinavý žlutý míč. Segementace obrazu pomocí barev, by mohla být v tomto ohledu nespolehlivá. Jako vstup používáme obraz z Intel RealSense D435 kamery.
 \subsubsection{Trénování CNN}
