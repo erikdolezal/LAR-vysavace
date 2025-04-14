@@ -46,13 +46,16 @@ class Planning:
             
             robot_destination = None
             hading_v = shoot_path[1] - shoot_path[0]
-            if self.are_points_in_proximity(self.robot_pos[:2], shoot_path[0]) and self.same_hading(hading_v ,self.robot_pos[2]):
+            if self.are_points_in_proximity(self.robot_pos[:2], shoot_path[0] + PlanningParm.SHOOT_ALIGNMENT * hading_v) and self.same_hading(hading_v ,self.robot_pos[2]):
+                print("Time to shoot")
                 robot_destination = shoot_path[1]
                 self.time_to_shoot = True
-            elif self.are_points_in_proximity(self.robot_pos[:2], shoot_path[0]) and not self.time_to_shoot:
+            elif self.are_points_in_proximity(self.robot_pos[:2], shoot_path[0]):
+                print("Time to turn")
                 robot_destination = shoot_path[0] + PlanningParm.SHOOT_ALIGNMENT * hading_v
                 self.time_to_shoot = True
             else:
+                print("Time to move")
                 self.time_to_shoot = False
                 robot_destination = shoot_path[0]
                 
