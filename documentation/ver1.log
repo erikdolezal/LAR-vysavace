@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 24.1) (preloaded format=pdflatex 2025.4.14)  14 APR 2025 21:46
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 24.1) (preloaded format=pdflatex 2025.4.14)  14 APR 2025 22:21
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -751,7 +751,7 @@ Package pdftex.def Info: pictures/rozpoznane.jpg  used on input line 93.
 <pictures/v11n_160p.png, id=97, 867.24pt x 650.43pt>
 File: pictures/v11n_160p.png Graphic file (type png)
 <use pictures/v11n_160p.png>
-Package pdftex.def Info: pictures/v11n_160p.png  used on input line 100.
+Package pdftex.def Info: pictures/v11n_160p.png  used on input line 101.
 (pdftex.def)             Requested size: 386.95897pt x 290.21953pt.
 
 
@@ -765,7 +765,7 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 <pictures/v11n_240p.png, id=105, 867.24pt x 650.43pt>
 File: pictures/v11n_240p.png Graphic file (type png)
 <use pictures/v11n_240p.png>
-Package pdftex.def Info: pictures/v11n_240p.png  used on input line 107.
+Package pdftex.def Info: pictures/v11n_240p.png  used on input line 108.
 (pdftex.def)             Requested size: 386.95897pt x 290.21953pt.
 
 
@@ -776,19 +776,19 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-3.35403pt}.
 
 [4 <./pictures/v11n_160p.png> <./pictures/v11n_240p.png>]
-LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 119.
+LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 120.
  (C:\Users\bouda\AppData\Local\Programs\MiKTeX\tex/latex/lm\t1lmtt.fd
 File: t1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 <pictures/detect.png, id=117, 966.61125pt x 715.92468pt>
 File: pictures/detect.png Graphic file (type png)
 <use pictures/detect.png>
-Package pdftex.def Info: pictures/detect.png  used on input line 132.
+Package pdftex.def Info: pictures/detect.png  used on input line 133.
 (pdftex.def)             Requested size: 241.84843pt x 179.12274pt.
 <pictures/depth_detect.png, id=118, 1279.78125pt x 715.17188pt>
 File: pictures/depth_detect.png Graphic file (type png)
 <use pictures/depth_detect.png>
-Package pdftex.def Info: pictures/depth_detect.png  used on input line 138.
+Package pdftex.def Info: pictures/depth_detect.png  used on input line 139.
 (pdftex.def)             Requested size: 338.58632pt x 189.21408pt.
 
 
@@ -823,7 +823,7 @@ Here is how much of TeX's memory you used:
  1141 hyphenation exceptions out of 8191
  99i,12n,101p,590b,463s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmbx12.pfb><C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmmi12.pfb><C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr12.pfb><C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr17.pfb><C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmri12.pfb><C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmro12.pfb><C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmtt12.pfb>
-Output written on ver1.pdf (6 pages, 3359604 bytes).
+Output written on ver1.pdf (6 pages, 3359607 bytes).
 PDF statistics:
  176 PDF objects out of 1000 (max. 8388607)
  27 named destinations out of 1000 (max. 500000)

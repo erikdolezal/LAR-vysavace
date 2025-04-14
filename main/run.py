@@ -13,11 +13,32 @@ FREQUENCY = 10
 
 
 class Odometry:
+    """
+    A class to manage and track the odometry of the robot.
+    Attributes:
+        turtle: Instance of the turtle_bot class.
+        last_odometry: The last recorded odometry data of the turtle robot.
+    Methods:
+        __init__(turtle):
+            Initializes the Odometry object with the given turtle robot and stores its initial odometry data.
+        update_and_get_delta():
+            Updates the stored odometry data and returns the previous and current odometry values as a tuple.
+    """
+
     def __init__(self, turtle):
         self.turtle = turtle
         self.last_odometry = turtle.get_odometry()
 
     def update_and_get_delta(self):
+        """
+        Updates the stored odometry data and calculates the delta between the
+        previous and current odometry readings.
+        Returns:
+            tuple: A tuple containing two elements:
+                - odo_old: The previous odometry reading.
+                - odo_new: The current odometry reading.
+        """
+
         odo_new = self.turtle.get_odometry()
         odo_old = self.last_odometry
         self.last_odometry = odo_new
@@ -25,6 +46,24 @@ class Odometry:
 
 
 class VelocityControl:
+    """
+    A class to control the velocity of the robot, ensuring smooth acceleration
+    and deceleration while adhering to specified constraints on speed and angular velocity.
+    Attributes:
+        turtle: Instance of the turtle_bot class.
+        velocity (float): The current linear velocity of the turtle.
+        max_acc (float): The maximum linear acceleration (m/s^2).
+        max_ang_acc (float): The maximum angular acceleration (rad/s^2).
+        max_speed (float): The maximum linear speed (m/s).
+        max_ang_speed (float): The maximum angular speed (rad/s).
+        last_cmd (tuple): The last commanded velocity as a tuple (linear, angular).
+        ang_p (float): The proportional gain for angular velocity control.
+    Methods:
+        cmd_velocity(position, target_position, dt):
+            Computes the linear and angular velocity commands to move the turtle
+            towards a target position while respecting acceleration and speed limits.
+    """
+
     def __init__(self, turtle):
         self.turtle = turtle
         self.velocity = 0
@@ -36,6 +75,19 @@ class VelocityControl:
         self.ang_p = 1.5
 
     def cmd_velocity(self, position, target_position, dt):
+        """
+        Calculate the linear and angular velocity required to move towards a target position.
+        Args:
+            position (numpy.ndarray): The current position and orientation of the object
+                in the global frame.
+            target_position (numpy.ndarray): The target position in the global frame.
+            dt (float): The time step for velocity calculation.
+        Returns:
+            tuple: A tuple containing:
+                - velocity (float): The linear velocity to move towards the target position.
+                - ang_velocity (float): The angular velocity to rotate towards the target position.
+        """
+
         target = global_to_local(
             np.expand_dims(target_position[:2].copy(), axis=0), position
         )[0]
@@ -57,6 +109,31 @@ class VelocityControl:
 
 
 class MainControl:
+    """
+    MainControl class is responsible for managing the robot's main control loop,
+    handling  SLAM (Simultaneous Localization and Mapping),
+    path planning, and velocity control.
+    Attributes:
+        turtle (Turtlebot): Instance of the Turtlebot class for robot control.
+        end_event (Event): Event to signal the end of the program.
+        start_event (Event): Event to signal the start of the mission.
+        velocity_control (VelocityControl): Handles velocity commands for the robot.
+        camera (OnnxCamera): Object detection class.
+        slam (UKF_SLAM): SLAM classs.
+        odo (Odometry): Odometry class.
+        path_planning (Planning): Path planning  class for navigation.
+    Methods:
+        __init__():
+            Initializes the MainControl class, sets up the robot, SLAM, and other components.
+        bumper_callback(msg):
+            Callback function triggered when the bumper is pressed.
+        button_callback(msg):
+            Callback function triggered when the button is pressed.
+        run():
+            Main control loop for the robot. Handles sensor data, SLAM updates,
+            path planning, and robot motion.
+    """
+
     def __init__(self):
         self.turtle = Turtlebot(rgb=True, depth=True, pc=True)
         self.turtle.reset_odometry()
@@ -85,16 +162,34 @@ class MainControl:
         cv2.resizeWindow("slam", 512, 512)
 
     def bumper_callback(self, msg):
+        """
+        Callback function triggered when the bumper state changes.
+        Args:
+            msg: A message object containing the state of the bumper.
+        """
         if msg.state == 1:
             self.end_event.set()
             print("Bumper pressed, ending program")
 
     def button_callback(self, msg):
+        """
+        Callback function triggered by a button press event used for starting the mission.
+        Args:
+            msg: An object containing the state of the button.
+        """
+
         if msg.state == 1 and not self.start_event.is_set():
             self.start_event.set()
             print("Button pressed, starting mission")
 
     def run(self):
+        """
+        The `run` method is the main execution loop for the robot's operation. It handles sensor data processing,
+        SLAM (Simultaneous Localization and Mapping), path planning, and velocity control. The method also
+        visualizes the SLAM process and generates a final plot of the robot's path and detected landmarks.
+        The method continuously runs until the robot is shut down or a goal is reached.
+        """
+
         self.turtle.register_bumper_event_cb(self.bumper_callback)
         self.turtle.register_button_event_cb(self.button_callback)
         print("waiting for start")

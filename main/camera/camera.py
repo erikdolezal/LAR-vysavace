@@ -18,12 +18,31 @@ cls_to_col = {0: (0, 255, 0), 1: (0, 0, 255), 2: (255, 0, 0), 3: (0, 255, 255)}
 
 
 def softmax(x):
+    """
+    Compute the softmax of a given input array.
+    Parameters:
+        x (numpy.ndarray): Input array or vector for which to compute the softmax.
+    Returns:
+        numpy.ndarray: An array of the same shape as the input, where each
+        element represents the softmax probability of the corresponding input element.
+    """
+
     e_x = np.exp(x - np.max(x))
     return e_x / e_x.sum(axis=0)
 
 
 def xywh2xyxy(x):
-    # Convert xywh to xyxy format
+    """
+    Convert bounding box format from (x_center, y_center, width, height) to
+    (x_min, y_min, x_max, y_max).
+    Parameters:
+        x (numpy.ndarray): A 2D array where each row represents a bounding box
+                           in the format [x_center, y_center, width, height].
+    Returns:
+        numpy.ndarray: A 2D array where each row represents a bounding box
+                       in the format [x_min, y_min, x_max, y_max].
+    """
+
     y = np.zeros(x.shape)
     y[:, 0] = x[:, 0] - x[:, 2] / 2
     y[:, 1] = x[:, 1] - x[:, 3] / 2
@@ -33,7 +52,17 @@ def xywh2xyxy(x):
 
 
 def xyxy2xywh(x):
-    # Convert xyxy to xywh format
+    """
+    Convert bounding box coordinates from (x_min, y_min, x_max, y_max) format
+    to (x_center, y_center, width, height) format.
+    Args:
+        x (numpy.ndarray): A 2D array where each row represents
+                           a bounding box in the format [x_min, y_min, x_max, y_max].
+    Returns:
+        numpy.ndarray: A 2D array  where each row represents
+                       a bounding box in the format [x_center, y_center, width, height].
+    """
+
     y = np.zeros(x.shape)
     y[:, 0] = (x[:, 0] + x[:, 2]) / 2
     y[:, 1] = (x[:, 1] + x[:, 3]) / 2
@@ -43,6 +72,31 @@ def xyxy2xywh(x):
 
 
 class OnnxCamera:
+    """
+    A class for performing object detection  using an ONNX model and coordinate transformation.
+    Attributes:
+        cam_K (numpy.ndarray): Inverse of the camera intrinsic matrix.
+        depth_K (numpy.ndarray): Inverse of the depth camera intrinsic matrix.
+        cam_to_depth (numpy.ndarray): Transformation matrix from camera to depth coordinates.
+        verbose (bool): Flag to enable verbose logging.
+        conf_thresh (float): Confidence threshold for filtering detection results.
+        model (onnxruntime.InferenceSession): ONNX model inference session.
+        input_name (str): Name of the input tensor for the ONNX model.
+        output_name (str): Name of the output tensor for the ONNX model.
+        input_shape (list): Shape of the input tensor for the ONNX model.
+        R_y (numpy.ndarray): Rotation matrix for adjusting camera angle.
+        class_map (dict): Mapping of class IDs to custom class indices.
+    Methods:
+        __init__(model_path, cam_K, depth_K, conf_thresh=0.25, verbose=False):
+            Initializes the OnnxCamera object with the given parameters.
+        detect(image):
+            Performs object detection on the input image using the ONNX model.
+        adjust_coords(coords):
+            Adjusts the coordinates based on the detected object's class and position.
+        get_detections(image, depth_image):
+            Detects objects in the input image, calculates their world coordinates, and visualizes results.
+    """
+
     def __init__(self, model_path, cam_K, depth_K, conf_thresh=0.25, verbose=False):
         self.cam_K = np.linalg.inv(cam_K)
         self.depth_K = np.linalg.inv(depth_K)
@@ -72,6 +126,20 @@ class OnnxCamera:
         self.class_map = {3: 0, 2: 2, 1: 3, 4: 1, 0: 3}
 
     def detect(self, image):
+        """
+        Perform object detection on the given image.
+        This method preprocesses the input image, runs inference using the model,
+        and post-processes the results to return detected objects with their bounding
+        boxes, confidence scores, and class labels.
+        Args:
+            image (numpy.ndarray): The input image in BGR format.
+        Returns:
+            numpy.ndarray: A 2D array where each row represents a detected object with the following columns:
+                - [0:4]: Bounding box coordinates in the format [x_min, y_min, x_max, y_max].
+                - [4]: Confidence score of the detection.
+                - [5]: Class label of the detected object.
+        """
+
         start = time.perf_counter()
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         input_image = cv2.resize(image, (self.input_shape[2], self.input_shape[3]))
@@ -116,6 +184,14 @@ class OnnxCamera:
         return results
 
     def adjust_coords(self, coords):
+        """
+        Adjusts the given coordinates based on the class of detected object.
+        Parameters:
+            coords (numpy.ndarray): A numpy array representing the coordinates
+        Returns:
+            numpy.ndarray: The adjusted coordinates.
+        """
+
         if coords[0] == np.nan:
             return coords
         if coords[2] in [0, 1]:
@@ -127,6 +203,16 @@ class OnnxCamera:
         return coords
 
     def get_detections(self, image, depth_image):
+        """
+        Processes an image and its corresponding depth image to detect objects and
+        calculate their world coordinates.
+        Args:
+            image (numpy.ndarray): The BGR image to process.
+            depth_image (numpy.ndarray): The depth image corresponding to the RGB image.
+        Returns:
+            numpy.ndarray: A 2D array where each row represents the world coordinates and class.
+        """
+
         pred = self.detect(image)
         world_coords = np.zeros((pred.shape[0], 3))
         xywh_preds = xyxy2xywh(pred[:, :4])
@@ -230,7 +316,7 @@ if __name__ == "__main__":
 
     # Load a model
     # model = YOLO("yolo11n.pt")  # load an official model
-    # folder = "michaloviny/best_ones/"
+    # folder = "/best_ones/"
     # files = [a for a in os.listdir(folder) if '.pt' in a and 'v11' in a and '160p' in a]
     # print(files)
     # for model_path in files:
@@ -255,9 +341,3 @@ if __name__ == "__main__":
         print("image grab time ", time.perf_counter() - st)
         depth_img = turtle.get_depth_image()
         camera.get_detections(img, depth_img)
-    # camera = Camera(turtle)
-    # while not turtle.is_shutting_down():
-    #    detected_objects = camera.get_np_objects()
-    #    for detected_object in detected_objects:
-    #        print(detected_object)
-    #    print("-" * 20)
