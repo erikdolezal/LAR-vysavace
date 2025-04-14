@@ -28,8 +28,8 @@ class VelocityControl:
         self.velocity = 0
         self.max_acc = 0.5 # m/s^2
         self.max_ang_acc = 0.5 # rad/s^2
-        self.max_speed = 1.2 # m/s #1.5
-        self.max_ang_speed = 1 # rad/s
+        self.max_speed = 0.5 # m/s #1.5
+        self.max_ang_speed = 0.6 # rad/s
         self.last_cmd = (0, 0)
         self.ang_p = 1.5
     

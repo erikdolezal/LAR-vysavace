@@ -18,7 +18,7 @@ config = {
     "detection_var": 0.2,
     "position_var": 0.02,
     "rotation_var": 0.001,
-    "min_occurences": 3,
+    "min_occurences": 2,
     "detection_timeout": 1,
 }
 

@@ -5,7 +5,7 @@ import time
 import torch
 import torchvision
 
-SHOW = False
+SHOW = True
 
 CAMERA_ANGLE = 0
 WINDOW = "image"
@@ -50,13 +50,6 @@ class OnnxCamera:
         self.input_name = self.model.get_inputs()[0].name
         self.output_name = self.model.get_outputs()[0].name
         self.input_shape = self.model.get_inputs()[0].shape
-        #self.R_x = np.array(
-        #    [
-        #        [1, 0, 0],
-        #        [0, np.cos(np.deg2rad(CAMERA_ANGLE)), -np.sin(np.deg2rad(CAMERA_ANGLE))],
-        #        [0, np.sin(np.deg2rad(CAMERA_ANGLE)), np.cos(np.deg2rad(CAMERA_ANGLE))],
-        #    ]
-        #)
         self.R_y = np.array(
             [
                 [np.cos(np.deg2rad(CAMERA_ANGLE)), 0, np.sin(np.deg2rad(CAMERA_ANGLE))],
