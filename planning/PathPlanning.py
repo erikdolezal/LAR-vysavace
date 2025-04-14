@@ -50,10 +50,17 @@ class Planning:
                 print("Time to shoot")
                 robot_destination = shoot_path[1]
                 self.time_to_shoot = True
-            elif self.are_points_in_proximity(self.robot_pos[:2], shoot_path[0]):
+            elif self.are_points_in_proximity(self.robot_pos[:2], shoot_path[0] + PlanningParm.SHOOT_ALIGNMENT * hading_v):
                 print("Time to turn")
+                robot_destination = self.turn_robot_around(self.robot_pos[:2], self.robot_pos[2], PlanningParm.ROBOT_TURN_RADIUS)
+                self.time_to_shoot = True
+            elif self.are_points_in_proximity(self.robot_pos[:2], shoot_path[0]):
+                print("Time to turn point")
                 robot_destination = shoot_path[0] + PlanningParm.SHOOT_ALIGNMENT * hading_v
                 self.time_to_shoot = True
+            elif self.are_points_in_proximity(self.robot_pos[:2], self.ball_pos, PlanningParm.BALL_PROXIMITY):
+                self.time_to_shoot = False
+                robot_destination = self.robot_pos[:2]
             else:
                 print("Time to move")
                 self.time_to_shoot = False
@@ -82,7 +89,7 @@ class Planning:
         Checks if the robot is in the same direction as the vector
         """
         
-        aplha = -np.arctan2(vector[1], vector[0])
+        aplha = np.arctan2(vector[1], vector[0])
         if np.abs(aplha - angle) < PlanningParm.HADING_CHECK:
             return True
         return False
@@ -123,20 +130,22 @@ class Planning:
             self.goal_targer = self.solve_more_blue_tubes()
         elif blue_count == 2:
             self.goal_targer = center_sum/2 # Calculates the center of the goal
+            if self.is_goal():
+                return ErrorCodes.IS_GOAL_ERR
         elif blue_count == 1 and self.goal_targer is not None:
+            return ErrorCodes.ZERO_BLUE_ERR
             if self.are_points_in_proximity(self.goal_targer, center_sum, PlanningParm.GOAL_POX):
                 self.goal_targer = self.goal_targer # Sets a position of the blue tube as a goal target
             else:
                 self.goal_targer = center_sum
         elif blue_count == 1:
+            return ErrorCodes.ZERO_BLUE_ERR
             self.goal_targer = center_sum
         else:
             if self.goal_targer is None:
                 return ErrorCodes.ZERO_BLUE_ERR
             else:
                 # check if is goal
-                if self.is_goal():
-                    return ErrorCodes.IS_GOAL_ERR
                 return ErrorCodes.OK_ERR
         return ErrorCodes.OK_ERR
     
@@ -156,11 +165,19 @@ class Planning:
         """
         
         if self.ball_pos is not None and self.goal_targer is not None:
+            #vec_behind = self.goal_targer - self.objects[DataClasses.BLUE][0][0:2]
+            #ver_beh_rot = self.mat_rot(-np.pi/2, vec_behind)
+            blue_vec = self.objects[DataClasses.BLUE][1][0:2] - self.objects[DataClasses.BLUE][0][0:2]
+            t = np.dot(self.robot_pos[:2] - self.objects[DataClasses.BLUE][0][0:2],  blue_vec) / np.linalg.norm(blue_vec) ** 2
+            t = np.clip(t, 0, 1)
+            robot_dist = np.linalg.norm(self.robot_pos[:2] - (self.objects[DataClasses.BLUE][0][0:2] + t * blue_vec))
             behind_goal = self.goal_targer - self.robot_pos[:2]
-            behind_goal = (behind_goal / np.linalg.norm(behind_goal) * PlanningParm.GOAL_CHECK) + self.goal_targer
-            dis_to_target = np.linalg.norm(self.ball_pos - self.goal_targer)
-            dis_to_check = np.linalg.norm(self.ball_pos - behind_goal)
-            if dis_to_target > dis_to_check:
+            projection = (np.dot(blue_vec, behind_goal) / np.dot(blue_vec, blue_vec)) * blue_vec
+            behind_goal = behind_goal - projection
+            behind_goal = (behind_goal / np.linalg.norm(behind_goal) * PlanningParm.GOAL_CHECK)
+            dis_to_target = np.linalg.norm(self.ball_pos - (self.goal_targer - behind_goal))
+            dis_to_check = np.linalg.norm(self.ball_pos - (self.goal_targer + behind_goal))
+            if dis_to_target > dis_to_check or robot_dist < 0.75:
                 return True
         return False
     

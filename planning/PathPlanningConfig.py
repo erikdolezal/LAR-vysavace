@@ -1,7 +1,7 @@
 from enum import IntEnum
 
 class PlanningParm():
-    CLEARANCE = 0.4
+    CLEARANCE = 0.5
     SHOOT_SCALING = 2
     SHOOT_STEPBACK = 0.6
     BALL_PROXIMITY = 0.2
@@ -9,7 +9,7 @@ class PlanningParm():
     ROBOT_TURN_RADIUS = 0.3
     GOAL_POX = 0.7
     SHOOT_ALIGNMENT = 0.1
-    GOAL_CHECK = 0.05
+    GOAL_CHECK = 0.1
         
 class DataClasses(IntEnum):
     """

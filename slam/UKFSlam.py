@@ -14,10 +14,10 @@ class DataClasses(IntEnum):
     BALL = 3
 
 config = {
-    "pairing_distance" : 1,
+    "pairing_distance": 0.6,
     "detection_var": 0.2,
     "position_var": 0.02,
-    "rotation_var": 0.01,
+    "rotation_var": 0.001,
     "min_occurences": 3,
     "detection_timeout": 1,
 }
@@ -188,28 +188,31 @@ class UKF_SLAM():
         if self.landmarks.shape[0] > 0:
             closest_cones, percep_data_mask = self.data_association(percep_data)
             percep_data_cls = percep_data[:,2]
-            lidar_percep_data = self.detections_to_lidar(percep_data[percep_data_mask, :2])
+            #lidar_percep_data = self.detections_to_lidar(percep_data[percep_data_mask, :2])
             matched_detections = closest_cones[percep_data_mask]
             if matched_detections.shape[0] > 0:
                 def h(x):
                     out = np.zeros((0,matched_detections.shape[0]*2))
                     for sigma in x:
                         local_detections = global_to_local(sigma[3:].copy().reshape(-1,2), sigma[:3])[matched_detections]
-                        out = np.vstack((out, self.detections_to_lidar(local_detections)))
+                        out = np.vstack((out, local_detections.flatten()))
+                        #out = np.vstack((out, self.detections_to_lidar(local_detections)))
                     return out
+                R = np.diag(np.ones((matched_detections.shape[0]*2)) * config["detection_var"])
                 # Extract x, y from detections that were matched
-                matched_points = percep_data[percep_data_mask, :2]
+                
+                #matched_points = percep_data[percep_data_mask, :2]
 
-                # We'll build R per (r, theta) for each point
-                R_blocks = []
-
-                for px, py in matched_points:
-                    var_r, var_theta = self.cartesian_to_polar_variance(px, py, var_x=config["detection_var"], var_y=config["detection_var"])  # adjust variances
-                    R_blocks.append(np.diag([var_r, var_theta]))
-
-                R = block_diag(*R_blocks)
+                ## We'll build R per (r, theta) for each point
+                #R_blocks = []
+#
+                #for px, py in matched_points:
+                #    var_r, var_theta = self.cartesian_to_polar_variance(px, py, var_x=config["detection_var"], var_y=config["detection_var"])  # adjust variances
+                #    R_blocks.append(np.diag([var_r, var_theta]))
+#
+                #R = block_diag(*R_blocks)
                 # Update the filter with the matched detections
-                self.update(lidar_percep_data, h, R)
+                self.update(percep_data[percep_data_mask, :2].flatten(), h, R)
             new_percep_data = local_to_global(percep_data[~percep_data_mask].copy(), self.x[:3])[:,:3]
             new_percep_data_cls = percep_data_cls[~percep_data_mask]
         else:

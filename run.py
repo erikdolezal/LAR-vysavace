@@ -26,26 +26,26 @@ class VelocityControl:
     def __init__(self, turtle):
         self.turtle = turtle
         self.velocity = 0
-        self.max_acc = 0.01 # m/s^2
-        self.max_ang_acc = 0.1 # rad/s^2
-        self.max_speed = 1 # m/s
-        self.max_ang_speed = 0.8 # rad/s
+        self.max_acc = 0.5 # m/s^2
+        self.max_ang_acc = 0.5 # rad/s^2
+        self.max_speed = 1.5 # m/s
+        self.max_ang_speed = 1 # rad/s
         self.last_cmd = (0, 0)
-        self.ang_p = 1
+        self.ang_p = 1.5
     
     def cmd_velocity(self, position, target_position, dt):
         target = global_to_local(np.expand_dims(target_position[:2].copy(), axis=0), position)[0]
         ang_velocity = np.arctan2(target[1], target[0])*self.ang_p
-        self.velocity = target[0] * (target[0] > 0)
+        ang_velocity = np.clip(ang_velocity, -self.max_ang_speed, self.max_ang_speed)
+        velocity = target[0] * (target[0] > 0) * (1 - (ang_velocity / self.max_ang_speed)**2) 
         #if np.linalg.norm(target) < 0.001:
         #    self.velocity = 0
         #    ang_velocity = 0
             #ang_velocity = target_position[2] - position[2]
             #if abs(target_position[2] - position[2]) < np.deg2rad(0.3):
             #    ang_velocity = 0
-        self.velocity = np.clip(np.clip(self.velocity, self.velocity - dt*self.max_acc, self.velocity + dt*self.max_acc), 
+        self.velocity = np.clip(np.clip(velocity, self.velocity - dt*self.max_acc, self.velocity + dt*self.max_acc), 
                                 -self.max_speed, self.max_speed)
-        ang_velocity = np.clip(ang_velocity, -self.max_ang_speed, self.max_ang_speed)
         return self.velocity, ang_velocity
     
 class MainControl:
@@ -63,12 +63,12 @@ class MainControl:
         self.end_event = Event()
         self.start_event = Event()
         self.velocity_control = VelocityControl(self.turtle)
-        self.camera = OnnxCamera("michaloviny/best_ones/v11n_v3_300e_240p_w.onnx", verbose=False, cam_K=self.turtle.get_rgb_K(), depth_K=self.turtle.get_depth_K(), conf_thresh=0.35)
+        self.camera = OnnxCamera("michaloviny/best_ones/v11n_v3_300e_240p_w.onnx", verbose=False, cam_K=self.turtle.get_rgb_K(), depth_K=self.turtle.get_depth_K(), conf_thresh=0.30)
         self.slam = UKF_SLAM(x_size=3, alpha=0.001, beta=2, kappa=0)
         self.odo = Odometry(self.turtle) 
         self.path_planning = Planning()
-        cv2.namedWindow("slam")
-        cv2.resizeWindow("slam", 512, 512)
+        #cv2.namedWindow("slam")
+        #cv2.resizeWindow("slam", 512, 512)
     
     def bumper_callback(self, msg):
         if msg.state == 1:
@@ -91,8 +91,6 @@ class MainControl:
         ball = np.zeros((0,3))
         last_time = time.perf_counter()
         while not self.turtle.is_shutting_down():
-            if self.end_event.is_set():
-                break
             if not self.start_event.is_set():
                 time.sleep(0.1)
                 continue
@@ -121,10 +119,9 @@ class MainControl:
             timedelta = actual_time - last_time
             last_time = actual_time
             #pos_robot = np.append(self.slam.x[:2], [4])
-            #print(np.vstack([self.slam.landmarks, pos_robot]))
+            print(np.vstack([self.slam.landmarks]))
             point_togo = self.path_planning.create_path(np.vstack([self.slam.landmarks, ball]), self.slam.x[:3], test_alg=False)
             print("togo", point_togo)
-            points = np.vstack((points, point_togo))
             if point_togo is None:
                 print("goal")
                 break
@@ -132,12 +129,20 @@ class MainControl:
                 v_lin, v_ang = self.velocity_control.cmd_velocity(self.slam.x[:3], point_togo, timedelta)
                 #v_lin, v_ang = self.velocity_control.cmd_velocity(self.slam.x[:3], ball, timedelta)
                 v_lin = 0 if self.slam.landmarks.shape[0] == 0 else v_lin
+            points = np.vstack((points, point_togo))
 
             #if np.linalg.norm(self.slam.x[:3] - ball) < 0.4:
             #    print("mission end")
             #    break
             print(f"velocity {v_lin} {v_ang}")
             self.turtle.cmd_velocity(v_lin, v_ang)
+
+            if self.end_event.is_set():
+                if (objects[objects[:,2] == DataClasses.BALL, :2].shape[0] == 0 or np.linalg.norm(objects[objects[:,2] == DataClasses.BALL, :2]) > 0.5):
+                    break
+                else:
+                    self.end_event.clear()
+
             slam_win = np.ones((512,512,3), dtype=np.uint8) * 255
             cv2.circle(slam_win, (256, 256), 50, (0,0,0), 1)
             cv2.circle(slam_win, (256, 256), 100, (0,0,0), 1)
@@ -158,8 +163,8 @@ class MainControl:
             if ball.shape[0] > 0:
                 cv2.circle(slam_win, (int(-ball[1]*50) + 256, int(-ball[0]*50) + 256), 5, (0, 255, 255), -1)
             cv2.line(slam_win, (int(-self.slam.x[1]*50) + 256, int(-self.slam.x[0]*50) + 256), (int(-point_togo[1]*50) + 256, int(-point_togo[0]*50) + 256), (255,0,255), 2)
-            cv2.imshow("slam", slam_win)
-            cv2.waitKey(1)
+            #cv2.imshow("slam", slam_win)
+            #cv2.waitKey(1)
 
             #rate.sleep()
         self.turtle.cmd_velocity(0,0)
