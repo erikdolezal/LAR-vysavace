@@ -147,7 +147,46 @@ Pomocí K matice převedeme souřadnice z pixelů na reálné souřadnice vůči
 
 
 
-\subsection{SLAM}
+\subsection{Lokalizace a mapování}
+Jelikož je plocha, po které se pohybujeme rovná, je možné používat pouze 2D souřadnice. Pro lokalizaci robota a mapování používáme SLAM algoritmus z rodiny 
+Kalman filtrů, kvůli nelinearitě transformace z globálních souřadnic do lokálních bylo potřeba použít Kalman filtr, který si umí s nelinearitami poradit. 
+Tedy se nabízí dvě možnosti, Extended Kalman Filter (EKF) a Unscented Kalman Filter (UKF). Pro náš účel jsme zvolili UKF, který je přesnější a při malém počtu landmarků není výpočetně náročný.
+\subsubsection{Unscented Kalman Filter}
+Unscented Kalman Filter je založen na Unscented transformaci, která pomocí sigma bodů aproximuje nové normální rozdělení po transformaci. 
+Sigma bodu odhadujeme pomocí Van der Merwe scaled sigma point algoritmu. Sigma body tedy počítáme podle vzorce:
+\begin{equation}
+    \chi_{i} = \begin{cases}
+        \bar{x} & i = 0 \\
+        \bar{x} + (\sqrt{(n + \lambda)P})_{i-1} & 1 \leq i \leq n \\
+        \bar{x} - (\sqrt{(n + \lambda)P})_{i-1} & n + 1 \leq i \leq 2n
+    \end{cases}
+\end{equation}
+kde $\bar{x}$ je odhad střední hodnoty, $P$ je odhad kovarianční matice a $\lambda$ je parametr, který určuje rozptyl sigma bodů a vypočítá se podle
+\begin{equation}
+    \lambda = \alpha^2(n + \kappa) - n
+\end{equation}
+kde $\alpha$ a $\kappa = 3 - n$ jsou vstupní parametry určující rozptyl sigma a $n$ je dimenze stavového vektoru kalman filtru. 
+Pro výpočet Unscented transformace jsou poutřeba ještě váhy jednotlivých sigma bodů. 
+Výpočet váhy aktuální střední hodnoty pro odhad nové je dělán podle: 
+\begin{equation}
+    W^{m}_0 = \frac{\lambda}{n + \lambda}
+\end{equation}
+Pro ostatní body pak podle 
+\begin{equation}
+    W^m_i = \frac{1}{2(n+\lambda)}  i = 1...2n
+    \label{eq:mean_weights}
+\end{equation}
+Výpočet váhy aktuální střední hodnoty pro odhad nové kovarianční matice je prováděn podle vzorce
+\begin{equation}
+   W^c_0 = \frac{\lambda}{n + \lambda} + 1 - \alpha^2 + \beta
+\end{equation}
+váhy pro ostatní body pak stejně jako pro odhad střední hodnoty, tedy podle (\ref{eq:mean_weights})
+
+
+
+
+
+
 \subsection{Plánování}
 \subsection{Pohyb}
 \section{Závěr}
