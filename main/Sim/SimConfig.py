@@ -1,10 +1,11 @@
 from enum import IntEnum
 import numpy as np
 
+
 class SimParm():
     """
-    SimParm is a configuration class that defines various parameters and constants 
-    used in the simulation. These parameters include visual settings, playground 
+    SimParm is a configuration class that defines various parameters and constants
+    used in the simulation. These parameters include visual settings, playground
     dimensions, simulator settings, setup configurations, and object properties.
     Attributes:
         WHITE (tuple): RGB color for white.
@@ -33,9 +34,8 @@ class SimParm():
         TURTLE_RADIUS (float): Radius of the turtle in meters.
         BALL_RADIUS (float): Radius of the ball in meters.
     """
-    
 
-    # Visualisation colors 
+    # Visualisation colors
     WHITE = (255, 255, 255)
     BLACK = (0, 0, 0)
     RED = (255, 0, 0)
@@ -49,11 +49,11 @@ class SimParm():
     SIDE_REAL = 5
     SIM_OFFSET = 2.5
 
-    #Simulator paramteres
+    # Simulator paramteres
     SIM_FPS = 100
     SIM_FRICTION = 0.98
 
-    #Sim setup parameters
+    # Sim setup parameters
     GATE_Y_START = 1.5
     MAX_GATE_WIDTH = 0.65
     BALL_GATE_CENTER = 0.3
@@ -62,10 +62,11 @@ class SimParm():
     CAMERA_FOV = np.deg2rad(60)
     FOV_LINE_LENGTH = 2000
 
-    #Objects parameters
+    # Objects parameters
     TUBE_RADIUS = 0.05
     TURTLE_RADIUS = 0.2
     BALL_RADIUS = 0.22
+
 
 class DataClasses(IntEnum):
     """

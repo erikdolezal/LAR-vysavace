@@ -10,6 +10,7 @@ slam_config = {
     "detection_timeout": 1,
 }
 
+
 class PlanningParm():
     """
     PlanningParm is a configuration class.
@@ -36,18 +37,19 @@ class PlanningParm():
     GOAL_CHECK = 0.1
     ROBOT_DIST_MIN = 0.48
 
+
 vision_config = {
     "show": False,
-    "cls_to_col": {DataClasses.GREEN: (0, 255, 0), 
-                   DataClasses.RED: (0, 0, 255), 
-                   DataClasses.BLUE: (255, 0, 0), 
+    "cls_to_col": {DataClasses.GREEN: (0, 255, 0),
+                   DataClasses.RED: (0, 0, 255),
+                   DataClasses.BLUE: (255, 0, 0),
                    DataClasses.BALL: (0, 255, 255)},
-    "class_map": {0: DataClasses.BALL, 
-                   1: DataClasses.BALL, 
-                   2: DataClasses.BLUE, 
-                   3: DataClasses.GREEN,
-                   4: DataClasses.RED
-    }
+    "class_map": {0: DataClasses.BALL,
+                  1: DataClasses.BALL,
+                  2: DataClasses.BLUE,
+                  3: DataClasses.GREEN,
+                  4: DataClasses.RED
+                  }
 }
 
 velocity_control_config = {

@@ -709,15 +709,24 @@ LaTeX Font Info:    External font `lmex10' loaded for size
 \tf@toc=\write5
 \openout5 = `ver1.toc'.
 
+<<<<<<< HEAD
 <pictures/map.png, id=143, 480.8364pt x 452.4102pt>
+=======
+<pictures/map.png, id=142, 480.8364pt x 452.4102pt>
+>>>>>>> 53b81e144de116485a25bbe2f6500297edfda922
 File: pictures/map.png Graphic file (type png)
 <use pictures/map.png>
 Package pdftex.def Info: pictures/map.png  used on input line 56.
 (pdftex.def)             Requested size: 193.47578pt x 182.03777pt.
  [1
 
+<<<<<<< HEAD
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}]
 <pictures/label_studio.png, id=156, 1541.76pt x 747.9945pt>
+=======
+{C:/Users/bouda/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}{C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/lm-ec.enc}]
+<pictures/label_studio.png, id=155, 1541.76pt x 747.9945pt>
+>>>>>>> 53b81e144de116485a25bbe2f6500297edfda922
 File: pictures/label_studio.png Graphic file (type png)
 <use pictures/label_studio.png>
 Package pdftex.def Info: pictures/label_studio.png  used on input line 83.
@@ -730,6 +739,7 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                You might also make \topmargin smaller to compensate:
 (fancyhdr)                \addtolength{\topmargin}{-3.35403pt}.
 
+<<<<<<< HEAD
 [2 <./pictures/map.png>]
 Overfull \hbox (9.03075pt too wide) in paragraph at lines 87--93
 \T1/lmr/m/n/12 tavali po-mocí ob-del-ník·. Zvo-lili jsme moºnost bez ro-tace, v²echny ob-del-níky mají tedy rovnob¥ºné
@@ -741,6 +751,10 @@ Overfull \hbox (8.04716pt too wide) in paragraph at lines 87--93
  []
 
 <pictures/v11n_160p.png, id=165, 867.24pt x 650.43pt>
+=======
+[2{C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/lm-rm.enc}{C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/lm-mathit.enc} <./pictures/map.png>]
+<pictures/v11n_160p.png, id=164, 867.24pt x 650.43pt>
+>>>>>>> 53b81e144de116485a25bbe2f6500297edfda922
 File: pictures/v11n_160p.png Graphic file (type png)
 <use pictures/v11n_160p.png>
 Package pdftex.def Info: pictures/v11n_160p.png  used on input line 97.
@@ -753,7 +767,11 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-3.35403pt}.
 
 [3 <./pictures/label_studio.png>]
+<<<<<<< HEAD
 <pictures/v11n_240p.png, id=174, 867.24pt x 650.43pt>
+=======
+<pictures/v11n_240p.png, id=172, 867.24pt x 650.43pt>
+>>>>>>> 53b81e144de116485a25bbe2f6500297edfda922
 File: pictures/v11n_240p.png Graphic file (type png)
 <use pictures/v11n_240p.png>
 Package pdftex.def Info: pictures/v11n_240p.png  used on input line 104.
@@ -771,12 +789,20 @@ LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 11
  (/usr/share/texmf/tex/latex/lm/t1lmtt.fd
 File: t1lmtt.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
+<<<<<<< HEAD
 <pictures/detect.png, id=185, 966.61125pt x 715.92468pt>
+=======
+<pictures/detect.png, id=183, 966.61125pt x 715.92468pt>
+>>>>>>> 53b81e144de116485a25bbe2f6500297edfda922
 File: pictures/detect.png Graphic file (type png)
 <use pictures/detect.png>
 Package pdftex.def Info: pictures/detect.png  used on input line 127.
 (pdftex.def)             Requested size: 241.84843pt x 179.12274pt.
+<<<<<<< HEAD
 <pictures/depth_detect.png, id=186, 1279.78125pt x 715.17188pt>
+=======
+<pictures/depth_detect.png, id=184, 1279.78125pt x 715.17188pt>
+>>>>>>> 53b81e144de116485a25bbe2f6500297edfda922
 File: pictures/depth_detect.png Graphic file (type png)
 <use pictures/depth_detect.png>
 Package pdftex.def Info: pictures/depth_detect.png  used on input line 133.
@@ -843,7 +869,11 @@ Underfull \hbox (badness 10000) in paragraph at lines 391--394
 
 
 pdfTeX warning: pdflatex (file ./pictures/PlanningDiagram.pdf): PDF inclusion: found PDF version <1.7>, but at most version <1.5> allowed
+<<<<<<< HEAD
 <pictures/PlanningDiagram.pdf, id=251, 446.62859pt x 604.17719pt>
+=======
+<pictures/PlanningDiagram.pdf, id=249, 446.62859pt x 604.17719pt>
+>>>>>>> 53b81e144de116485a25bbe2f6500297edfda922
 File: pictures/PlanningDiagram.pdf Graphic file (type pdf)
 <use pictures/PlanningDiagram.pdf>
 Package pdftex.def Info: pictures/PlanningDiagram.pdf  used on input line 401.
@@ -894,7 +924,11 @@ Underfull \hbox (badness 10000) in paragraph at lines 444--448
 
  []
 
+<<<<<<< HEAD
 <pictures/tangent_test-eps-converted-to.pdf, id=289, 1036.87375pt x 548.0475pt>
+=======
+<pictures/tangent_test-eps-converted-to.pdf, id=287, 1036.87375pt x 548.0475pt>
+>>>>>>> 53b81e144de116485a25bbe2f6500297edfda922
 File: pictures/tangent_test-eps-converted-to.pdf Graphic file (type pdf)
 <use pictures/tangent_test-eps-converted-to.pdf>
 Package pdftex.def Info: pictures/tangent_test-eps-converted-to.pdf  used on input line 451.
@@ -924,16 +958,25 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-3.35403pt}.
 
 [14]
+<<<<<<< HEAD
 <pictures/sim_002.png, id=317, 979.66pt x 979.66pt>
+=======
+<pictures/sim_002.png, id=314, 979.66pt x 979.66pt>
+>>>>>>> 53b81e144de116485a25bbe2f6500297edfda922
 File: pictures/sim_002.png Graphic file (type png)
 <use pictures/sim_002.png>
 Package pdftex.def Info: pictures/sim_002.png  used on input line 525.
 (pdftex.def)             Requested size: 217.66211pt x 217.64853pt.
+<<<<<<< HEAD
 <pictures/sim_001.png, id=318, 979.66pt x 979.66pt>
+=======
+<pictures/sim_001.png, id=315, 979.66pt x 979.66pt>
+>>>>>>> 53b81e144de116485a25bbe2f6500297edfda922
 File: pictures/sim_001.png Graphic file (type png)
 <use pictures/sim_001.png>
 Package pdftex.def Info: pictures/sim_001.png  used on input line 530.
 (pdftex.def)             Requested size: 217.66211pt x 217.64853pt.
+<<<<<<< HEAD
 
 
 Package fancyhdr Warning: \headheight is too small (12.0pt): 
@@ -944,6 +987,9 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 
 [15 <./pictures/sim_002.png> <./pictures/sim_001.png>]
 <pictures/rozpoznane.jpg, id=332, 1156.32pt x 899.36pt>
+=======
+<pictures/rozpoznane.jpg, id=317, 1156.32pt x 899.36pt>
+>>>>>>> 53b81e144de116485a25bbe2f6500297edfda922
 File: pictures/rozpoznane.jpg Graphic file (type jpg)
 <use pictures/rozpoznane.jpg>
 Package pdftex.def Info: pictures/rozpoznane.jpg  used on input line 584.
@@ -956,6 +1002,7 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                You might also make \topmargin smaller to compensate:
 (fancyhdr)                \addtolength{\topmargin}{-3.35403pt}.
 
+<<<<<<< HEAD
 [16 <./pictures/rozpoznane.jpg>]
 Underfull \hbox (badness 10000) in paragraph at lines 611--614
 
@@ -972,6 +1019,15 @@ Underfull \hbox (badness 10000) in paragraph at lines 617--618
  []
 
 <pictures/slam3ok.png, id=343, 722.7pt x 619.3539pt>
+=======
+[15 <./pictures/sim_002.png> <./pictures/sim_001.png>]
+<pictures/map3.png, id=328, 385.44pt x 385.44pt>
+File: pictures/map3.png Graphic file (type png)
+<use pictures/map3.png>
+Package pdftex.def Info: pictures/map3.png  used on input line 558.
+(pdftex.def)             Requested size: 241.84843pt x 241.8463pt.
+<pictures/slam3ok.png, id=329, 722.7pt x 619.3539pt>
+>>>>>>> 53b81e144de116485a25bbe2f6500297edfda922
 File: pictures/slam3ok.png Graphic file (type png)
 <use pictures/slam3ok.png>
 Package pdftex.def Info: pictures/slam3ok.png  used on input line 621.
@@ -1014,11 +1070,20 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                You might also make \topmargin smaller to compensate:
 (fancyhdr)                \addtolength{\topmargin}{-3.35403pt}.
 
+<<<<<<< HEAD
 [19] (./ver1.aux)
+=======
+[18] (ver1.aux)
+ ***********
+LaTeX2e <2023-11-01> patch level 1
+L3 programming layer <2024-01-04>
+ ***********
+>>>>>>> 53b81e144de116485a25bbe2f6500297edfda922
 Package rerunfilecheck Info: File `ver1.out' has not changed.
 (rerunfilecheck)             Checksum: 217D2987AB3087B19FAC2335C50EAD4B;3848.
  ) 
 Here is how much of TeX's memory you used:
+<<<<<<< HEAD
  24361 strings out of 480247
  452258 string characters out of 5896151
  738083 words of memory out of 5000000
@@ -1032,5 +1097,19 @@ PDF statistics:
  474 PDF objects out of 1000 (max. 8388607)
  382 compressed objects within 4 object streams
  91 named destinations out of 1000 (max. 500000)
+=======
+ 24999 strings out of 474486
+ 467674 string characters out of 5743755
+ 1956542 words of memory out of 5000000
+ 46734 multiletter control sequences out of 15000+600000
+ 640391 words of font info for 95 fonts, out of 8000000 for 9000
+ 1141 hyphenation exceptions out of 8191
+ 99i,13n,101p,908b,647s stack positions out of 10000i,1000n,20000p,200000b,200000s
+<C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmbsy10.pfb><C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmbx12.pfb><C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmbx8.pfb><C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmex10.pfb><C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmmi12.pfb><C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmmi6.pfb><C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmmi8.pfb><C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmmib10.pfb><C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr10.pfb><C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr12.pfb><C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr17.pfb><C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr8.pfb><C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmri12.pfb><C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmro12.pfb><C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmss8.pfb><C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmsy10.pfb><C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmsy8.pfb><C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmtt12.pfb>
+Output written on ver1.pdf (18 pages, 4125440 bytes).
+PDF statistics:
+ 454 PDF objects out of 1000 (max. 8388607)
+ 85 named destinations out of 1000 (max. 500000)
+>>>>>>> 53b81e144de116485a25bbe2f6500297edfda922
  294 words of extra memory for PDF output out of 10000 (max. 10000000)
 

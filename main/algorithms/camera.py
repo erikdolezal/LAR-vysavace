@@ -6,6 +6,7 @@ import torch
 import torchvision
 from configs.alg_config import vision_config
 
+
 def softmax(x):
     """
     Compute the softmax of a given input array.

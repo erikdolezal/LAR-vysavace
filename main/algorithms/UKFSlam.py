@@ -1,10 +1,10 @@
 import numpy as np
-from enum import IntEnum
 from scipy.linalg import block_diag
 from algorithms.geometry import global_to_local, local_to_global, rotate_points
 from scipy.spatial.distance import cdist
 from configs.alg_config import slam_config as config
 from configs.value_enums import DataClasses
+
 
 class UKF_SLAM:
     """
