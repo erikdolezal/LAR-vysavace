@@ -68,7 +68,10 @@ Od Úlohy 2 se Úloha 3 liší tím, že míč může být vzdálen od osy brank
 Největším rozdílem je možnost výskutu až dvou překážek před čarou. Ty jsou umístěny tak, že pokaždé existuje cesta od míe k brance o minimální šířce $600$ mm.
 
 \section{Řešení}
-Naše řešení jsme rozdělili na tři hlavní části. První část je zpracování obrazu, druhá část je SLAM a třetí část je plánování a pohyb robota. Tyto části běží v hlavní smyčce programu. Naše řešení je dimenzováno pro řešení třetí úlohy. Z nedostataku času pro ošetření všech možných přídapů, jsme se ale rozhodli řešit druhou úlohu. 
+Naše řešení jsme rozdělili na tři hlavní části. První část je zpracování obrazu, druhá část je SLAM a třetí část je plánování a pohyb robota. Tyto části běží v hlavní smyčce programu. 
+Po naimportování knihoven čeká robot na stisk tlačítka, které spustí hlavní smyčku. Splnění úkolu oznámí zvukovým signálem.
+
+Naše řešení je dimenzováno pro řešení třetí úlohy. Z nedostataku času pro ošetření všech možných přídapů, jsme se ale rozhodli řešit druhou úlohu. 
 Při řešení problému bylo využíváno nástroje GitHub Copilot pro jednoduché úkony pro zrychlení práce. 
 \subsection{Zpracování obrazu}
 Detekci objektů děláme pomocí konvoluční neuronové sítě YOLO (You Only Look Once), kterou poté konvertujeme do ONNX. Důvodem k použití CNN bylo, aby náše řešení dobře zvládalo změny v osvětlení a jiné rušivé vstupy jako například špinavý žlutý míč. Segementace obrazu pomocí barev, by mohla být v tomto ohledu nespolehlivá. Jako vstup používáme obraz z Intel RealSense D435 kamery.
@@ -575,6 +578,7 @@ Třetím parametrem je $SHOOT\_SCALING$, což je faktor, o který se zvětší d
 Čtvrtým parametrem je $HADING\_CHECK$, což je toleranční úhel pro provedení kopu. Tento parametr byl nastaven na 0.1746 rad, což je dostatečně hodnota pro zajištění dostatečné zarovnanosti směru kopu a zároveň zajišťuje stále dostatečnou vůli pro práci s nepřesnými daty.\\
 Pátým a posledním důležitým parametrem, který byl lazen je $GOAL\_POX$, což je vzdálenost bodů od brankové čáry pro detekci gólu. Tento parametr byl nastaven na 0.1 m, což je dostatečně hodnota pro odrastranění šumu poloh a tudíž spolehlou detekci gólu.\\
 
+\subsection{Pohyb}
 
 
 \section{Závěr}

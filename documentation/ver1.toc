@@ -24,4 +24,5 @@
 \contentsline {subsection}{\numberline {3.1}Vidění}{15}{subsection.3.1}%
 \contentsline {subsection}{\numberline {3.2}SLAM}{16}{subsection.3.2}%
 \contentsline {subsection}{\numberline {3.3}Plánování}{17}{subsection.3.3}%
+\contentsline {subsection}{\numberline {3.4}Pohyb}{18}{subsection.3.4}%
 \contentsline {section}{\numberline {4}Závěr}{18}{section.4}%
