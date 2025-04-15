@@ -150,7 +150,7 @@ Tedy se nabízí dvě možnosti, Extended Kalman Filter (EKF) a Unscented Kalman
 Unscented Kalman Filter je založen na Unscented transformaci, která pomocí sigma bodů aproximuje nové normální rozdělení po transformaci. 
 Sigma podle vzorce:
 \begin{equation}
-    \chi_{i} = \begin{cases}
+    \boldsymbol{\chi}_{i} = \begin{cases}
         \mathbf{\bar{x}} & i = 0 \\
         \mathbf{\bar{x}} + (\sqrt{(n + \lambda) \mathbf P})_{i-1} & 1 \leq i \leq n \\
         \mathbf{\bar{x}} - (\sqrt{(n + \lambda) \mathbf P})_{i-1} & n + 1 \leq i \leq 2n
@@ -367,6 +367,7 @@ Známe rozptyl pro jednotlivé landmarky v lokálních souřadnicích, tedy
 \end{equation}
 
 \subsubsection{Aktualizace mapy}
+\label{sec:update_map}
 I když nám krok aktualizace Kalman filtru aktualizuje polohy jednotlivých namapovaných landmarků a polohu robota, je potřeba ještě přidat nové landmarky do mapy.
 Jelikož nechceme kvůli stabilitě Kalman filtru mazat false detekce ze stavového vektoru a kovarianční matice, 
 je potřeba rozlišit landmarky, které jsou opravdové a které jsou false detekce.\\
@@ -535,6 +536,45 @@ Modrá čára znázorňuje plánovanou trajektorii pro střelbu, zatímco červe
 
 
 \subsection{Pohyb}
+Robotovi jde z path planningu cílová destinace, kam se má dostat v globálních souřadnicích v podobě $(x_g,y_g)$. To pomocí rovnice (\ref{eq:local_to_global}) převedeme do lokálních souřadnic $(x_l,y_l)$. 
+Úhlovou rychlost robota počítáme pomocí vzorce 
+\begin{equation}
+    \omega = K_p * \arctan2(y_l,x_l)\\
+    \label{eq:angular_velocity}
+\end{equation}
+Poté omezujeme rychlost na maximální povolenou rychlost robota $\omega_{max}$,
+\begin{equation}
+    \omega = \begin{cases}
+        \omega_{max} & \omega > \omega_{max} \\
+        -\omega_{max} & \omega < -\omega_{max} \\
+        \omega & -\omega_{max} < \omega < \omega_{max}
+    \end{cases}
+\end{equation}
+Lineární rychlost robota počítáme pomocí 
+\begin{equation}
+    v = \begin{cases}
+        x_l (1 - (\frac{\omega}{\omega_{max}})^2) & x_l > 0 \\
+        0 & x_l \leq 0
+    \end{cases}
+    \label{eq:linear_velocity}
+\end{equation}
+Poté rychlost omezíme maximální povolenou akcelerací robota $a_{max}$, tedy
+\begin{equation}
+    v = \begin{cases}
+        v_{n-1} + \Delta t a_{max} & v \geq v_{n-1} + \Delta t a_{max} \\
+        v_{n-1} - \Delta t a_{max} & v \leq v_{n-1} - \Delta t a_{max} \\
+        v & v_{n-1} - \Delta t a_{max} < v < v_{n-1} + \Delta t a_{max}
+    \end{cases}
+\end{equation}
+kde $\Delta t$ je časový krok mezi iteracemi a $v_{n-1}$ je rychlost robota v předchozí iteraci.\\
+Potom už jen omezíme rychlost na maximální povolenou rychlost robota $v_{max}$, tedy
+\begin{equation}
+    v = \begin{cases}
+        v_{max} & v > v_{max} \\
+        -v_{max} & v < -v_{max} \\
+        v & -v_{max} < v < v_{max}
+    \end{cases}
+\end{equation}
 
 \section{Testování}
 \subsection{Vidění}
@@ -551,19 +591,44 @@ Model také například rozpoznal míč, když je z části za pilířem, nebo o
 Boty s určitým vzorem mohou například být rozpoznány jako míč.
 
 \subsection{SLAM}
+Ve SLAMu bylo potřeba pro správné fungování nastavit parametry rozptyl v $\mathbf Q$ a $\mathbf R$ a také inicializační parametry pro Kalmanův filtr. 
+Nejdříve jsme tedy z pozorování chování detekcí landmarků nastavili rozptyl pro jednotlivé landmarky na hodnotu $\sigma_x^2 = \sigma_v^2 = 0.2 \text{ m}^2$. Poté jsme spouštěli hlavní kontrolní smyčku, kde se SLAM aktualizoval pouze z detekcí, tedy bez kroku predikce.
+Původně jsme měli nastavenou kovarianční matici na 
+\[
+\mathbf P = \begin{bmatrix}
+    1 & 0 & 0 \\
+    0 & 1 & 0 \\
+    0 & 0 & 1 \\
+\end{bmatrix}
+\]
+což vedlo k tomu, že se poloha byla ze začátku velmi chaotická. Po několika pokusech jsme došli k hodnotě 
+\[
+\mathbf P = \begin{bmatrix}
+    0.1 & 0 & 0 \\
+    0 & 0.1 & 0 \\
+    0 & 0 & 0.1 \\
+\end{bmatrix}
+\]
+Poté bylo potřeba odhadnout rozptyl pro odometrii, tedy $\mathbf Q$, abychom byli schopni spolehlivě odhadnout polohu robota, i když nevidíme žádné sloupky. Tam jsme se setkali s problémem, 
+že byla použita moc velká nejistota pro úhel, takže poloha ve SLAMu nekorespodovala při otáčení s reálnou polohou robota. Po několika pokusech jsme došli k hodnotě $\sigma_\theta^2 = 0.001 \text{ rad}^2$ a pro polohu jsme došli k hodnotám $\sigma_{x}^2 = \sigma_{y}^2 = 0.2 \text{ m}^2$.\\
 
+Ve SLAMu také původně nebyla žádné opatření proti false detekcím, což vedlo k tomu, že se SLAM snažil mapovat objekty, které nebyly v reálném světě, proto jsme přidali uchazeče od landmarky popsané v kapitole \ref{sec:update_map}. Po testování jsme došli k nastavení $t_{max} = 1$ a $n_{min} = 2$\\
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.5\textwidth]{pictures/map3.png}
-    \caption{Vizualizace problému v průběhu řešení úlohy}
-    \label{fig:slam_in_game}
-\end{figure}
+Pro testování SLAMu jsme původně používali offline řešení pomocí matplotlib grafu na obrázku \ref{fig:slam_end}. \\
+
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\textwidth]{pictures/slam3ok.png}
     \caption{Záznam proběhnuté trasy robota a detekovaných landmarků}
     \label{fig:slam_end}
+\end{figure}
+
+To však nebylo schopné dobře popsat chování v reálném čase, proto jsme použili vizualizaci v reálném čase pomocí opencv okna na obrázku \ref{fig:slam_in_game}.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{pictures/map3.png}
+    \caption{Vizualizace problému v průběhu řešení úlohy}
+    \label{fig:slam_in_game}
 \end{figure}
 
 \subsection{Plánování}

@@ -20,9 +20,9 @@
 \contentsline {subsubsection}{\numberline {2.3.4}Plánování trajektorie robota}{14}{subsubsection.2.3.4}%
 \contentsline {subsubsection}{\numberline {2.3.5}Simulátor}{14}{subsubsection.2.3.5}%
 \contentsline {subsection}{\numberline {2.4}Pohyb}{15}{subsection.2.4}%
-\contentsline {section}{\numberline {3}Testování}{15}{section.3}%
-\contentsline {subsection}{\numberline {3.1}Vidění}{15}{subsection.3.1}%
-\contentsline {subsection}{\numberline {3.2}SLAM}{16}{subsection.3.2}%
-\contentsline {subsection}{\numberline {3.3}Plánování}{17}{subsection.3.3}%
-\contentsline {subsection}{\numberline {3.4}Pohyb}{18}{subsection.3.4}%
-\contentsline {section}{\numberline {4}Závěr}{18}{section.4}%
+\contentsline {section}{\numberline {3}Testování}{16}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Vidění}{16}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}SLAM}{17}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Plánování}{18}{subsection.3.3}%
+\contentsline {subsection}{\numberline {3.4}Pohyb}{19}{subsection.3.4}%
+\contentsline {section}{\numberline {4}Závěr}{19}{section.4}%
