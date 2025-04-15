@@ -74,7 +74,7 @@ Po naimportování knihoven čeká robot na stisk tlačítka, které spustí hla
 Naše řešení je dimenzováno pro řešení třetí úlohy. Z nedostataku času pro ošetření všech možných přídapů, jsme se ale rozhodli řešit druhou úlohu. 
 Při řešení problému bylo využíváno nástroje GitHub Copilot pro jednoduché úkony pro zrychlení práce. 
 \subsection{Zpracování obrazu}
-Detekci objektů děláme pomocí konvoluční neuronové sítě YOLO (You Only Look Once), kterou poté konvertujeme do ONNX. Důvodem k použití CNN bylo, aby náše řešení dobře zvládalo změny v osvětlení a jiné rušivé vstupy jako například špinavý žlutý míč. Segementace obrazu pomocí barev, by mohla být v tomto ohledu nespolehlivá. Jako vstup používáme obraz z Intel RealSense D435 kamery.
+Detekci objektů děláme pomocí konvoluční neuronové sítě YOLO \cite{YOLO} (You Only Look Once), kterou poté konvertujeme do ONNX \cite{ONNX}. Důvodem k použití CNN bylo, aby náše řešení dobře zvládalo změny v osvětlení a jiné rušivé vstupy jako například špinavý žlutý míč. Segementace obrazu pomocí barev, by mohla být v tomto ohledu nespolehlivá. Jako vstup používáme obraz z Intel RealSense D435 kamery.
 \subsubsection{Trénování CNN}
 YOLO model jsme museli nejdříve natrénovat na rozponávání pilířů a míče. Učinili jsme tak na více než 670 obrázcích,
 které jsme pořídili pomocí kamery na robotovi. Dalších 120 jsme použili pro validaci. Obrázky jsme ručně anotovali pomocí programu Label Studio. Jak vypadá anotace je vidět v obrázku \eqref{fig:label_studio}.
@@ -87,7 +87,7 @@ které jsme pořídili pomocí kamery na robotovi. Dalších 120 jsme použili p
 Pro anotaci jsme použili nastavení \textit{Object Detection with Bounding Boxes}, tedy jsme anotavali pomocí obdelníků. Zvolili jsme možnost bez rotace, všechny obdelníky mají tedy rovnoběžné strany se stranami obrazu. 
 Možnost segmentace, myšleno maskou jsme zamítli z různých důvodou, např. pracné anotace. 
 Anotovaný data set byl poté vyexportován ve formátu YOLO.
-Pomocí Python kódu a knihovny od Ultralitics jsme natrénovali model. Vyzkoušeli jsme YOLO verze v8 a 11. Ukázalo se, že verze 11 je mnohem přesnější, zvláště při změně osvětlení. 
+Pomocí Python kódu a knihovny od Ultralitics \cite{Ultralitics} jsme natrénovali model. Vyzkoušeli jsme YOLO verze v8 a 11. Ukázalo se, že verze 11 je mnohem přesnější, zvláště při změně osvětlení. 
 Protože detekce musí probíhat rychle, zkoušeli jsme modeli 11s a 11n. I když je model 11s přesnější, používáme ho jen výjimečně, protože může způsobit problémy pro SLAM svojí dlouhou časovou náročností. I přesto máme natrénované dva modely v rozlišení 160p a 240p.
 I pro model 11n jsme zkoušeli různé rozlišení. Rozlišení 160p a 240p bylo zpracováno dostatečně rychle a s uspokojivími výsledky. Oba modely byly natrénovany na 300 epochách.
 
@@ -695,7 +695,18 @@ Pátým a posledním důležitým parametrem, který byl lazen je $GOAL\_POX$, c
 
 \section{Závěr}
 
+\begin{thebibliography}{5}
 
+    \bibitem{YOLO}
+    Ultralytics. \emph{YOLO Models}. Available at: \url{https://docs.ultralytics.com/models/}
+    
+    \bibitem{Ultralitics}
+    Ultralytics. \emph{Ultralytics Documentation}. Available at: \url{https://docs.ultralytics.com/}
+    
+    \bibitem{ONNX}
+    ONNX. \emph{Open Neural Network Exchange}. Available at: \url{https://onnx.ai/}
+    
+    \end{thebibliography}
 
 
 \end{document}
