@@ -578,7 +578,7 @@ Potom už jen omezíme rychlost na maximální povolenou rychlost robota $v_{max
 
 \section{Testování}
 \subsection{Vidění}
-Anotování obrázků obbélníky bez rotace představilo problém, který jde vidět v obrázku \eqref{fig:detected_image}. Díky zakřivení obrazu z kamery, obdelníky nesedí přímo na pilíře, což byl lehce vyřešitelný problém. Vzdálenost překážky bereme jako medián vzdáleností z obdelníku.
+I když jsou modely naučené na rozpoznávání žlutého i červeného míče, testovali jsem výhradně míč žlutý. Anotování obrázků obbélníky bez rotace představilo problém, který jde vidět v obrázku \eqref{fig:detected_image}. Díky zakřivení obrazu z kamery, obdelníky nesedí přímo na pilíře, což byl lehce vyřešitelný problém. Vzdálenost překážky bereme jako medián vzdáleností z obdelníku.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\textwidth]{pictures/rozpoznane.jpg}
@@ -644,9 +644,11 @@ Třetím parametrem je $SHOOT\_SCALING$, což je faktor, o který se zvětší d
 Pátým a posledním důležitým parametrem, který byl lazen je $GOAL\_POX$, což je vzdálenost bodů od brankové čáry pro detekci gólu. Tento parametr byl nastaven na 0.1 m, což je dostatečně hodnota pro odrastranění šumu poloh a tudíž spolehlou detekci gólu.\\
 
 \subsection{Pohyb}
-
-
+Pro pohyb jsme ladili hlavně maximální ryhlost $\omega_{max}$. Bylo potřeba, aby robot při rychlých pohybech neztratil orientaci v prostoru a zároveň dokázal dostatečně rychle silně kopnout do míče. Po testování různých rozložení hracího pole, kde se míč nacházel v různých vzdálenostech od branky, jsme zvolili $\omega_{max} = 0.8$ m/s.
+Vyhnuli jsme se také používání vysokých akcelerací, zase z důvodu aby se robot dobře orientoval. Velká zrychlení mohla vyvovlat nechtěné kývání robota.
 \section{Závěr}
+
+
 
 \begin{thebibliography}{5}
 
