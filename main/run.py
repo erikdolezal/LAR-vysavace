@@ -59,8 +59,8 @@ class MainControl:
         self.slam_poses = np.zeros((1, 3))
         self.points = np.zeros((1, 2))
         self.ball = np.zeros((0, 3))
-        cv2.namedWindow("slam")
-        cv2.resizeWindow("slam", 512, 512)
+        #cv2.namedWindow("slam")
+        #cv2.resizeWindow("slam", 512, 512)
 
     def bumper_callback(self, msg):
         """
@@ -201,8 +201,8 @@ class MainControl:
                 (255, 0, 255),
                 2,
             )
-            cv2.imshow("slam", slam_win)
-            cv2.waitKey(1)
+            #cv2.imshow("slam", slam_win)
+            #cv2.waitKey(1)
 
         self.turtle.cmd_velocity(0, 0)
 
