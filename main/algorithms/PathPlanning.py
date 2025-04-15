@@ -1,7 +1,6 @@
 import numpy as np
-from planning.PathPlanningConfig import DataClasses
-from planning.PathPlanningConfig import PlanningParm
-from planning.PathPlanningConfig import ErrorCodes
+from configs.alg_config import PlanningParm
+from configs.value_enums import ErrorCodes, DataClasses
 
 
 class Planning:

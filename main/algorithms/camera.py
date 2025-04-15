@@ -4,18 +4,7 @@ import onnxruntime as ort
 import time
 import torch
 import torchvision
-
-SHOW = False
-
-CAMERA_ANGLE = 0
-WINDOW = "image"
-R_PILLAR = 0.02
-R_BALL = 0.08
-
-
-label_map = {"green": 0, "red": 1, "blue": 2, "ball_y": 3, "ball_r": 3}
-cls_to_col = {0: (0, 255, 0), 1: (0, 0, 255), 2: (255, 0, 0), 3: (0, 255, 255)}
-
+from configs.alg_config import vision_config
 
 def softmax(x):
     """
@@ -91,8 +80,6 @@ class OnnxCamera:
             Initializes the OnnxCamera object with the given parameters.
         detect(image):
             Performs object detection on the input image using the ONNX model.
-        adjust_coords(coords):
-            Adjusts the coordinates based on the detected object's class and position.
         get_detections(image, depth_image):
             Detects objects in the input image, calculates their world coordinates, and visualizes results.
     """
@@ -108,22 +95,11 @@ class OnnxCamera:
         self.input_name = self.model.get_inputs()[0].name
         self.output_name = self.model.get_outputs()[0].name
         self.input_shape = self.model.get_inputs()[0].shape
-        self.R_y = np.array(
-            [
-                [np.cos(np.deg2rad(CAMERA_ANGLE)), 0, np.sin(np.deg2rad(CAMERA_ANGLE))],
-                [0, 1, 0],
-                [
-                    -np.sin(np.deg2rad(CAMERA_ANGLE)),
-                    0,
-                    np.cos(np.deg2rad(CAMERA_ANGLE)),
-                ],
-            ]
-        )
-        if SHOW:
-            cv2.namedWindow(WINDOW)
+        if vision_config["show"]:
+            cv2.namedWindow("image")
             cv2.namedWindow("depth")
             cv2.namedWindow("position")
-        self.class_map = {3: 0, 2: 2, 1: 3, 4: 1, 0: 3}
+        self.class_map = vision_config["class_map"]
 
     def detect(self, image):
         """
@@ -180,25 +156,6 @@ class OnnxCamera:
 
         return results
 
-    def adjust_coords(self, coords):
-        """
-        Adjusts the given coordinates based on the class of detected object.
-        Parameters:
-            coords (numpy.ndarray): A numpy array representing the coordinates
-        Returns:
-            numpy.ndarray: The adjusted coordinates.
-        """
-
-        if coords[0] == np.nan:
-            return coords
-        if coords[2] in [0, 1]:
-            angle_z = np.arcsin(np.abs(coords[2]) / np.linalg.norm(coords))
-            r_ball = R_BALL * np.cos(angle_z)
-            coords += np.array([r_ball, r_ball, 0])
-        else:
-            coords += np.array([R_PILLAR, R_PILLAR, 0])
-        return coords
-
     def get_detections(self, image, depth_image):
         """
         Processes an image and its corresponding depth image to detect objects and
@@ -223,8 +180,6 @@ class OnnxCamera:
         for i in range(pred.shape[0]):
             x1, y1, x2, y2 = pred[i, :4]
             hom_coords = np.array([[x1, y1, 1], [x2, y2, 1]])
-            # x, y, w, h = xywh_preds[i,:4]
-            # hom_coords = np.array([[x - w/4, y - h/8, 1], [x+w/4, y + h/8, 1]])
 
             depth_coords = hom_coords @ self.cam_to_depth.T
             median_distance = (
@@ -237,17 +192,14 @@ class OnnxCamera:
                 / 1000
             )
             median_distance += 0.04 * median_distance
-            # median_distance = np.average(depth_image[int(depth_coords[0,1]):int(depth_coords[1,1]), int(depth_coords[0,0]):int(depth_coords[1,0])],
-            #                            weights = np.exp(-(depth_image[int(depth_coords[0,1]):int(depth_coords[1,1]), int(depth_coords[0,0]):int(depth_coords[1,0])] - median_distance)**2/100))/1000
             distances[i] = median_distance
-            # depth_xy = np.array([np.mean(depth_coords[:, 0]), depth_coords[1,1], 1])
             depth_xy = np.average(depth_coords, axis=0)
             world_coords[i] = (depth_xy @ self.depth_K.T)[[2, 0, 1]]
             world_coords[i, 1] = -world_coords[i, 1]
             world_coords[i] *= median_distance / np.linalg.norm(world_coords[i, 0])
             world_coords[i, 2] = self.class_map[pred[i, 5]]
             distances[i] = np.linalg.norm(world_coords[i, :2])
-            if SHOW:
+            if vision_config["show"]:
                 x, y = x1, y2
                 cv2.putText(
                     image,
@@ -262,7 +214,7 @@ class OnnxCamera:
                     image,
                     (int(x1), int(y1)),
                     (int(x2), int(y2)),
-                    cls_to_col[world_coords[i, 2]],
+                    vision_config["cls_to_col"][world_coords[i, 2]],
                     2,
                 )
                 cv2.rectangle(
@@ -288,13 +240,13 @@ class OnnxCamera:
                         int(-world_coords[i, 0] * 200) + 512,
                     ),
                     5,
-                    cls_to_col[world_coords[i, 2]],
+                    vision_config["cls_to_col"][world_coords[i, 2]],
                     -1,
                 )
 
-        if SHOW:
-            # cv2.imshow("depth", depth_copy)
-            # cv2.imshow(WINDOW, image)
+        if vision_config["show"]:
+            cv2.imshow("depth", depth_copy)
+            cv2.imshow("image", image)
             cv2.imshow("position", position)
             cv2.waitKey(1)
         if self.verbose:
