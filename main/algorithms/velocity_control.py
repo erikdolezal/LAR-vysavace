@@ -2,6 +2,7 @@ import numpy as np
 from algorithms.geometry import global_to_local
 from configs.alg_config import velocity_control_config
 
+
 class VelocityControl:
     """
     A class to control the velocity of the robot, ensuring smooth acceleration
@@ -23,9 +24,9 @@ class VelocityControl:
 
     def __init__(self):
         self.velocity = 0
-        self.max_acc = velocity_control_config["max_acc"] # m/s^2
-        self.max_speed = velocity_control_config["max_speed"] # m/s
-        self.max_ang_speed = velocity_control_config["max_ang_speed"] # rad/s
+        self.max_acc = velocity_control_config["max_acc"]  # m/s^2
+        self.max_speed = velocity_control_config["max_speed"]  # m/s
+        self.max_ang_speed = velocity_control_config["max_ang_speed"]  # rad/s
         self.last_cmd = (0, 0)
         self.ang_p = velocity_control_config["ang_p"]
 

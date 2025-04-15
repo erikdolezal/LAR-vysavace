@@ -1,5 +1,5 @@
 # Fdb version 4
-["pdflatex"] 1744712420.94339 "c:/Users/bouda/OneDrive/Dokumenty/GitHub/LAR-vysavace/documentation/ver1.tex" "ver1.pdf" "ver1" 1744712431.4827 0
+["pdflatex"] 1744712538.11987 "c:/Users/bouda/OneDrive/Dokumenty/GitHub/LAR-vysavace/documentation/ver1.tex" "ver1.pdf" "ver1" 1744712553.60119 0
   "C:/Users/bouda/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map" 1744635605 80909 eab91d9745dd2edfd62a31d53cd5fe15 ""
   "C:/Users/bouda/AppData/Local/MiKTeX/miktex/data/le/pdftex/pdflatex.fmt" 1744635523 24225046 5161c74949a4656b1859d207a94cf510 ""
   "C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/lm-ec.enc" 1256929440 2375 baa924870cfb487815765f9094cf3728 ""
@@ -216,7 +216,7 @@
   "C:/Users/bouda/AppData/Local/Programs/MiKTeX/tex/latex/url/url.sty" 1388490452 12796 8edb7d69a20b857904dd0ea757c14ec9 ""
   "C:/Users/bouda/AppData/Local/Programs/MiKTeX/tex/latex/xcolor/xcolor.sty" 1700127522 55487 80a65caedd3722f4c20a14a69e785d8f ""
   "C:/Users/bouda/AppData/Local/Programs/MiKTeX/tex/latex/xkeyval/xkeyval.sty" 1656236919 4937 4ce600ce9bd4ec84d0250eb6892fcf4f ""
-  "c:/Users/bouda/OneDrive/Dokumenty/GitHub/LAR-vysavace/documentation/ver1.tex" 1744712417 40547 a88188adb85b7af04e9d31069a1274e2 ""
+  "c:/Users/bouda/OneDrive/Dokumenty/GitHub/LAR-vysavace/documentation/ver1.tex" 1744712523 40567 a6ae290b150a73aa223c0debae9191d0 ""
   "pictures/PlanningDiagram.pdf" 1744707895 77723 28fa4203f52d04f7860dc08d92020a82 ""
   "pictures/depth_detect.png" 1744633916 128598 3649db2afbc8dee46e1baf245f79f82b ""
   "pictures/detect.png" 1744633916 487668 2b2f699cb048fb6f0d482e72e3dfba31 ""
@@ -230,10 +230,10 @@
   "pictures/tangent_test-eps-converted-to.pdf" 1744707895 232098 95289fc93e207fc041c2fa66641a379d ""
   "pictures/v11n_160p.png" 1744633916 118019 8fe72db03d7ef297b5f353c8fb0797b9 ""
   "pictures/v11n_240p.png" 1744633916 120197 88965b1e9746a849c9224b05358ad83d ""
-  "ver1.aux" 1744712430 8686 6a28947577cd1ef68bbad17974b976e5 "pdflatex"
-  "ver1.out" 1744712430 3765 2ca178b1e45f19402c4fbb59091f5cb4 "pdflatex"
-  "ver1.tex" 1744712417 40547 a88188adb85b7af04e9d31069a1274e2 ""
-  "ver1.toc" 1744712430 2285 bb55e163196a3e79a77666ca871e9db1 "pdflatex"
+  "ver1.aux" 1744712551 8799 038865206c8b6a26bf827268dcf2d26e "pdflatex"
+  "ver1.out" 1744712551 3848 217d2987ab3087b19fac2335c50ead4b "pdflatex"
+  "ver1.tex" 1744712523 40567 a6ae290b150a73aa223c0debae9191d0 ""
+  "ver1.toc" 1744712551 2357 181ee8265f5fb4880f3ce3492662624e "pdflatex"
   (generated)
   "ver1.aux"
   "ver1.log"

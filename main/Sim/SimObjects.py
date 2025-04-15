@@ -1,6 +1,5 @@
 import pygame
 import numpy as np
-import random
 from Sim.SimConfig import SimParm
 from Sim.SimConfig import DataClasses
 
@@ -21,27 +20,27 @@ class Objects:
         get_position():
             Returns the current position of the object.
     """
-    
+
     def __init__(self, sim, type=None, x=None, y=None):
-        
-        #object parametrs
+
+        # object parametrs
         self.sim = sim
         self.type = type
         self.RADIUS = 0
         if x is not None and y is not None:
             self.pos = np.array([x, y])
-    
+
     def DimToPixels(self, dim_real):
         """
         Converts a real-world dimension to its equivalent in pixels.
         Args:
             dim_real (float): The real-world dimension to be converted.
         Returns:
-            int: The dimension in pixels, calculated based on the ratio of 
+            int: The dimension in pixels, calculated based on the ratio of
                  simulation width in pixels to the real-world side length.
         """
-        return int((SimParm.WIDTH/SimParm.SIDE_REAL)*dim_real)  
-    
+        return int((SimParm.WIDTH / SimParm.SIDE_REAL) * dim_real)
+
     def was_collision(self, collission_pos, radius):
         """
         Determines whether a collision has occurred between the object and another object.
@@ -56,16 +55,17 @@ class Objects:
             return True
         else:
             return False
-    
+
     def get_position(self):
         """
         Retrieve the current position of the object.
         Returns:
             tuple: The current position of the object as a tuple (e.g., (x, y)).
         """
-        
+
         return self.pos
-    
+
+
 class PlayGround(Objects):
     """
     A class representing the playground in the simulation.
@@ -85,10 +85,10 @@ class PlayGround(Objects):
             the screen with a white background and drawing lines to represent
             specific areas of the playground.
     """
-    
+
     def __init__(self, sim, type=None, x=None, y=None):
         super().__init__(sim, type, x, y)
-    
+
     def draw(self):
         """
         Draws the simulation environment on the screen.
@@ -100,13 +100,13 @@ class PlayGround(Objects):
           `DimToPixels` method.
         The positions and colors of the lines are defined by the `SimParm` class.
         """
-        
+
         self.sim.screen.fill(SimParm.WHITE)
-        pygame.draw.line(self.sim.screen, SimParm.BLACK, (SimParm.WIDTH/2, 0), (SimParm.WIDTH/2, SimParm.WIDTH), 3)
+        pygame.draw.line(self.sim.screen, SimParm.BLACK, (SimParm.WIDTH / 2, 0), (SimParm.WIDTH / 2, SimParm.WIDTH), 3)
         pygame.draw.line(self.sim.screen, SimParm.RED, (0, self.DimToPixels(1.3)), (SimParm.WIDTH, self.DimToPixels(1.3)), 3)
         pygame.draw.line(self.sim.screen, SimParm.RED, (0, self.DimToPixels(2.1)), (SimParm.WIDTH, self.DimToPixels(2.1)), 3)
-    
-    
+
+
 class Turtle(Objects):
     """
     Represents a TurtleBot object in the simulation.
@@ -120,29 +120,29 @@ class Turtle(Objects):
         draw():
             Draws the TurtleBot on the simulation screen, including its position, orientation, and field of view.
         move(velocity, angular_velocity, forward=True, clockwise=True):
-            Moves the TurtleBot based on the given velocity and angular velocity. 
+            Moves the TurtleBot based on the given velocity and angular velocity.
             The direction of movement can be controlled using the `forward` and `clockwise` flags.
         get_info():
             Returns the current state of the TurtleBot as a NumPy array, including position, angle, and last velocity.
     """
-    
+
     def __init__(self, sim, type, x, y, angle):
         super().__init__(sim, type, x, y)
-        #turlte parametrs
+        # turlte parametrs
         self.angle = angle
         self.last_velosity = 0
-        #turtle constants
+        # turtle constants
         self.RADIUS = SimParm.TURTLE_RADIUS
-        
+
     def draw(self):
         """
         Draws the TurtleBot on the simulation screen.
-        This method visualizes the TurtleBot's position, orientation, and field of view (FOV) 
+        This method visualizes the TurtleBot's position, orientation, and field of view (FOV)
         on the simulation screen using Pygame. It includes:
         - A circle representing the TurtleBot's body.
         - A line indicating the front direction of the TurtleBot.
         - Two lines representing the edges of the TurtleBot's camera field of view.
-        The drawing is scaled and positioned based on the TurtleBot's current position, 
+        The drawing is scaled and positioned based on the TurtleBot's current position,
         orientation, and dimensions.
         Attributes:
             self.pos (tuple): The (x, y) position of the TurtleBot in the simulation.
@@ -154,7 +154,7 @@ class Turtle(Objects):
             SimParm.CAMERA_FOV (float): The field of view angle of the TurtleBot's camera in radians.
             SimParm.FOV_LINE_LENGTH (float): The length of the FOV lines.
         Note:
-            The `DimToPixels` method is used to convert dimensions from simulation units 
+            The `DimToPixels` method is used to convert dimensions from simulation units
             to pixel units for rendering on the screen.
         """
 
@@ -162,17 +162,17 @@ class Turtle(Objects):
         line_length = self.DimToPixels(self.RADIUS) * 2
         line_end_x = self.DimToPixels(self.pos[0]) + np.cos(self.angle) * line_length
         line_end_y = self.DimToPixels(self.pos[1]) - np.sin(self.angle) * line_length
-        
-        fov_line_x1 = self.DimToPixels(self.pos[0]) + np.cos(self.angle + SimParm.CAMERA_FOV/2) * SimParm.FOV_LINE_LENGTH
-        fov_line_y1 = self.DimToPixels(self.pos[1]) - np.sin(self.angle + SimParm.CAMERA_FOV/2) * SimParm.FOV_LINE_LENGTH
-        fov_line_x2 = self.DimToPixels(self.pos[0]) + np.cos(self.angle - SimParm.CAMERA_FOV/2) * SimParm.FOV_LINE_LENGTH
-        fov_line_y2 = self.DimToPixels(self.pos[1]) - np.sin(self.angle - SimParm.CAMERA_FOV/2) * SimParm.FOV_LINE_LENGTH
+
+        fov_line_x1 = self.DimToPixels(self.pos[0]) + np.cos(self.angle + SimParm.CAMERA_FOV / 2) * SimParm.FOV_LINE_LENGTH
+        fov_line_y1 = self.DimToPixels(self.pos[1]) - np.sin(self.angle + SimParm.CAMERA_FOV / 2) * SimParm.FOV_LINE_LENGTH
+        fov_line_x2 = self.DimToPixels(self.pos[0]) + np.cos(self.angle - SimParm.CAMERA_FOV / 2) * SimParm.FOV_LINE_LENGTH
+        fov_line_y2 = self.DimToPixels(self.pos[1]) - np.sin(self.angle - SimParm.CAMERA_FOV / 2) * SimParm.FOV_LINE_LENGTH
 
         pygame.draw.circle(self.sim.screen, SimParm.RED, (self.DimToPixels(self.pos[0]), self.DimToPixels(self.pos[1])), self.DimToPixels(self.RADIUS))
         pygame.draw.line(self.sim.screen, SimParm.BLACK, (self.DimToPixels(self.pos[0]), self.DimToPixels(self.pos[1])), (line_end_x, line_end_y), 3)
         pygame.draw.line(self.sim.screen, SimParm.BLACK, (self.DimToPixels(self.pos[0]), self.DimToPixels(self.pos[1])), (fov_line_x1, fov_line_y1), 4)
         pygame.draw.line(self.sim.screen, SimParm.BLACK, (self.DimToPixels(self.pos[0]), self.DimToPixels(self.pos[1])), (fov_line_x2, fov_line_y2), 4)
-            
+
     def move(self, velocity, angular_velocity, forward=True, clockwise=True):
         """
         Moves the robot based on the specified velocity and angular velocity.
@@ -186,22 +186,22 @@ class Turtle(Objects):
             - The robot's position is updated based on the linear velocity, direction, and current angle.
             - The `last_velocity` attribute is set to the provided velocity.
         """
-    
+
         if clockwise:
-            self.angle += angular_velocity/SimParm.SIM_FPS
+            self.angle += angular_velocity / SimParm.SIM_FPS
         else:
-            self.angle -= angular_velocity/SimParm.SIM_FPS
+            self.angle -= angular_velocity / SimParm.SIM_FPS
         self.angle = (self.angle + np.pi) % (2 * np.pi) - np.pi
-        
+
         if forward:
-            self.pos[0] += velocity/SimParm.SIM_FPS * np.cos(self.angle)
-            self.pos[1] -= velocity/SimParm.SIM_FPS * np.sin(self.angle) 
+            self.pos[0] += velocity / SimParm.SIM_FPS * np.cos(self.angle)
+            self.pos[1] -= velocity / SimParm.SIM_FPS * np.sin(self.angle)
         else:
-            self.pos[0] -= velocity/SimParm.SIM_FPS * np.cos(self.angle)
-            self.pos[1] += velocity/SimParm.SIM_FPS * np.sin(self.angle)
-            
+            self.pos[0] -= velocity / SimParm.SIM_FPS * np.cos(self.angle)
+            self.pos[1] += velocity / SimParm.SIM_FPS * np.sin(self.angle)
+
         self.last_velosity = velocity
-    
+
     def get_info(self):
         """
         Retrieve information about the object's current state.
@@ -212,9 +212,10 @@ class Turtle(Objects):
                 - self.angle (float): The object's current angle or orientation.
                 - self.last_velosity (float): The object's last recorded velocity.
         """
-        
+
         return np.array([self.pos[0], self.pos[1], self.angle, self.last_velosity])
-    
+
+
 class Tube(Objects):
     """
     Represents a tube object in the simulation.
@@ -228,16 +229,15 @@ class Tube(Objects):
             Draws the tube on the simulation screen as a circle.
     """
 
-    
     def __init__(self, sim, type, x, y, color=None):
         super().__init__(sim, type, x, y)
-        
-        #Tube parametrs
+
+        # Tube parametrs
         self.color = color
-        
-        #Tube constants
+
+        # Tube constants
         self.RADIUS = SimParm.TUBE_RADIUS
-        
+
     def draw(self):
         """
         Draws the object as a circle on the simulation screen.
@@ -251,30 +251,32 @@ class Tube(Objects):
             self.pos (tuple): The position of the object in simulation dimensions.
             self.RADIUS (float): The radius of the object in simulation dimensions.
         """
-        
+
         pygame.draw.circle(self.sim.screen, self.color, (self.DimToPixels(self.pos[0]), self.DimToPixels(self.pos[1])), self.DimToPixels(self.RADIUS))
-        
-        
+
+
 class Ball(Objects):
     def __init__(self, sim, type, x, y, color=None):
         super().__init__(sim, type, x, y)
         self.RADIUS = SimParm.BALL_RADIUS
         if color is None:
             self.color = SimParm.YELLOW
-        self.velocity = np.array([0,0])           
+        self.velocity = np.array([0, 0])
+
     def draw(self):
         """ Draw the objects. """
         pygame.draw.circle(self.sim.screen, self.color, (self.DimToPixels(self.pos[0]), self.DimToPixels(self.pos[1])), self.DimToPixels(self.RADIUS))
-        
+
     def movement(self):
-        self.pos[0] += self.velocity[0]/SimParm.SIM_FPS
-        self.velocity[0] = self.velocity[0]*SimParm.SIM_FRICTION
-        self.pos[1] += self.velocity[1]/SimParm.SIM_FPS
-        self.velocity[1] = self.velocity[1]*SimParm.SIM_FRICTION
-        
+        self.pos[0] += self.velocity[0] / SimParm.SIM_FPS
+        self.velocity[0] = self.velocity[0] * SimParm.SIM_FRICTION
+        self.pos[1] += self.velocity[1] / SimParm.SIM_FPS
+        self.velocity[1] = self.velocity[1] * SimParm.SIM_FRICTION
+
     def set_velocity(self, new_velocity):
         self.velocity = new_velocity
-    
+
+
 class Point(Objects):
     class Point:
         """
@@ -293,19 +295,17 @@ class Point(Objects):
             draw():
                 Draws the point on the simulation screen as a circle.
         """
-    
-    
+
     def __init__(self, sim, type, x, y, color=SimParm.BLACK):
         super().__init__(sim, type, x, y)
         self.color = color
         self.x = x
-        self.y = y       
-        
-         
+        self.y = y
+
     def __del__(self):
         """ Destructor for Point class. """
         del self.pos
-        
+
     def set_position(self, x, y):
         """
         Set the position of the object.
@@ -315,9 +315,9 @@ class Point(Objects):
         Returns:
         None
         """
-        
+
         self.pos = np.array([x, y])
-        
+
     def draw(self):
         """
         Draws the object on the simulation screen as a circle.
@@ -331,7 +331,8 @@ class Point(Objects):
         """
 
         pygame.draw.circle(self.sim.screen, self.color, (self.DimToPixels(self.pos[0]), self.DimToPixels(self.pos[1])), self.DimToPixels(0.1))
-        
+
+
 class Path(Objects):
     class Path:
         """
@@ -350,30 +351,30 @@ class Path(Objects):
             draw():
                 Draws the path by connecting the points with lines on the simulation screen.
         """
-    
+
     def __init__(self, sim, color=SimParm.BLACK):
         self.points = []
         self.color = color
         self.sim = sim
-    
+
     def __del__(self):
         """ Destructor for Path class. """
         del self.points
-    
+
     def add_point(self, point):
         """
         Adds a new point to the list of points.
         Args:
-            point (tuple): A tuple containing the x and y coordinates of the point 
+            point (tuple): A tuple containing the x and y coordinates of the point
                            to be added (e.g., (x, y)).
         Creates:
-            A new `Point` object with the specified coordinates, associated with 
+            A new `Point` object with the specified coordinates, associated with
             the current simulation (`sim`), and appends it to the `points` list.
         """
-        
-        point_new = Point(sim=self.sim,type=DataClasses.POINT ,x=point[0], y=point[1], color=self.color)
+
+        point_new = Point(sim=self.sim, type=DataClasses.POINT, x=point[0], y=point[1], color=self.color)
         self.points.append(point_new)
-        
+
     def draw(self):
         """
         Draws lines connecting a sequence of points on the simulation screen.
@@ -387,6 +388,6 @@ class Path(Objects):
         Returns:
             None
         """
-        
-        for index in range(len(self.points)-1):
-            pygame.draw.line(self.sim.screen, self.color, (self.DimToPixels(self.points[index].x), self.DimToPixels(self.points[index].y)), (self.DimToPixels(self.points[index+1].x), self.DimToPixels(self.points[index+1].y)), 3)
+
+        for index in range(len(self.points) - 1):
+            pygame.draw.line(self.sim.screen, self.color, (self.DimToPixels(self.points[index].x), self.DimToPixels(self.points[index].y)), (self.DimToPixels(self.points[index + 1].x), self.DimToPixels(self.points[index + 1].y)), 3)

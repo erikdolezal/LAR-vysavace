@@ -1,5 +1,6 @@
 from enum import IntEnum
 
+
 class DataClasses(IntEnum):
     """
     Enum for data classes

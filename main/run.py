@@ -1,5 +1,5 @@
 from algorithms.UKFSlam import UKF_SLAM, DataClasses
-from algorithms.geometry import local_to_global, global_to_local
+from algorithms.geometry import local_to_global
 from robolab_turtlebot import Turtlebot
 from multiprocessing import Event
 from algorithms.camera import OnnxCamera
@@ -10,6 +10,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import time
 import cv2
+
 
 class MainControl:
     """
@@ -213,16 +214,16 @@ class MainControl:
         ax.set_ylabel("Y [m]")
         ax.set_xlim(-4, 4)
         ax.set_ylim(-4, 4)
-        ax.plot(self.slam_poses[0,0], self.slam_poses[0,1], 'ro', label="Start")
-        ax.plot(self.slam_poses[-1,0], self.slam_poses[-1,1], 'go', label="End")
-        ax.plot(self.slam_poses[:,0], self.slam_poses[:,1], '.', label="SLAM", c='orange')
+        ax.plot(self.slam_poses[0, 0], self.slam_poses[0, 1], 'ro', label="Start")
+        ax.plot(self.slam_poses[-1, 0], self.slam_poses[-1, 1], 'go', label="End")
+        ax.plot(self.slam_poses[:, 0], self.slam_poses[:, 1], '.', label="SLAM", c='orange')
         ax.plot(*self.points.T, c='violet', label='path')
-        blue_mask = self.slam.landmarks[:,2] == DataClasses.BLUE
-        ax.plot(self.slam.landmarks[blue_mask,0], self.slam.landmarks[blue_mask,1], '.', c="blue", label="Blue cones")
-        green_mask = self.slam.landmarks[:,2] == DataClasses.GREEN
-        ax.plot(self.slam.landmarks[green_mask,0], self.slam.landmarks[green_mask,1], '.', c="green", label="Green cones")
-        red_mask = self.slam.landmarks[:,2] == DataClasses.RED
-        ax.plot(self.slam.landmarks[red_mask,0], self.slam.landmarks[red_mask,1], '.', c="red", label="Red cones")
+        blue_mask = self.slam.landmarks[:, 2] == DataClasses.BLUE
+        ax.plot(self.slam.landmarks[blue_mask, 0], self.slam.landmarks[blue_mask, 1], '.', c="blue", label="Blue cones")
+        green_mask = self.slam.landmarks[:, 2] == DataClasses.GREEN
+        ax.plot(self.slam.landmarks[green_mask, 0], self.slam.landmarks[green_mask, 1], '.', c="green", label="Green cones")
+        red_mask = self.slam.landmarks[:, 2] == DataClasses.RED
+        ax.plot(self.slam.landmarks[red_mask, 0], self.slam.landmarks[red_mask, 1], '.', c="red", label="Red cones")
         ax.plot(*self.ball[:2], '.', label="ball", c='cyan')
         ax.legend()
         ax.grid()
