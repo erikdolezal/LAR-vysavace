@@ -194,8 +194,9 @@ Kalman filtrů, kvůli nelinearitě transformace z globálních souřadnic do lo
 Tedy se nabízí dvě možnosti, Extended Kalman Filter (EKF) a Unscented Kalman Filter (UKF). Pro náš účel jsme zvolili UKF, který je přesnější a při malém počtu landmarků není výpočetně náročný.
 \subsubsection{Unscented Kalman filter}
 \label{sec:ukf}
-Unscented Kalman Filter je založen na Unscented transformaci, která pomocí sigma bodů aproximuje nové normální rozdělení po transformaci. 
-Sigma podle vzorce:
+Unscented Kalman Filter je založen na Unscented transformaci, která pomocí sigma bodů aproximuje nové normální rozdělení po transformaci. Vzorce v této kapitole jsou převzaty z \cite{UKF}. \\
+
+Sigma body se počítají podle vzorce
 \begin{equation}
     \boldsymbol{\chi}_{i} = \begin{cases}
         \mathbf{\bar{x}} & i = 0 \\
@@ -700,13 +701,16 @@ Vyhnuli jsme se také používání vysokých akcelerací, zase z důvodu aby se
 \begin{thebibliography}{5}
 
     \bibitem{YOLO}
-    Ultralytics. \emph{YOLO Models}. Available at: \url{https://docs.ultralytics.com/models/}
+    Ultralytics. \emph{YOLO Models}. Dostupné z: \url{https://docs.ultralytics.com/models/} [cit. 2025-04-15]
     
     \bibitem{Ultralitics}
-    Ultralytics. \emph{Ultralytics Documentation}. Available at: \url{https://docs.ultralytics.com/}
+    Ultralytics. \emph{Ultralytics Documentation}. Dostupné z: \url{https://docs.ultralytics.com/} [cit. 2025-04-15]
     
     \bibitem{ONNX}
-    ONNX. \emph{Open Neural Network Exchange}. Available at: \url{https://onnx.ai/}
+    ONNX. \emph{Open Neural Network Exchange}. Dostupné z: \url{https://onnx.ai/} [cit. 2025-04-15]
+
+    \bibitem{UKF}
+    Kalman and Bayesian Filters in Python \emph{Unscented Kalman Filter}. Available at: \url{https://github.com/rlabbe/Kalman-and-Bayesian-Filters-in-Python/blob/master/10-Unscented-Kalman-Filter.ipynb} [cit. 2025-04-15]
     
     \end{thebibliography}
 

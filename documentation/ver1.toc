@@ -17,7 +17,7 @@
 \contentsline {subsubsection}{\numberline {2.3.1}Identifikace a přeřazení objektů}{11}{subsubsection.2.3.1}%
 \contentsline {subsubsection}{\numberline {2.3.2}Hlavní logika}{11}{subsubsection.2.3.2}%
 \contentsline {subsubsection}{\numberline {2.3.3}Plánování trajektorie míče}{13}{subsubsection.2.3.3}%
-\contentsline {subsubsection}{\numberline {2.3.4}Plánování trajektorie robota}{14}{subsubsection.2.3.4}%
+\contentsline {subsubsection}{\numberline {2.3.4}Plánování trajektorie robota}{15}{subsubsection.2.3.4}%
 \contentsline {subsubsection}{\numberline {2.3.5}Simulátor}{15}{subsubsection.2.3.5}%
 \contentsline {subsection}{\numberline {2.4}Pohyb}{15}{subsection.2.4}%
 \contentsline {section}{\numberline {3}Testování}{16}{section.3}%
