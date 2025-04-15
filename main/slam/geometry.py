@@ -2,8 +2,7 @@ import numpy as np
 
 
 def global_to_local(points, pose) -> np.ndarray:
-    """Convert points from global to local coordinates
-    From standard (x,y) to (x',y') where x' is forward and y' is left
+    """Convert points from global to local coordinates.
     Args:
         points (np.ndarray): Points to be converted
         pose (np.ndarray): Position of the car in global coordinates (x,y,yaw)
@@ -20,8 +19,7 @@ def global_to_local(points, pose) -> np.ndarray:
 
 
 def local_to_global(points, pose) -> np.ndarray:
-    """Convert points from local to global coordinates
-    From (x',y') where x' is forward and y' is left to standard (x,y)
+    """Convert points from local to global coordinates.
     Args:
         points (np.ndarray): Points to be converted
         pose (np.ndarray): Position of the car in global coordinates (x,y,yaw)

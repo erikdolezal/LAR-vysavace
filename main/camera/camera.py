@@ -128,9 +128,6 @@ class OnnxCamera:
     def detect(self, image):
         """
         Perform object detection on the given image.
-        This method preprocesses the input image, runs inference using the model,
-        and post-processes the results to return detected objects with their bounding
-        boxes, confidence scores, and class labels.
         Args:
             image (numpy.ndarray): The input image in BGR format.
         Returns:

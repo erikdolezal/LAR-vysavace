@@ -23,7 +23,7 @@ class Planning:
             robot_pos (list): Position of the robot
             test_alg (bool): If True, returns all paths for testing
         Returns:
-            next_point (np.ndarray): Next point in the path for the robot to follow
+            np.ndarray: Next point in the path for the robot to follow
         """
 
         next_point = None
@@ -399,6 +399,13 @@ class Planning:
         1. lineA: (lineA_a, lineA_b)
         2. lineB: (lineB_a, lineB_b)
         3. Returns the intersection point if exists, else None
+        Args:
+            lineA_a (np.ndarray): Start point of line A
+            lineA_b (np.ndarray): End point of line A
+            lineB_a (np.ndarray): Start point of line B
+            lineB_b (np.ndarray): End point of line B
+        Returns:
+            np.ndarray: Intersection point if exists, else None
         """
 
         lineA = lineA_b - lineA_a
@@ -416,6 +423,12 @@ class Planning:
     def are_points_in_proximity(self, point1, point2, dis_check=PlanningParm.BALL_PROXIMITY):
         """
         Checks if two points are within a given proximity.
+        Args:
+            point1 (np.ndarray): First point
+            point2 (np.ndarray): Second point
+            dis_check (float): Distance threshold for proximity check
+        Returns:
+            bool: True if points are within proximity, False otherwise
         """
         state = False
         distance = np.linalg.norm(np.array(point1) - np.array(point2))
