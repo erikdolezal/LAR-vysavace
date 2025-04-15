@@ -134,10 +134,57 @@ To se ukázalo jako velice časově náročné. Proto jsme se rozhodli, že bude
     \caption{Obrázek z hloubkové kamery s rozpoznanými objekty}
     \label{fig:depth_detect}
 \end{figure}
-Hloubková kamera vrací pouze pixeli s hloubkou. Aby byla poloha objektů spočítána co nejrychleji, pracujeme pouze s pixeli z hloubkové kamery (Obrázek \eqref{fig:depth_detect}), které jsou detekovány jako objekty z RGB kamery (Obrázek \eqref{fig:detect}).
-Nejdříve vytvoříme transformační matici, která převadí mezi souřadnicemi kamery a hloubkové kamery. Poté se vypočítá median vzdáleností v bounding boxu, což řeší problém s obdelníky přesně nepasujícími na detekované objekty. 
-Medián vzdálenosti přenásobíme konstantou 1.04, abychom korigovali nepřesnost depth kamery.
-Pomocí K matice převedeme souřadnice z pixelů na reálné souřadnice vůči robotovi. Za souřadnice detekce se také přidá třída objektu.
+Hloubková kamera vrací pouze pixely s hloubkou. Aby byla poloha objektů spočítána co nejrychleji, pracujeme pouze s pixely z hloubkové kamery (Obrázek \eqref{fig:depth_detect}), které jsou detekovány jako objekty z RGB kamery (Obrázek \eqref{fig:detect}).
+Nejdříve vytvoříme transformační matici, která převadí mezi souřadnicemi kamery a hloubkové kamery podle 
+\begin{equation}
+    \mathbf T = \mathbf{K_{depth}} \cdot \mathbf{K_{rgb}}^-1 + \begin{bmatrix}
+        0 & 0 & -10\\
+        0 & 0 & -10\\
+        0 & 0 & 0\\
+    \end{bmatrix}
+\end{equation}
+Hodnota $-10$ je zvolena tak, aby byl co nejmenší rozdíl mezi pozicemi v souřadnicích hloubkové a RGB kamery.
+
+Poté se vypočítá median vzdáleností v bounding boxu, což řeší problém s obdelníky přesně nepasujícími na detekované objekty. 
+Medián vzdálenosti přenásobíme konstantou 1.04, abychom korigovali nepřesnost depth kamery. Souřadnice detekce v prostoru spočítáme pak pomocí středu bounding boxu se souřadnicemi $(cx,cy)$ v hloubkové kameře a mediánové vzdálenosti $d$ podle vzorce
+\begin{equation}
+    \begin{bmatrix}
+        x \\
+        y \\
+        z \\
+    \end{bmatrix} = 
+    \mathbf{K_{depth}}^-1 \cdot \begin{bmatrix}
+        cx \\
+        cy \\
+        1\\
+    \end{bmatrix}
+\end{equation}
+\begin{equation}
+    \begin{bmatrix}
+        x \\
+        y \\
+        z \\
+    \end{bmatrix} = 
+    \begin{bmatrix}
+        x \\
+        y \\
+        z \\
+    \end{bmatrix} \cdot \frac{d}{z}
+\end{equation}
+Tím dostaneme směrový vektor s délkou $d$ v souřadnicovém systému hloubkové kamery. Pro konverci do souřadnicového systému robota použijeme 
+\begin{equation}
+    \begin{bmatrix}
+        x_{robot} \\
+        y_{robot} \\
+        z_{robot} \\
+    \end{bmatrix} = 
+    \begin{bmatrix}
+        z \\
+        -x \\
+        y \\
+    \end{bmatrix}
+\end{equation}
+Poté ještě nahradíme $z_{robot}$ za třídu detekce, protože nás zajímají pouze 2D souřadnice.
 
 
 
