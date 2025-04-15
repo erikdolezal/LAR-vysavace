@@ -1,0 +1,18 @@
+\babel@toc {czech}{}\relax 
+\contentsline {section}{\numberline {1}Zadání}{1}{section.1}%
+\contentsline {subsection}{\numberline {1.1}Úloha 2}{2}{subsection.1.1}%
+\contentsline {subsection}{\numberline {1.2}Úloha 3}{2}{subsection.1.2}%
+\contentsline {section}{\numberline {2}Řešení}{2}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Zpracování obrazu}{2}{subsection.2.1}%
+\contentsline {subsubsection}{\numberline {2.1.1}Trénování CNN}{3}{subsubsection.2.1.1}%
+\contentsline {subsubsection}{\numberline {2.1.2}Rozpoznávání obrazu}{5}{subsubsection.2.1.2}%
+\contentsline {subsubsection}{\numberline {2.1.3}Pozice objektů v prostoru}{6}{subsubsection.2.1.3}%
+\contentsline {subsection}{\numberline {2.2}Lokalizace a mapování}{6}{subsection.2.2}%
+\contentsline {subsubsection}{\numberline {2.2.1}Unscented Kalman filter}{7}{subsubsection.2.2.1}%
+\contentsline {subsubsection}{\numberline {2.2.2}SLAM struktura}{8}{subsubsection.2.2.2}%
+\contentsline {subsubsection}{\numberline {2.2.3}Predikce Kalman filtru ve SLAMu}{8}{subsubsection.2.2.3}%
+\contentsline {subsubsection}{\numberline {2.2.4}Aktualizace Kalman filtru ve SLAMu}{9}{subsubsection.2.2.4}%
+\contentsline {subsubsection}{\numberline {2.2.5}Aktualizace mapy}{10}{subsubsection.2.2.5}%
+\contentsline {subsection}{\numberline {2.3}Plánování}{11}{subsection.2.3}%
+\contentsline {subsection}{\numberline {2.4}Pohyb}{11}{subsection.2.4}%
+\contentsline {section}{\numberline {3}Závěr}{11}{section.3}%

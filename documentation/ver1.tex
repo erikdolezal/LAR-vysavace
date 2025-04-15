@@ -151,17 +151,18 @@ Pomocí K matice převedeme souřadnice z pixelů na reálné souřadnice vůči
 Jelikož je plocha, po které se pohybujeme rovná, je možné používat pouze 2D souřadnice. Pro lokalizaci robota a mapování používáme SLAM algoritmus z rodiny 
 Kalman filtrů, kvůli nelinearitě transformace z globálních souřadnic do lokálních bylo potřeba použít Kalman filtr, který si umí s nelinearitami poradit. 
 Tedy se nabízí dvě možnosti, Extended Kalman Filter (EKF) a Unscented Kalman Filter (UKF). Pro náš účel jsme zvolili UKF, který je přesnější a při malém počtu landmarků není výpočetně náročný.
-\subsubsection{Unscented Kalman Filter}
+\subsubsection{Unscented Kalman filter}
+\label{sec:ukf}
 Unscented Kalman Filter je založen na Unscented transformaci, která pomocí sigma bodů aproximuje nové normální rozdělení po transformaci. 
-Sigma bodu odhadujeme pomocí Van der Merwe scaled sigma point algoritmu. Sigma body tedy počítáme podle vzorce:
+Sigma podle vzorce:
 \begin{equation}
     \chi_{i} = \begin{cases}
-        \bar{x} & i = 0 \\
-        \bar{x} + (\sqrt{(n + \lambda)P})_{i-1} & 1 \leq i \leq n \\
-        \bar{x} - (\sqrt{(n + \lambda)P})_{i-1} & n + 1 \leq i \leq 2n
+        \mathbf{\bar{x}} & i = 0 \\
+        \mathbf{\bar{x}} + (\sqrt{(n + \lambda) \mathbf P})_{i-1} & 1 \leq i \leq n \\
+        \mathbf{\bar{x}} - (\sqrt{(n + \lambda) \mathbf P})_{i-1} & n + 1 \leq i \leq 2n
     \end{cases}
 \end{equation}
-kde $\bar{x}$ je odhad střední hodnoty, $P$ je odhad kovarianční matice a $\lambda$ je parametr, který určuje rozptyl sigma bodů a vypočítá se podle
+kde $\mathbf{\bar{x}}$ je odhad střední hodnoty, $\mathbf P$ je kovarianční matice a $\lambda$ je parametr, který určuje rozptyl sigma bodů a vypočítá se podle
 \begin{equation}
     \lambda = \alpha^2(n + \kappa) - n
 \end{equation}
@@ -169,22 +170,232 @@ kde $\alpha$ a $\kappa = 3 - n$ jsou vstupní parametry určující rozptyl sigm
 Pro výpočet Unscented transformace jsou poutřeba ještě váhy jednotlivých sigma bodů. 
 Výpočet váhy aktuální střední hodnoty pro odhad nové je dělán podle: 
 \begin{equation}
-    W^{m}_0 = \frac{\lambda}{n + \lambda}
+    w^{m}_0 = \frac{\lambda}{n + \lambda}
 \end{equation}
 Pro ostatní body pak podle 
 \begin{equation}
-    W^m_i = \frac{1}{2(n+\lambda)}  i = 1...2n
+    w^m_i = \frac{1}{2(n+\lambda)} \;\;\; i = 1...2n
     \label{eq:mean_weights}
 \end{equation}
 Výpočet váhy aktuální střední hodnoty pro odhad nové kovarianční matice je prováděn podle vzorce
 \begin{equation}
-   W^c_0 = \frac{\lambda}{n + \lambda} + 1 - \alpha^2 + \beta
+   w^c_0 = \frac{\lambda}{n + \lambda} + 1 - \alpha^2 + \beta
 \end{equation}
 váhy pro ostatní body pak stejně jako pro odhad střední hodnoty, tedy podle (\ref{eq:mean_weights})
+\\
+Po vytvoření sigma bodů a jejich vah, je možné pomocí Unscented transformace určit nový odhad střední hodnoty a kovarianční matice pro funkční hodnoty dané transformace $f$ pro všechny sigma body.
+\begin{equation}
+    \begin{aligned}
+    \boldsymbol{\mathcal{Y}} &= f(\boldsymbol{\chi}) \\
+    \mathbf{\bar{x}} &= \sum_{i=0}^{2n} w^m_i\boldsymbol{\mathcal{Y}}_i \\
+    \mathbf{\bar{P}} &= \sum_{i=0}^{2n} w^c_i{(\boldsymbol{\mathcal{Y}}_i-\mu)(\boldsymbol{\mathcal{Y}}_i-\mu)^\mathsf{T}}
+    \end{aligned}
+    \label{eq:ukf_transform}
+\end{equation}
+\\
+Kalman filtr má pak dva hlavní kroky, predikci a aktualizaci.\\
 
+Predikce je provedena pomocí funkce $f$ a sigma bodů. Sigma body se transformují do nového prostoru pomocí funkce $f$ a odhadne se nová střední hodnota a kovarianční matice.
+Pro UKF se pak používá Unscented transformace (\ref{eq:ukf_transform}) pro výpočet nové střední hodnoty a kovarianční matice, 
+navíc je k nové kovarianční matici přičtena matice $\mathbf Q$, která je matice šumu procesu. Dostaneme tedy
+\begin{equation}
+    \begin{aligned}
+        \boldsymbol{\mathcal Y} &= f(\boldsymbol\chi) \\
+        \mathbf{\bar x} &= \sum w^m\boldsymbol{\mathcal Y}  \\
+        \mathbf{\bar P} &= \sum w^c({\boldsymbol{\mathcal Y} - \mathbf{\bar x})(\boldsymbol{\mathcal Y} - \mathbf{\bar x})^\mathsf T}+\mathbf Q \\
+    \end{aligned}
+    \label{eq:ukf_predict}
+\end{equation}
 
+Aktualizace je prováděna pomocí měření ze senzorů, je tedy potřeba převést sigma body do prostoru měření, 
+to se provádí pomocí funkce $h$ a jelikož žádné měření není přesné, tak šum měření je modelován maticí $\mathbf R$.
+Pro odhad nové střední hodnoty a kovarianční matice se používá 
+\begin{equation}
+    \begin{aligned}
+        \boldsymbol{\mathcal Z} &=  h(\boldsymbol{\mathcal{Y}}) \\
+        \boldsymbol\mu_z &= \sum w^m\boldsymbol{\mathcal{Z}} \\
+        \mathbf y &= \mathbf z - \boldsymbol\mu_z \\
+        \mathbf P_z &= \sum w^c{(\boldsymbol{\mathcal Z}-\boldsymbol\mu_z)(\boldsymbol{\mathcal{Z}}-\boldsymbol\mu_z)^\mathsf{T}} + \mathbf R \\ 
+        \mathbf K &= \left[\sum w^c(\boldsymbol{\mathcal Y}-\bar{\mathbf x})(\boldsymbol{\mathcal{Z}}-\boldsymbol\mu_z)^\mathsf{T}\right] \mathbf P_z^{-1} \\
+        \mathbf x &= \mathbf{\bar x} + \mathbf{Ky}\\
+        \mathbf P &= \bar{\mathbf P} - \mathbf{KP_z}\mathbf{K}^\mathsf{T}
+    \end{aligned}
+\end{equation}
 
+\subsubsection{SLAM struktura}
+Stavový vektor ve SLAMu obsahuje pozici robota a pozice landmarků, které robot vidí, tedy 
+\begin{equation}
+    \mathbf x = \begin{bmatrix}
+        x \\
+        y \\
+        \theta \\
+        x_1 \\
+        y_1 \\
+        x_2 \\
+        y_2 \\
+        \vdots \\
+        x_n \\
+        y_n 
+    \end{bmatrix}
+\end{equation}
+kde $(x,y, \theta)$ je pozice robota a $(x_i,y_i)$ je pozice $i$-tého landmarku.
+Jelikož máme více typů landmarků, které se liší svojí třídou, je potřeba mít pro každý landmark uloženou třídu mimo stavový vektor, 
+jelikož jejich chování na ní není závislé a zbytečně by se zvedala dimenze stavového vektoru.
 
+\subsubsection{Predikce Kalman filtru ve SLAMu}
+Predikce může být provedena podle fyzikálního modelu robota v závislosti na kontolních vstupech $\mathbf u$, to je však v našem případě zbytečné,
+jelikož robot nabízí odometrii, která může model nahradit. Jelikož polohy landmarků se nemění v čase, mění se pouze poloha robota. Dostaneme tedy
+\begin{equation}
+    f(\mathbf x,\mathbf u) = \mathbf x + \begin{bmatrix}
+                                    \Delta x \\
+                                    \Delta y \\
+                                    \Delta \theta \\
+                                    0 \\
+                                    0 \\
+                                    \vdots \\
+                                    0
+                                \end{bmatrix}
+\end{equation}
+Abychom zíkali pouze rozdíly z odometrie bez restartování integrace v robotovi v každé iteraci, musíme si uchovávat poslední odometrické hodnoty, označení $n-1$, a počítat rozdíly mezi nimi.
+V lokálních souřadnicích robota pak dostaneme 
+\begin{equation}
+    \begin{bmatrix}
+        \Delta x_l \\
+        \Delta y_l \\
+        \Delta \theta_l \\
+    \end{bmatrix} = 
+    \begin{bmatrix}
+        (x_{n} - x_{n-1})\cos(-\theta_{n}) + (y_{n} - y_{n-1})\sin(-\theta_{n}) \\
+         -(x_{n} - x_{n-1})\sin(-\theta_{n}) + (y_{n} - y_{n-1})\cos(-\theta_{n})\\
+        \theta_{n} - \theta_{n-1} \\
+    \end{bmatrix}
+\end{equation}
+Poté je potřeba převést delty do globálních souřadnic, což je v tomoto případě další rotace
+\begin{equation}
+    \begin{bmatrix}
+        \Delta x \\
+        \Delta y \\
+        \Delta \theta \\
+    \end{bmatrix} = 
+    \begin{bmatrix}
+        \Delta x_l \cos(\theta) + \Delta y_l \sin(\theta) \\
+         -\Delta x_l \sin(\theta) + \Delta y_l \cos(\theta)\\
+         \Delta \theta_l \\
+    \end{bmatrix}
+\end{equation}
+Nepřesnot odometrie je modelována maticí $\mathbf Q$, která má dimenzi stejnou jako stavový vektor, bude tedy z velké části nulová. Známe pouze odchylky pro jednotlivé proměnné, které jsou v našem případě $x$, $y$ a $\theta$, tedy
+
+\begin{equation}
+    \mathbf Q_c = \begin{bmatrix}
+        \sigma_{x} & 0 & 0 & 0 & ... & 0\\
+        0 & \sigma_{y} & 0 & 0 & ... & 0 \\
+        0 & 0 & \sigma_{\theta} & 0 & ... & 0\\
+        0 & 0 & 0 & 0 & ... & 0\\
+        \vdots & \vdots & \vdots & \vdots & \ddots & \vdots \\
+        0 & 0 & 0 & 0 & ... & 0\\
+    \end{bmatrix}
+\end{equation}
+to však neodpovídá transformaci, která je prováděna, tedy je potřeba použít Jacobian pro transformaci
+\begin{equation}
+    \mathbf J = \begin{bmatrix}
+        \frac{\partial x}{\partial x_l} & \frac{\partial x}{\partial y_l} & \frac{\partial x}{\partial \theta_l} & 0 & ... & 0\\
+        \frac{\partial y}{\partial x_l} & \frac{\partial y}{\partial y_l} & \frac{\partial y}{\partial \theta_l} & 0 & ... & 0\\
+        \frac{\partial \theta}{\partial x_l} & \frac{\partial \theta}{\partial y_l} & \frac{\partial \theta}{\partial \theta_l} & 0 & ... & 0\\
+        0 & 0 & 0 & 0 & ... & 0\\
+        \vdots & \vdots & \vdots & \vdots & \ddots & \vdots \\
+        0 & 0 & 0 & 0 & ... & 0\\
+    \end{bmatrix} = \begin{bmatrix}
+        \cos(\theta) & \sin(\theta) & 0 & 0 & ... & 0\\
+        -\sin(\theta) & \cos(\theta) & 0 & 0 & ... & 0\\
+        0 & 0 & 1 & 0 & ... & 0\\
+        0 & 0 & 0 & 0 & ... & 0\\
+        \vdots & \vdots & \vdots & \vdots & \ddots & \vdots \\
+        0 & 0 & 0 & 0 & ... & 0\\
+    \end{bmatrix}
+\end{equation}
+Výsledná matice $ \mathbf Q$ pro predikci je tedy
+\begin{equation}
+    \mathbf Q = \mathbf J \cdot \mathbf Q_c \cdot \mathbf J^T
+\end{equation}
+
+\subsubsection{Aktualizace Kalman filtru ve SLAMu}
+Pro krok aktualizace používáme detekce z kamery, které jsou statické, to znamená, že pouze sloupky. 
+Ty jsou na vstupu do SLAMu v lokálních souřadnicích robota, a mají tvar $(x_l, y_l, třída)$, kde třída je barva sloupku.
+Pro vytváření mapy a lokalizaci robota však poutřebujeme souřadnice v globálních souřadnicích, pro převod do globálních souřadnic použijeme
+\begin{equation}
+    \begin{bmatrix}
+        x_g \\
+        y_g \\
+    \end{bmatrix} = 
+    \begin{bmatrix}
+        x_r + x_l \cos(\theta) - y_l \sin(\theta) \\
+        y_r + x_l \sin(\theta) + y_l \cos(\theta) \\
+    \end{bmatrix}
+    \label{eq:local_to_global}
+\end{equation}
+kde $(x_r,y_r)$ je pozice robota, $(x_l,y_l)$ je pozice landmarku v lokálních souřadnicích a $\theta$ je úhel robota. \\
+V Kalman filtru však musíme transformovat souřadnice landmarků z lokálních do globálních souřadnic, to se provádí pomocí 
+\begin{equation}
+    \begin{bmatrix}
+        x_l \\
+        y_l \\
+    \end{bmatrix} =
+    \begin{bmatrix}
+        (x_g - x_r) \cos(\theta) + (y_g - y_r) \sin(\theta) \\
+        - (x_g - x_r) \sin(\theta) + (y_g - y_r) \cos(\theta) \\
+    \end{bmatrix}
+    \label{eq:global_to_local}
+\end{equation}
+
+Nejdůležitějším krokem v aktualizaci z landmarků z kamery je správná asociace landmarků z kamery a landmarků v mapě. 
+To provádíme pomocí eukleidovské vzdálenosti mezi landmarky z kamery a landmarky v mapě.
+Pokud jsou splněny podmínky v (\ref{eq:association}) pro daný landmark z kamery $L^c_i$ a landmark z mapy $L^m_j$, pak je asociace provedena podle vzorce
+\begin{equation}
+    min_{j} \|L^c_{i} - L^m_{j} \| = min_{k} \|L^c_{k} - L^m_{argmin_{j} \|L^c_{i} - L^m_{j} \|}\| < \epsilon
+    \label{eq:association} 
+\end{equation}
+kde $\epsilon$ je prahová hodnota pro vzdálenost mezi landmarky. 
+Tím, že jsou třídy reprezentovány jako čísla, tak je možné použít k rozlišení tříd landmarků opět (\ref{eq:association}) a to tím způsobem, 
+že třídy vynásobíme $10^6$ a tím přesuneme každou třídu do jiné roviny, avšak mezi landmarky stejné třídy budou vzdálenosti stejné.\\
+Measurement fukce $h$ pro asociované landmarky je pouze převod landmarků z globálních do lokálních souřadnic podle (\ref{eq:global_to_local}).
+\\
+Measurement noise je modelováno maticí $\mathbf R$, která má stejnou dimenzi jako měření, tedy $2k$, kde $k$ je počet asociovaných landmarků.
+Známe rozptyl pro jednotlivé landmarky v lokálních souřadnicích, tedy
+\begin{equation}
+    \mathbf R = \begin{bmatrix}
+        \sigma_{x} & 0 & 0 & 0 & ... & 0\\
+        0 & \sigma_{y} & 0 & 0 & ... & 0 \\
+        0 & 0 & \sigma_{x} & 0 & ... & 0\\
+        0 & 0 & 0 & \sigma_{y} & ... & 0\\
+        \vdots & \vdots & \vdots & \vdots & \ddots & \vdots \\
+        0 & 0 & 0 & 0 & ... & \sigma_{y}\\
+    \end{bmatrix}
+\end{equation}
+
+\subsubsection{Aktualizace mapy}
+I když nám krok aktualizace Kalman filtru aktualizuje polohy jednotlivých namapovaných landmarků a polohu robota, je potřeba ještě přidat nové landmarky do mapy.
+Jelikož nechceme kvůli stabilitě Kalman filtru mazat false detekce ze stavového vektoru a kovarianční matice, 
+je potřeba rozlišit landmarky, které jsou opravdové a které jsou false detekce.\\
+Z předchozího kroku máme asociované landmarky z kamery, pokud se nějaký landmark nepodařilo asociovat, tak je přidán do mapy uchazečů, 
+která se nepoužívá na aktualizaci polohy ani kalman filtru, detekce jsou zde uchovány po maximální dobu $t_{max}$ od své poslední detekce. 
+Pokud je zde landmark kratší dobu, je asociován s novýmy detekcemi v dalších iteracích a jehé je poloha aktualizována jako vážený průměr s váhou nové detekce $w_n = \frac{1}{1 + n}$, kde $n$ je počet detekcí daného landmarku.
+Pokud je daný landnark viděn více než $n_{min}$ krát, je přidán do stavového vektoru a je rozšířena kovarianční matice s inicializací na 
+\[
+\mathbf P_{ln} = \begin{bmatrix}
+    \sigma_{x} & 0 \\
+    0 & \sigma_{y} \\
+\end{bmatrix}
+\]
+je tedy ve tvaru 
+\[
+\mathbf P =
+\begin{bmatrix}
+    \mathbf P & \mathbf 0 \\
+    \mathbf 0 & \mathbf P_{ln} \\
+\end{bmatrix}
+\]
+a landmark je odstraněn z mapy uchazečů.
+Jelikož se tím změní dimenze stavového vektoru je potřeba přepočítat parametry a vstupy Unscented transformace, tedy $\kappa$ a váhy jednotlivých sigma bodů podle postupu v kapitole \ref{sec:ukf}.\\
 
 
 \subsection{Plánování}

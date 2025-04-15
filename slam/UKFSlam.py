@@ -182,13 +182,10 @@ class UKF_SLAM():
         return var_r, var_theta
     
     def update_from_detections(self, percep_data, time):
-        #self.P[:3, :3] += np.eye(3) * 0.05
         percep_data = percep_data[percep_data[:,2] != DataClasses.BALL]
-        #percep_data = percep_data[percep_data[:,0] > 0.2]
         if self.landmarks.shape[0] > 0:
             closest_cones, percep_data_mask = self.data_association(percep_data)
             percep_data_cls = percep_data[:,2]
-            #lidar_percep_data = self.detections_to_lidar(percep_data[percep_data_mask, :2])
             matched_detections = closest_cones[percep_data_mask]
             if matched_detections.shape[0] > 0:
                 def h(x):
@@ -196,22 +193,9 @@ class UKF_SLAM():
                     for sigma in x:
                         local_detections = global_to_local(sigma[3:].copy().reshape(-1,2), sigma[:3])[matched_detections]
                         out = np.vstack((out, local_detections.flatten()))
-                        #out = np.vstack((out, self.detections_to_lidar(local_detections)))
                     return out
                 R = np.diag(np.ones((matched_detections.shape[0]*2)) * config["detection_var"])
-                # Extract x, y from detections that were matched
-                
-                #matched_points = percep_data[percep_data_mask, :2]
 
-                ## We'll build R per (r, theta) for each point
-                #R_blocks = []
-#
-                #for px, py in matched_points:
-                #    var_r, var_theta = self.cartesian_to_polar_variance(px, py, var_x=config["detection_var"], var_y=config["detection_var"])  # adjust variances
-                #    R_blocks.append(np.diag([var_r, var_theta]))
-#
-                #R = block_diag(*R_blocks)
-                # Update the filter with the matched detections
                 self.update(percep_data[percep_data_mask, :2].flatten(), h, R)
             new_percep_data = local_to_global(percep_data[~percep_data_mask].copy(), self.x[:3])[:,:3]
             new_percep_data_cls = percep_data_cls[~percep_data_mask]
@@ -244,7 +228,7 @@ class UKF_SLAM():
         self.data_cls = np.hstack((self.data_cls, new_percep_data_cls))
         self.x = np.hstack((self.x, new_percep_data[:,:2].flatten()))
 
-        self.kappa = 3*self.x.shape[0] 
+        self.kappa = 3-self.x.shape[0] 
         self.P = block_diag(self.P, np.eye(new_percep_data.shape[0]*2)*0.5)
         self.landmarks = np.hstack((self.x[3:].reshape(-1,2), np.expand_dims(self.data_cls, axis=1)))   
 
