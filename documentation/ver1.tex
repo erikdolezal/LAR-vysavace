@@ -399,6 +399,153 @@ Jelikož se tím změní dimenze stavového vektoru je potřeba přepočítat pa
 
 
 \subsection{Plánování}
+Cílem plánovacího procesu v této úloze je generování trajektorií pro míč a následně pro pohyb samotného robota. Plánovací algoritmus využívá data získaná ze SLAMu, aktuální polohu míče a rovněž aktuální polohu a orientaci robota. Celý proces plánování lze rozdělit do čtyř hlavních oblastí, přičemž jednotlivé části a klíčové rozhodovací mechanismy jsou znázorněny na Obrázku \ref{fig:fig_plan_dig}. Výsledkem plánování je bod na trajektorii, který má robot navštívit jako první. V případě testovaní je plánovač také vrátit všechny vytvořené trajektorie. Tohoto režimu je využito v jednoduchém simulátoru. 
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{pictures/PlanningDiagram.pdf}
+	\caption{Základní rozhodovací diagram plánovacího algoritmu}
+	\label{fig:fig_plan_dig}
+\end{figure}
+
+\subsubsection{Identifikace a přeřazení objektů}
+První fází plánovacího procesu je identifikace a přeřazení objektů, vyznačená modře na Obrázku \ref{fig:fig_plan_dig}. V této části dochází nejprve k načtení všech objektů vstupujících do plánovače a jejich roztřídění podle zadaných vlastností.\\
+V případě, že jsou obě krajní kuželky brány detekovány, je následně vypočten její střed. Tento výpočet je proveden pomocí aritmetického průměru pozic krajních modrých tyčí branky. Výsledný bod je pak použit jako cílová pozice, do které se robot snaží dopravit míč. Pokud však brána není aktuálně viditelná a algoritmus nedisponuje informací o její pozici z předchozího běhu, fáze identifikace vrací pokyn k aktivnímu hledání brány.\\
+V závěrečném kroku této fáze se ověřuje, zda již nedošlo ke vstřelení gólu. Detekce gólu je založena na porovnání vzdáleností míče od bodu ležícího před a za bránou. Tyto body jsou určeny pomocí projekce vektoru $\mathbf{w}$, který směřuje od robota ke středu branky, na vektor $\mathrm{v}$, reprezentující brankovou čáru. Tento výpočet je vyjádřen rovnicí \ref{eq:eq_proj}:
+\begin{equation}
+	proj_v(\mathbf{w})=\frac{\mathbf{w}\cdot\mathbf{v}}{\mathbf{v}\cdot\mathbf{v}}\cdot\mathbf{v}
+	\label{eq:eq_proj}
+\end{equation}
+Na základě této projekce je následně spočten kolmo orientovaný vektor podle známého postupu, viz rovnice \ref{eq:eq_rej}:
+\begin{equation}
+	\mathbf{w_{per}}=\mathbf{w}-proj_v(\mathbf{w})
+	\label{eq:eq_rej}
+\end{equation}
+Tento kolmý vektor je dále upraven (posunut a případně rotován) tak, aby směřoval jednak před branku, jednak za ni. Na základě těchto dvou bodů se následně rozhoduje, zda se míč nachází za brankovou čárou, a tedy zda došlo ke vstřelení gólu.\\
+
+\subsubsection{Hlavní logika}
+Druhou částí plánovacího procesu je hlavní logika, která je na Obrázku \ref{fig:fig_plan_dig} vyznačena zeleně. Tato část rozhodovacího mechanismu na základě informací z fáze identifikace a aktuální polohy robota určuje, kde se bude nacházet další cílový bod, na který má robot směřovat.\\
+
+První možnou situací, která může nastat, je potřeba aktivního hledání brány a míče. V takovém případě je robot naváděn pomocí vektoru kolmého na svůj aktuální směrový vektor, což způsobí jeho rotaci na místě s cílem rozhlédnutí se.\\
+
+Pokud jsou současně detekovatelné jak brána, tak i míč, přechází systém do fáze plánování trajektorie míče (blíže popsáno v následující části). Po úspěšném naplánování této trajektorie se ověřuje, zda se robot již nachází v pozici vhodné k provedení kopu. Tato situace nastává tehdy, pokud robot splňuje dvě podmínky:
+\begin{itemize}
+	\item 
+	Robot se nachází v těsné, předem definované oblasti okolo bodu, ze kterého začíná akcelerace směrem k míči.
+	\item
+	Úhel mezi vektory spojujícími míč se středem brány a robota se středem brány je menší než stanovená prahová hodnota, čímž je zajištěna dostatečná zarovnanost směru kopu.
+\end{itemize}
+Pokud tyto podmínky nejsou splněny, je jako další cílový bod zvolen první bod z naplánované trajektorie, která má robota navést do pozice vhodné pro provedení kopu.\\
+Pokud jsou splněny všechny požadované podmínky, je jako cílový bod pro pohyb robota zvolen koncový bod škálovaného jednotkového vektoru, který je umístěn do pozice míče a směřuje ke středu brány. Délka vektoru je zvolena tak, aby vyvolala prudší akceleraci robota, a tím došlo k provedení kopu. 
+
+\subsubsection{Plánování trajektorie míče}
+Třetí částí plánovacího procesu je plánování trajektorie míče, které je na Obrázku \ref{fig:fig_plan_dig} znázorněno červeně. Tato fáze pracuje s polohou všech objektů ve scéně – tj. se všemi barevnými trubkami, aktuální polohou míče a polohou robota.\\
+Základní trajektorie je inicializována jako přímá spojnice mezi aktuální pozicí míče a středem brány. Následně je tato trasa ověřována z hlediska možných kolizí s překážkami, konkrétně se zelenými a červenými trubkami.\\
+Detekce kolizí je založena na výpočtu vzdálenosti bodu od úsečky. Úsečka je definována vektorem $\mathbf{v}$, zatímco bod, jehož vzdálenost se vyhodnocuje, je reprezentován vektorem $\mathbf{w}$, který vznikne spojením příslušného bodu s počátečním bodem úsečky.\\
+Nejprve je spočten parametr projekce bodu na přímku, která vznikne prodloužením dané úsečky, a to podle rovnice \ref{eq:eq_dis_line_proj}:
+\begin{equation}
+	t = \frac{\mathbf{w}\cdot\mathbf{v}}{\mathbf{v}\cdot\mathbf{v}}
+	\label{eq:eq_dis_line_proj}
+\end{equation}
+Parametr $t$ určuje relativní pozici projekce bodu vůči délce úsečky. Pokud $t$ nabývá hodnot mimo interval $[0, 1]$, znamená to, že projekce bodu leží mimo úsečku, a vzdálenost se proto porovnává s bližším krajním bodem této úsečky.\\
+Finální vzdálenost je následně spočtena pomocí Eukleidovské normy vektoru a porovnána s předem definovanou prahovou hodnotou, která slouží k detekci potenciální kolize.\\
+V případě detekce kolize vrací funkce pro kontrolu kolizí také konkrétní problémový bod. Kolem tohoto bodu je následně vytyčeno kruhové okolí s volitelným poloměrem, do něhož nesmí plánovaná trajektorie míče zasahovat. Pro řešení této situace byla zvolena metoda obejití kruhové oblasti pomocí tečen. Tyto tečny definují novou trasu, která vede míč kolem překážky.\\
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{pictures/tangent_test-eps-converted-to.pdf}
+	\caption{Znázornění trajektorie a pomocných vektorů metody obcházení pomocí tečen}
+	\label{fig:fig_tangent}
+\end{figure}
+
+Funkce pro generování alternativní trajektorie akceptuje tři body: počáteční bod, koncový bod a střed kolizního okolí, spolu s poloměrem tohoto okolí. Nejprve jsou vygenerovány směrové vektory tečen ke kružnici, a to pro každý bod kromě středu, čímž vzniknou celkem čtyři tečny. Tyto tečny se vypočítávají pomocí rotace normalizovaného vektoru $d$, který spojuje daný bod se středem kružnice, o úhel $\alpha$. Tento úhel spolu svírá právě vektor $d$ a poloměr kružnice.\\
+Úhel $\alpha$ je získán pomocí inverzní funkce kosinu, a to za předpokladu, že tečna je kolmá na poloměr, viz rovnice \ref{eq:eq_tan_angle}:
+
+\begin{equation}
+	\alpha = \arccos(\frac{r}{|d|})
+	\label{eq:eq_tan_angle}
+\end{equation} 
+
+Pro každý bod existují dvě tečny, a proto je vektor $d$ rotován jak o úhel $+\alpha$, tak o úhel $-\alpha$. Výsledné jednotkové vektory tečen jsou dány rovnicemi \ref{eq:eq_tan_rot}:
+
+\begin{equation}
+	\begin{aligned}
+		&\mathbf{d}_{\text{rot}} =
+		\begin{bmatrix}
+			\cos\alpha & -\sin\alpha \\
+			\sin\alpha & \cos\alpha
+		\end{bmatrix}
+		\cdot \mathbf{d} \\
+		&\mathbf{d}_{\text{-rot}} =
+		\begin{bmatrix}
+			\cos(-\alpha) & -\sin(-\alpha) \\
+			\sin(-\alpha) & \cos(-\alpha)
+		\end{bmatrix}
+		\cdot \mathbf{d} \\
+	\end{aligned}
+	\label{eq:eq_tan_rot}
+\end{equation}
+
+Tyto jednotkové vektory jsou dále posunuty a škálovány tak, aby ukazovaly na konkrétní body na kružnici. Viz modré vektory na Obrázku \ref{fig:fig_tangent}.
+
+Následně jsou vytvořeny čtyři možné kombinace vzniklých tečen a hledají se jejich průsečíky pomocí soustavy lineárních rovnic, viz rovnice \ref{eq:eq_inter}. Zde $\mathbf{v}_1$ a $\mathbf{v}_2$ představují směrové vektory obou tečen a $\mathbf{A}_1$, $\mathbf{B}_1$ jejich počáteční body:
+
+\begin{equation}
+	\begin{bmatrix}
+		\mathbf{v}_1 & -\mathbf{v}_2
+	\end{bmatrix}
+	\begin{bmatrix}
+		t \\
+		s
+	\end{bmatrix}
+	=
+	\mathbf{B}_1 - \mathbf{A}_1
+	\label{eq:eq_inter}
+\end{equation}
+
+Polohu průsečíku $\mathbf{P}_{\text{inter}}$ lze poté spočítat dle rovnice \ref{eq:eq_line_inter}:
+
+\begin{equation}
+	\mathbf{P}_{\text{inter}} = \mathbf{A}_1 + t \cdot \mathbf{v}_1
+	\label{eq:eq_line_inter}
+\end{equation}
+
+Pro výběr nejoptimálnější trajektorie je následně ze všech možností zvolena ta, která má nejmenší celkovou délku. Výsledná trajektorie je tvořena lomenou čarou procházející body počátku $\mathbf{A}_1$, průsečíkem tečen $\mathbf{P}_{\text{inter}_i}$ a koncovým bodem $\mathbf{B}_1$. Tato optimální trajektorie je v obrázku \ref{fig:fig_tangent} znázorněna červeně.
+
+\subsubsection{Plánování trajektorie robota}
+
+Poslední, čtvrtou částí plánovacího procesu je generování trajektorie pro pohyb robota. I v tomto případě je využita metoda vyhýbání překážkám pomocí tečen, jak byla popsána v předchozí kapitole. Zásadní rozdíl však spočívá v tom, že cílovým bodem zde není střed brány, ale tzv. shoot point – bod nacházející se za míčem na přímce spojující míč se středem brány.\\
+
+Při plánování trajektorie k tomuto bodu je navíc do systému detekce kolizí zahrnuta i poloha míče, čímž se zamezí jeho nechtěnému kontaktu při přípravné fázi pohybu. Tato kontrola kolize s míčem je po dosažení cílového bodu deaktivována, aby bylo možné provést samotný kop.
+
+\subsubsection{Simulátor}
+Pro potřeby ladění plánovacího algoritmu byl implementován jednoduchý simulátor, který automaticky generuje náhodná rozložení trubek a polohu robota dle pravidel úlohy 3. Simulátor byl vytvořen v prostředí Pygame, které umožňuje snadnou vizualizaci a zároveň ovládání pomocí uživatelských vstupů z klávesnice. V aktuální verzi simulace je dostupný pouze manuální režim řízení, tedy ovládání robota pomocí klávesnice – konkrétně pomocí kláves W, S, A a D.\\
+Pohyb míče je modelován pomocí zjednodušeného fyzikálního modelu zahrnujícího tření, jehož parametr byl laděn tak, aby simulované chování odpovídalo co nejvíce reálnému pohybu molitanového míče. Vzhledem k nelineárnímu a nepředvídatelnému chování reálného míče je však simulace míče vnímána spíše jen jako orientační.\\
+Náhled simulátoru je zobrazen na obrázku \ref{fig:fig_sim_a}. Všechny objekty v simulaci jsou zobrazeny ve svých reálných rozměrech, přičemž hrací plocha o velikosti 5 × 5 metrů je přepočtena na velikost okna 1000 × 1000 pixelů. Robot je zobrazen červenou barvou, přičemž je u něj vykreslen směrový vektor a zorné pole (FOV – Field of View) pomocí černých čar. Červené vodorovné čáry vymezují oblast, ve které se nesmí nacházet žádné objekty s výjimkou modrých trubek.\\
+Modrá čára znázorňuje plánovanou trajektorii pro střelbu, zatímco červená lomená čára reprezentuje trajektorii pohybu robota. Simulace běží na frekvenci 100 FPS (Frames per Second) a lze ji ukončit buď vstřelením gólu, nebo stiskem klávesy ESC.
+
+\begin{figure}
+	\centering
+	\begin{subfigure}{0.45\linewidth}
+			\includegraphics[width=\textwidth]{pictures/sim_002.png}
+		\caption{Náhled jednoduchého simulátoru s nepřímou trajektorií}
+		\label{fig:fig_sim_a}
+	\end{subfigure}
+	\begin{subfigure}{0.45\linewidth}
+		\includegraphics[width=\textwidth]{pictures/sim_001.png}
+		\caption{Náhled jednoduchého simulátoru s přímou trajektorií}
+		\label{fig:fig_sim_b}
+	\end{subfigure}
+	\caption{Náhled jednoduchého simulátoru pro úlohu 3}
+\end{figure} 
+
+\subsubsection{Testování}
+Při testování plánovače byl zpočátku primárně využíván simulátor, ve kterém byla laděna logika programu. Při přechodu k testování na reálném robotu se však objevily časté problémy spojené s chováním míče. Vlivem jeho nepřesného tvaru a nerovností hracího povrchu dochází k výrazným odchylkám od naplánované trajektorie míče. Díky flexibilnímu chování plánovače je však možné tyto nepředvídatelné situace řešit přeplánováním trajektorie míče, čímž dochází ke korekci jeho pohybu. Pokud míč nedorazí do brány nebo se příliš odchýlí od požadované trajektorie, a zároveň nedojde ke kolizi s žádným z objektů, plánovač automaticky vygeneruje novou trajektorii. Tento proces se opakuje, dokud není dosaženo vstřelení gólu.\\
+Toto chování bylo plně odladěno pro podmínky uvedené v zadání 2, kde se nevyskytují problémy spojené s kolizemi. Při testování na konfiguracích ze zadání 3 se však objevovaly potíže spojené s častou ztrátou viditelnosti objektů. To vedlo k častým změnám v plánované trajektorii, což mělo za následek prudké a dynamické pohyby robota. Tyto pohyby dále zvyšovaly nepřesnosti v měření a ztěžovaly stabilní navigaci. Možným řešením tohoto problému by bylo implementovat pokročilejší mechanismus pro dohledávání ztracených objektů.\\
+Dalším problémem, který brání plynulé implementaci úlohy 3, je časté srážení míče s překážkovými trubkami při snaze je obstřelit. Tento problém je důsledkem již zmíněného chování míče. Možným řešením by bylo zavedení přesnějšího a přísnějšího polohování robota při střelbě. Tento přístup však naráží na komplikaci při určování přesných poloh, neboť při pouhém zmenšení tolerančních okolí pro jednotlivé navštívené body může docházet k zacyklení, kdy robot není schopen dosáhnout těchto bodů, kvůli časté malá změně jich polohy.\\
+Plánovač není zcela dokonalý a v konfiguraci hracího pole ze zadání 3 se ukazuje jako velmi nespolehlivý v mnoha případech. Při použití konfigurace hracího pole ze zadání 2 však mnoho těchto problémů vymizí, což činí plánovač použitelným.
+
+
 \subsection{Pohyb}
 \section{Závěr}
 
