@@ -1,5 +1,14 @@
-from enum import IntEnum
+from configs.value_enums import DataClasses
 
+
+slam_config = {
+    "pairing_distance": 0.6,
+    "detection_var": 0.2,
+    "position_var": 0.02,
+    "rotation_var": 0.001,
+    "min_occurences": 2,
+    "detection_timeout": 1,
+}
 
 class PlanningParm():
     """
@@ -27,26 +36,21 @@ class PlanningParm():
     GOAL_CHECK = 0.1
     ROBOT_DIST_MIN = 0.48
 
+vision_config = {
+    "show": False,
+    "cls_to_col": {DataClasses.GREEN: (0, 255, 0), 
+                   DataClasses.RED: (0, 0, 255), 
+                   DataClasses.BLUE: (255, 0, 0), 
+                   DataClasses.BALL: (0, 255, 255)},
+    "class_map": {0: DataClasses.BALL, 
+                   1: DataClasses.RED, 
+                   2: DataClasses.BLUE, 
+                   3: DataClasses.GREEN},
+}
 
-class DataClasses(IntEnum):
-    """
-    Enum for data classes.
-    """
-    GREEN = 0
-    RED = 1
-    BLUE = 2
-    BALL = 3
-
-
-class ErrorCodes(IntEnum):
-    """
-    Enum for data classed.
-    """
-    OK_ERR = 0
-    MORE_BLUE_ERR = 1
-    NO_BALL_ERR = 2
-    BALL_STUCK_ERR = 3
-    NO_SHOOT_ERR = 4
-    NO_ROBOT_ERR = 5
-    ZERO_BLUE_ERR = 6
-    IS_GOAL_ERR = 7
+velocity_control_config = {
+    "max_acc": 0.8,  # m/s^2
+    "max_speed": 0.8,  # m/s
+    "max_ang_speed": 0.8,  # rad/s
+    "ang_p": 1.5,
+}
