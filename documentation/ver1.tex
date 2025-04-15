@@ -50,7 +50,7 @@
 
 \section{Zadání}
 Úkolem práce je napsat řešení úkolu, kde má Roomba TurtleBot kopnout míč do branky označené modrými pilíři.
-Rozložení problému je vidět na obrázku \eqref{fig:map}.
+Rozložení problému je vidět na obrázku \ref{fig:map}.
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.4\textwidth]{pictures/map.png}
@@ -59,13 +59,13 @@ Rozložení problému je vidět na obrázku \eqref{fig:map}.
 \end{figure}
 
 \subsection{Úloha 2}
-Robot má za úkol najít míč a ten kopnout mezi modré pilíře, které jsou od sebe vzdálené minimálně $700$ mm. Robot musí zastavit $20$ cm před brankou. Míč je vzdálen od osy branky maximálně $c = 150$ mm.
+Robot má za úkol najít míč a ten kopnout mezi modré pilíře, které jsou od sebe vzdálené minimálně $700$ mm. Robot musí zastavit minimálně $20$ cm před brankou. Míč je vzdálen od osy branky maximálně $c = 150$ mm.
 Míč se bude nacházet v minimální vzdálenosti $a = 500$ mm od brány a bude nejdále $b = 1,5$ m. TurtleBot bude na začátku umístěn od středu míče ve vzdálenosti $d = 0,7$ m až $e = 2,5$ m.
 Za bránou může být neomezený počet pilířů.
 
 \subsection{Úloha 3}
 Od Úlohy 2 se Úloha 3 liší tím, že míč může být vzdálen od osy branky $c = 300$ mm. Vzdálenost míče od branky může být až $b = 2$ m.
-Největším rozdílem je možnost výskutu až dvou překážek před čarou. Ty jsou umístěny tak, že pokaždé existuje cesta od míe k brance o minimální šířce $600$ mm.
+Největším rozdílem je možnost výskytu až dvou překážek před čarou. Ty jsou umístěny tak, že pokaždé existuje cesta od míe k brance o minimální šířce $600$ mm.
 
 \section{Řešení}
 Naše řešení jsme rozdělili na tři hlavní části. První část je zpracování obrazu, druhá část je SLAM a třetí část je plánování a pohyb robota. Tyto části běží v hlavní smyčce programu. 
@@ -77,7 +77,7 @@ Při řešení problému bylo využíváno nástroje GitHub Copilot pro jednoduc
 Detekci objektů děláme pomocí konvoluční neuronové sítě YOLO \cite{YOLO} (You Only Look Once), kterou poté konvertujeme do ONNX \cite{ONNX}. Důvodem k použití CNN bylo, aby náše řešení dobře zvládalo změny v osvětlení a jiné rušivé vstupy jako například špinavý žlutý míč. Segementace obrazu pomocí barev, by mohla být v tomto ohledu nespolehlivá. Jako vstup používáme obraz z Intel RealSense D435 kamery.
 \subsubsection{Trénování CNN}
 YOLO model jsme museli nejdříve natrénovat na rozponávání pilířů a míče. Učinili jsme tak na více než 670 obrázcích,
-které jsme pořídili pomocí kamery na robotovi. Dalších 120 jsme použili pro validaci. Obrázky jsme ručně anotovali pomocí programu Label Studio. Jak vypadá anotace je vidět v obrázku \eqref{fig:label_studio}.
+které jsme pořídili pomocí kamery na robotovi. Dalších 120 jsme použili pro validaci. Obrázky jsme ručně anotovali pomocí programu Label Studio. Jak vypadá anotace je vidět v obrázku \ref{fig:label_studio}.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{pictures/label_studio.png}
@@ -106,7 +106,7 @@ I pro model 11n jsme zkoušeli různé rozlišení. Rozlišení 160p a 240p bylo
     \label{fig:confusion_matrix_240p}
 \end{figure}
 
-Model 160p (Obrázek \eqref{fig:confusion_matrix_160p}) je v některých podmínkách znatelně horší oproti 240p (Obrázek \eqref{fig:confusion_matrix_240p}) v rozpoznávání modrých pilířů.
+Model 160p (Obrázek \ref{fig:confusion_matrix_160p}) je v některých podmínkách znatelně horší oproti 240p (Obrázek \ref{fig:confusion_matrix_240p}) v rozpoznávání modrých pilířů.
 To může způsobit velké problémy, protože modré pilíře tvoří branku. Nejčastějším objektem, který byl zaměněn s pozadím, je zelený pilíř, který, když je detekován navíc, minimálně překaží úspěšnému vyřešení problému.
 
 \subsubsection{Rozpoznávání obrazu}
@@ -134,7 +134,7 @@ To se ukázalo jako velice časově náročné. Proto jsme se rozhodli, že bude
     \caption{Obrázek z hloubkové kamery s rozpoznanými objekty}
     \label{fig:depth_detect}
 \end{figure}
-Hloubková kamera vrací pouze pixely s hloubkou. Aby byla poloha objektů spočítána co nejrychleji, pracujeme pouze s pixely z hloubkové kamery (Obrázek \eqref{fig:depth_detect}), které jsou detekovány jako objekty z RGB kamery (Obrázek \eqref{fig:detect}).
+Hloubková kamera vrací pouze pixely s hloubkou. Aby byla poloha objektů spočítána co nejrychleji, pracujeme pouze s pixely z hloubkové kamery (Obrázek \ref{fig:depth_detect}), které jsou detekovány jako objekty z RGB kamery (Obrázek \ref{fig:detect}).
 Nejdříve vytvoříme transformační matici, která převadí mezi souřadnicemi kamery a hloubkové kamery podle 
 \begin{equation}
     \mathbf T = \mathbf{K_{depth}} \cdot \mathbf{K_{rgb}}^-1 + \begin{bmatrix}
