@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 24.1) (preloaded format=pdflatex 2025.4.14)  15 APR 2025 12:54
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 24.1) (preloaded format=pdflatex 2025.4.14)  15 APR 2025 12:55
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -840,7 +840,7 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-3.35403pt}.
 
 [9]
-Underfull \hbox (badness 10000) in paragraph at lines 390--393
+Underfull \hbox (badness 10000) in paragraph at lines 391--394
 
  []
 
@@ -850,7 +850,7 @@ pdfTeX warning: pdflatex (file ./pictures/PlanningDiagram.pdf): PDF inclusion: f
 <pictures/PlanningDiagram.pdf, id=255, 446.62859pt x 604.17719pt>
 File: pictures/PlanningDiagram.pdf Graphic file (type pdf)
 <use pictures/PlanningDiagram.pdf>
-Package pdftex.def Info: pictures/PlanningDiagram.pdf  used on input line 400.
+Package pdftex.def Info: pictures/PlanningDiagram.pdf  used on input line 401.
 (pdftex.def)             Requested size: 483.69687pt x 654.31778pt.
 
 Package fancyhdr Warning: \headheight is too small (12.0pt): 
@@ -868,21 +868,21 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-3.35403pt}.
 
 [11 <./pictures/PlanningDiagram.pdf>]
-Underfull \hbox (badness 10000) in paragraph at lines 417--419
+Underfull \hbox (badness 10000) in paragraph at lines 418--420
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 421--422
+Underfull \hbox (badness 10000) in paragraph at lines 422--423
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 423--424
+Underfull \hbox (badness 10000) in paragraph at lines 424--425
 
  []
 
-LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 428.
+LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 429.
 (C:\Users\bouda\AppData\Local\Programs\MiKTeX\tex/latex/lm\ts1lmr.fd
 File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
@@ -894,14 +894,14 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-3.35403pt}.
 
 [12{C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/lm-ts1.enc}]
-Underfull \hbox (badness 10000) in paragraph at lines 443--447
+Underfull \hbox (badness 10000) in paragraph at lines 444--448
 
  []
 
 <pictures/tangent_test-eps-converted-to.pdf, id=293, 1036.87375pt x 548.0475pt>
 File: pictures/tangent_test-eps-converted-to.pdf Graphic file (type pdf)
 <use pictures/tangent_test-eps-converted-to.pdf>
-Package pdftex.def Info: pictures/tangent_test-eps-converted-to.pdf  used on input line 450.
+Package pdftex.def Info: pictures/tangent_test-eps-converted-to.pdf  used on input line 451.
 (pdftex.def)             Requested size: 483.69687pt x 255.66734pt.
 
 Package fancyhdr Warning: \headheight is too small (12.0pt): 
@@ -911,7 +911,7 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-3.35403pt}.
 
 [13 <./pictures/tangent_test-eps-converted-to.pdf>]
-Underfull \hbox (badness 10000) in paragraph at lines 511--512
+Underfull \hbox (badness 10000) in paragraph at lines 512--513
 
  []
 
@@ -926,18 +926,13 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 <pictures/sim_002.png, id=320, 979.66pt x 979.66pt>
 File: pictures/sim_002.png Graphic file (type png)
 <use pictures/sim_002.png>
-Package pdftex.def Info: pictures/sim_002.png  used on input line 524.
+Package pdftex.def Info: pictures/sim_002.png  used on input line 525.
 (pdftex.def)             Requested size: 217.66211pt x 217.64853pt.
 <pictures/sim_001.png, id=321, 979.66pt x 979.66pt>
 File: pictures/sim_001.png Graphic file (type png)
 <use pictures/sim_001.png>
-Package pdftex.def Info: pictures/sim_001.png  used on input line 529.
+Package pdftex.def Info: pictures/sim_001.png  used on input line 530.
 (pdftex.def)             Requested size: 217.66211pt x 217.64853pt.
-<pictures/rozpoznane.jpg, id=323, 1156.32pt x 899.36pt>
-File: pictures/rozpoznane.jpg Graphic file (type jpg)
-<use pictures/rozpoznane.jpg>
-Package pdftex.def Info: pictures/rozpoznane.jpg  used on input line 544.
-(pdftex.def)             Requested size: 338.58632pt x 263.33276pt.
 
 
 Package fancyhdr Warning: \headheight is too small (12.0pt): 
@@ -947,16 +942,11 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-3.35403pt}.
 
 [15 <./pictures/sim_002.png> <./pictures/sim_001.png>]
-<pictures/map3.png, id=334, 385.44pt x 385.44pt>
-File: pictures/map3.png Graphic file (type png)
-<use pictures/map3.png>
-Package pdftex.def Info: pictures/map3.png  used on input line 558.
-(pdftex.def)             Requested size: 241.84843pt x 241.8463pt.
-<pictures/slam3ok.png, id=335, 722.7pt x 619.3539pt>
-File: pictures/slam3ok.png Graphic file (type png)
-<use pictures/slam3ok.png>
-Package pdftex.def Info: pictures/slam3ok.png  used on input line 564.
-(pdftex.def)             Requested size: 338.58632pt x 290.17021pt.
+<pictures/rozpoznane.jpg, id=335, 1156.32pt x 899.36pt>
+File: pictures/rozpoznane.jpg Graphic file (type jpg)
+<use pictures/rozpoznane.jpg>
+Package pdftex.def Info: pictures/rozpoznane.jpg  used on input line 584.
+(pdftex.def)             Requested size: 338.58632pt x 263.33276pt.
 
 
 Package fancyhdr Warning: \headheight is too small (12.0pt): 
@@ -965,8 +955,41 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-3.35403pt}.
 
-[16 <./pictures/rozpoznane.jpg> <./pictures/map3.png (PNG copy)>]
-Underfull \hbox (badness 10000) in paragraph at lines 570--580
+[16 <./pictures/rozpoznane.jpg>]
+Underfull \hbox (badness 10000) in paragraph at lines 611--614
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 615--616
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 617--618
+
+ []
+
+<pictures/slam3ok.png, id=346, 722.7pt x 619.3539pt>
+File: pictures/slam3ok.png Graphic file (type png)
+<use pictures/slam3ok.png>
+Package pdftex.def Info: pictures/slam3ok.png  used on input line 621.
+(pdftex.def)             Requested size: 338.58632pt x 290.17021pt.
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 15.35403pt, for example:
+(fancyhdr)                \setlength{\headheight}{15.35403pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-3.35403pt}.
+
+[17]
+<pictures/map3.png, id=353, 385.44pt x 385.44pt>
+File: pictures/map3.png Graphic file (type png)
+<use pictures/map3.png>
+Package pdftex.def Info: pictures/map3.png  used on input line 629.
+(pdftex.def)             Requested size: 241.84843pt x 241.8463pt.
+
+Underfull \hbox (badness 10000) in paragraph at lines 635--645
 
  []
 
@@ -977,7 +1000,7 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-3.35403pt}.
 
-[17 <./pictures/slam3ok.png>]
+[18 <./pictures/slam3ok.png> <./pictures/map3.png (PNG copy)>]
 
 Package fancyhdr Warning: \headheight is too small (12.0pt): 
 (fancyhdr)                Make it at least 14.49998pt, for example:
@@ -985,7 +1008,15 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
 
-[18] (ver1.aux)
+[19]
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
+
+[20] (ver1.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-04>
@@ -994,17 +1025,17 @@ Package rerunfilecheck Info: File `ver1.out' has not changed.
 (rerunfilecheck)             Checksum: 217D2987AB3087B19FAC2335C50EAD4B;3848.
  ) 
 Here is how much of TeX's memory you used:
- 25008 strings out of 474486
- 467818 string characters out of 5743755
+ 25018 strings out of 474486
+ 467954 string characters out of 5743755
  1956542 words of memory out of 5000000
- 46739 multiletter control sequences out of 15000+600000
+ 46742 multiletter control sequences out of 15000+600000
  640391 words of font info for 95 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  99i,13n,101p,908b,647s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmbsy10.pfb><C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmbx12.pfb><C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmbx8.pfb><C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmex10.pfb><C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmmi12.pfb><C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmmi6.pfb><C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmmi8.pfb><C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmmib10.pfb><C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr10.pfb><C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr12.pfb><C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr17.pfb><C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr8.pfb><C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmri12.pfb><C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmro12.pfb><C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmss8.pfb><C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmsy10.pfb><C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmsy8.pfb><C:/Users/bouda/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmtt12.pfb>
-Output written on ver1.pdf (18 pages, 4132311 bytes).
+Output written on ver1.pdf (20 pages, 4141514 bytes).
 PDF statistics:
- 464 PDF objects out of 1000 (max. 8388607)
- 89 named destinations out of 1000 (max. 500000)
+ 483 PDF objects out of 1000 (max. 8388607)
+ 96 named destinations out of 1000 (max. 500000)
  294 words of extra memory for PDF output out of 10000 (max. 10000000)
 
