@@ -1,5 +1,5 @@
-from slam.UKFSlam import UKF_SLAM, DataClasses
-from slam.geometry import local_to_global, global_to_local
+from algorithms.UKFSlam import UKF_SLAM, DataClasses
+from algorithms.geometry import local_to_global, global_to_local
 from robolab_turtlebot import Turtlebot
 from multiprocessing import Event
 from algorithms.camera import OnnxCamera
