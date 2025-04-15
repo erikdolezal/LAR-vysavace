@@ -20,7 +20,7 @@ cls_to_col = {0: (0, 255, 0), 1: (0, 0, 255), 2: (255, 0, 0), 3: (0, 255, 255)}
 def softmax(x):
     """
     Compute the softmax of a given input array.
-    Parameters:
+    Args:
         x (numpy.ndarray): Input array or vector for which to compute the softmax.
     Returns:
         numpy.ndarray: An array of the same shape as the input, where each
@@ -35,7 +35,7 @@ def xywh2xyxy(x):
     """
     Convert bounding box format from (x_center, y_center, width, height) to
     (x_min, y_min, x_max, y_max).
-    Parameters:
+    Args:
         x (numpy.ndarray): A 2D array where each row represents a bounding box
                            in the format [x_center, y_center, width, height].
     Returns:

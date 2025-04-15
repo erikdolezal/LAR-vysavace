@@ -2,6 +2,20 @@ from enum import IntEnum
 
 
 class PlanningParm():
+    """
+    PlanningParm is a configuration class.
+    Attributes:
+        CLEARANCE (float): Minimum clearance distance required around obstacles.
+        SHOOT_SCALING (float): Scaling factor for shooting calculations.
+        SHOOT_STEPBACK (float): Distance to step back before kicking the ball.
+        BALL_PROXIMITY (float): Proximity threshold to the ball.
+        HADING_CHECK (float): Heading check threshold in radians.
+        ROBOT_TURN_RADIUS (float): Turning radius of the robot.
+        GOAL_POX (float): Proximity threshold to the goal position.
+        SHOOT_ALIGNMENT (float): Alignment threshold for shooting.
+        GOAL_CHECK (float): Position of checks points for goal. Behind and in front of the goal line.
+        ROBOT_DIST_MIN (float): How close to the goal line, can the robot get to.
+    """
     CLEARANCE = 0.5
     SHOOT_SCALING = 2
     SHOOT_STEPBACK = 0.8
@@ -16,7 +30,7 @@ class PlanningParm():
 
 class DataClasses(IntEnum):
     """
-    Enum for data classes
+    Enum for data classes.
     """
     GREEN = 0
     RED = 1
@@ -25,6 +39,9 @@ class DataClasses(IntEnum):
 
 
 class ErrorCodes(IntEnum):
+    """
+    Enum for data classed.
+    """
     OK_ERR = 0
     MORE_BLUE_ERR = 1
     NO_BALL_ERR = 2

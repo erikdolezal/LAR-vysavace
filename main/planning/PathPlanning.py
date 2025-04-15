@@ -18,6 +18,12 @@ class Planning:
     def create_path(self, object_pos, robot_pos, test_alg=False):
         """
         Returns next point in a path or robot path and ball path if test_alg is true
+        Args:
+            object_pos (list): List of objects positions and classes
+            robot_pos (list): Position of the robot
+            test_alg (bool): If True, returns all paths for testing
+        Returns:
+            next_point (np.ndarray): Next point in the path for the robot to follow
         """
 
         next_point = None
@@ -79,7 +85,7 @@ class Planning:
 
     def clear_objects(self):
         """
-        Clears all objectss
+        Clears all objectss.
         """
 
         for type_ in DataClasses:
@@ -87,7 +93,12 @@ class Planning:
 
     def same_hading(self, vector, angle):
         """
-        Checks if the robot is in the same direction as the vector
+        Checks if the robot is in the same direction as the vector.
+        Args:
+            vector (np.ndarray): Vector to check
+            angle (float): Angle of the robot
+        Returns:
+            bool: True if the robot is in the same direction as the vector, False otherwise
         """
 
         aplha = np.arctan2(vector[1], vector[0])
@@ -97,7 +108,13 @@ class Planning:
 
     def turn_robot_around(self, center, angle, distance):
         """
-        Turns the robot around by -90 degrees
+        Turns the robot around by -90 degrees.
+        Args:
+            center (np.ndarray): Center of the robot
+            angle (float): Angle of the robot
+            distance (float): Scale of turning vector
+        Returns:
+            np.ndarray: New position to turn to.
         """
 
         vector = np.array([distance * np.cos(angle), distance * np.sin(angle)])
@@ -108,6 +125,10 @@ class Planning:
     def identify_objects(self, objects_in):
         """
         Indenfify objects and add them to the objects list
+        Args:
+            objects_in (np.ndarray): List of objects positions and classes
+        Returns:
+            ErrorCodes: Error code for the outcome of the function
         """
 
         center_sum = np.array([0, 0])
@@ -153,6 +174,8 @@ class Planning:
     def solve_more_blue_tubes(self):
         """
         Solves the problem of more than 2 blue tubes by returning the first blue tube or the goal target if it exists
+        Retuns:
+            np.ndarray: Position of the blue tube or goal target
         """
 
         blue_tubes = self.objects[DataClasses.BLUE]
@@ -162,7 +185,9 @@ class Planning:
 
     def is_goal(self):
         """
-        Checks if the ball is in the goal
+        Checks if the ball is in the goal.
+        Returns:
+            bool: True if the ball is in the goal, False otherwise
         """
 
         if self.ball_pos is not None and self.goal_targer is not None:
@@ -184,7 +209,12 @@ class Planning:
 
     def generate_trajectory(self, start, target):
         """
-        Gernerates a path from start to target point and avoids one obstacle point
+        Gernerates a path from start to target point and avoids one obstacle point.
+        Args:
+            start (np.ndarray): Start point
+            target (np.ndarray): Target point
+        Returns:
+            np.ndarray: Path points
         """
 
         path_points = None
@@ -200,6 +230,12 @@ class Planning:
     def generate_way_around(self, start, end, problem):
         """
         Generates a path around the problem point by finding the shortest path through the tangent points.
+        Args:
+            start (np.ndarray): Start point
+            end (np.ndarray): End point
+            problem (np.ndarray): Problem point
+        Returns:
+            np.ndarray: Path points for the alternative path
         """
 
         if np.linalg.norm(start - problem) < PlanningParm.CLEARANCE or np.linalg.norm(end - problem) < PlanningParm.CLEARANCE:
@@ -225,6 +261,8 @@ class Planning:
     def generate_shoot_path(self):
         """
         Generates a shooting point for the robot and a path to the ball
+        Returns:
+            np.ndarray: Shooting point and overshoot point
         """
 
         ball_point = self.ball_path[0]
@@ -239,6 +277,10 @@ class Planning:
     def check_colisions(self, path):
         """
         Checks if there are any collisions with the path between the start and end points and returns the collision point if there is one.
+        Args:
+            path (np.ndarray): Path points
+        Returns:
+            np.ndarray: Collision point if there is one, else None
         """
 
         colision_point = None
@@ -258,6 +300,11 @@ class Planning:
     def check_colision_from_class(self, path, data_class):
         """
         Checks for colision with specified class of objects and returns the colision point if there is one.
+        Args:
+            path (np.ndarray): Path points
+            data_class (DataClasses): Class of objects
+        Returns:
+            np.ndarray: Collision point if there is one, else None
         """
 
         colision = None
@@ -272,6 +319,12 @@ class Planning:
     def point_distance_from_line(self, P, A, B):
         """
         Calculates the perpendicular distance of a point from the line defined by points A and B.
+        Args:
+            P (np.ndarray): Point to check
+            A (np.ndarray): Start point of the line
+            B (np.ndarray): End point of the line
+        Returns:
+            float: Distance from the point to the line
         """
 
         AB = B - A
@@ -296,6 +349,13 @@ class Planning:
     def find_tangent_points(self, start, center, radius):
         """
         Finds two tangent points from start point to circle.
+        Args:
+            start (np.ndarray): Start point
+            center (np.ndarray): Center of the object
+            radius (float): Radius of the object perimeter
+        Returns:
+            np.ndarray: First tangent point
+            np.ndarray: Second tangent point
         """
 
         d = start - center
@@ -313,6 +373,11 @@ class Planning:
     def mat_rot(self, angle, vector):
         """
         Returns a rotation matrix for a given angle
+        Args:
+            angle (float): Angle in radians
+            vector (np.ndarray): Vector to rotate
+        Returns:
+            np.ndarray: Rotated vector
         """
 
         mat = np.array([[np.cos(angle), -np.sin(angle)], [np.sin(angle), np.cos(angle)]])
@@ -322,6 +387,8 @@ class Planning:
     def path_length(self, points):
         """
         Calculates the total length of a line.
+        Args:
+            float: Length of the line.
         """
 
         return np.sum(np.linalg.norm(np.diff(points, axis=0), axis=1))

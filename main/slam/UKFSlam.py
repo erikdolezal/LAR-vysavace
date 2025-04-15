@@ -28,7 +28,39 @@ config = {
 
 class UKF_SLAM:
     """
-    Unscented Kalman Filter for estimating speed of the car
+    Unscented Kalman Filter for estimating speed of the robot.
+    Attributes:
+        x (np.ndarray): State vector of the robot and landmarks.
+        P (np.ndarray): Covariance matrix of the state.
+        data_cls (np.ndarray): Array storing the classes of detected landmarks.
+        landmarks (np.ndarray): Array of landmarks with their positions and classes.
+        alpha (float): Scaling parameter for sigma points.
+        beta (float): Parameter for incorporating prior knowledge of the distribution.
+        kappa (float): Secondary scaling parameter for sigma points.
+        n (int): Dimensionality of the state vector.
+        lambda_ (float): Composite scaling parameter for sigma points.
+        Wm (np.ndarray): Weights for the mean of sigma points.
+        Wc (np.ndarray): Weights for the covariance of sigma points.
+        landmark_contestants (np.ndarray): Temporary storage for potential landmarks.
+    Methods:
+        __init__(x_size, alpha, beta, kappa):
+            Initializes the UKF_SLAM object with state size and filter parameters.
+        sigma_points(x, P):
+            Computes sigma points for the given state mean and covariance.
+        f(x, u):
+            State transition function for predicting the next state.
+        predict(u, old_u):
+            Performs the prediction step of the UKF using odometry data.
+        update(z, h, R):
+            Performs the update step of the UKF using camera detections.
+        detections_to_lidar(detections):
+            Converts Cartesian detections to polar lidar measurements.
+        data_association(percep_data):
+            Associates perceived data with existing landmarks.
+        cartesian_to_polar_variance(x, y, var_x, var_y):
+            Converts Cartesian variances to polar variances.
+        update_from_detections(percep_data, time):
+            Updates the state and landmarks based on new detections.
     """
 
     def __init__(self, x_size: int, alpha: float, beta: float, kappa: float):
@@ -52,9 +84,10 @@ class UKF_SLAM:
 
     def sigma_points(self, x, P):
         """
-        Compute sigma points
-        x : mean
-        P : covariance
+        Compute sigma points.
+        Args:
+            x (np.ndarray): mean
+            P (np.ndarray): covariance
         """
         # square root of (self.n + self.lambda_)*P
         U = np.linalg.cholesky((self.n + self.lambda_) * P).T
@@ -68,9 +101,10 @@ class UKF_SLAM:
 
     def f(self, x, u):
         """
-        State transition function
-        x : state
-        u : control input
+        State transition function.
+        Args:
+            x (np.ndarray): state
+            u (np.ndarray): control input
         """
         x[:, :3] += u
         return x
@@ -78,8 +112,9 @@ class UKF_SLAM:
     def predict(self, u, old_u):
         """
         Predict step
-        u : odometry
-        old_u : previous odometry
+        Args:
+            u (np.ndarray): odometry
+            old_u (np.ndarray): previous odometry
         """
         delta_theta = np.tan(np.arctan(u[2] - old_u[2]))
         delta_pos = np.hstack((rotate_points(u[:2] - old_u[:2], -u[2]), delta_theta))
@@ -111,10 +146,11 @@ class UKF_SLAM:
 
     def update(self, z, h, R):
         """
-        Update step
-        z : measurement
-        h : measurement function - returns in the same shape as z
-        R : measurement noise covariance
+        Update step.
+        Args:
+            z (np.ndarray): measurement
+            h (function): measurement function - returns in the same shape as z
+            R (np.ndarray): measurement noise covariance
         """
         # compute sigma points
         # sigmas = self.sigmas_f # use sigma points from predict step
@@ -148,10 +184,10 @@ class UKF_SLAM:
     def detections_to_lidar(self, detections):
         """
         Convert detections to lidar measurements
-        input:
-        detections : array x, y coordinates
-        output:
-        z : array of measurements dist, angle
+        Args:
+            detections (np.ndarray): array x, y coordinates
+        Returns:
+            np.ndarray : array of measurements dist, angle
         """
 
         z = np.zeros((len(detections), 2))
@@ -161,7 +197,13 @@ class UKF_SLAM:
 
     def data_association(self, percep_data):
         """
-        Perform data association
+        Perform data association.
+        Args:
+            percep_data (np.ndarray): perceived data
+        Returns:
+            tuple: A tuple containing:
+                np.ndarray: indices of closest cones
+                np.ndarray: mask for perceived data
         """
         local_landmarks = np.hstack(
             (global_to_local(self.x[3:].reshape(-1, 2).copy(), self.x[:3]), np.expand_dims(self.data_cls, axis=1))
@@ -179,6 +221,19 @@ class UKF_SLAM:
         return closest_cones, percep_data_mask
 
     def cartesian_to_polar_variance(self, x, y, var_x, var_y):
+        """
+        Converts Cartesian coordinate variances to polar coordinate variances.
+        Args:
+            x (float): The x-coordinate in Cartesian space.
+            y (float): The y-coordinate in Cartesian space.
+            var_x (float): The variance of the x-coordinate.
+            var_y (float): The variance of the y-coordinate.
+        Returns:
+            tuple: A tuple containing:
+                float: The variance of the radius (r) in polar coordinates.
+                float: The variance of the angle (theta) in polar coordinates.
+        """
+
         r = np.sqrt(x**2 + y**2)
         r2 = r**2
 
@@ -188,6 +243,13 @@ class UKF_SLAM:
         return var_r, var_theta
 
     def update_from_detections(self, percep_data, time):
+        """
+        Updates the state of the SLAM system based on perception data and the current time.
+        Args:
+            percep_data (numpy.ndarray): A 2D array containing perception data.
+            time (float): The current timestamp.
+        """
+
         # self.P[:3, :3] += np.eye(3) * 0.05
         percep_data = percep_data[percep_data[:, 2] != DataClasses.BALL]
         # percep_data = percep_data[percep_data[:,0] > 0.2]
