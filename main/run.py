@@ -67,10 +67,10 @@ class VelocityControl:
     def __init__(self, turtle):
         self.turtle = turtle
         self.velocity = 0
-        self.max_acc = 0.5  # m/s^2
-        self.max_ang_acc = 0.5  # rad/s^2
-        self.max_speed = 0.6  # m/s #1.5
-        self.max_ang_speed = 0.6  # rad/s
+        self.max_acc = 0.8 # m/s^2
+        self.max_ang_acc = 0.5 # rad/s^2
+        self.max_speed = 0.8 # m/s #1.5
+        self.max_ang_speed = 0.8 # rad/s
         self.last_cmd = (0, 0)
         self.ang_p = 1.5
 
@@ -148,13 +148,7 @@ class MainControl:
         self.end_event = Event()
         self.start_event = Event()
         self.velocity_control = VelocityControl(self.turtle)
-        self.camera = OnnxCamera(
-            "yolo/v11n_v3_300e_240p_w.onnx",
-            verbose=False,
-            cam_K=self.turtle.get_rgb_K(),
-            depth_K=self.turtle.get_depth_K(),
-            conf_thresh=0.30,
-        )
+        self.camera = OnnxCamera("yolo/v11s_v2_300e_160p.onnx", verbose=False, cam_K=self.turtle.get_rgb_K(), depth_K=self.turtle.get_depth_K(), conf_thresh=0.30)
         self.slam = UKF_SLAM(x_size=3, alpha=0.001, beta=2, kappa=0)
         self.odo = Odometry(self.turtle)
         self.path_planning = Planning()
@@ -322,35 +316,17 @@ class MainControl:
         ax.set_ylabel("Y [m]")
         ax.set_xlim(-4, 4)
         ax.set_ylim(-4, 4)
-        ax.plot(slam_poses[0, 0], slam_poses[0, 1], "ro", label="Start")
-        ax.plot(slam_poses[-1, 0], slam_poses[-1, 1], "go", label="End")
-        ax.plot(slam_poses[:, 0], slam_poses[:, 1], ".", label="SLAM", c="orange")
-        ax.plot(*points.T, c="violet", label="path")
-        blue_mask = self.slam.landmarks[:, 2] == DataClasses.BLUE
-        ax.plot(
-            self.slam.landmarks[blue_mask, 0],
-            self.slam.landmarks[blue_mask, 1],
-            ".",
-            c="blue",
-            label="Blue cones",
-        )
-        green_mask = self.slam.landmarks[:, 2] == DataClasses.GREEN
-        ax.plot(
-            self.slam.landmarks[green_mask, 0],
-            self.slam.landmarks[green_mask, 1],
-            ".",
-            c="green",
-            label="Green cones",
-        )
-        red_mask = self.slam.landmarks[:, 2] == DataClasses.RED
-        ax.plot(
-            self.slam.landmarks[red_mask, 0],
-            self.slam.landmarks[red_mask, 1],
-            ".",
-            c="red",
-            label="Red cones",
-        )
-        ax.plot(*ball[:2], ".", label="misa no balls", c="cyan")
+        ax.plot(slam_poses[0,0], slam_poses[0,1], 'ro', label="Start")
+        ax.plot(slam_poses[-1,0], slam_poses[-1,1], 'go', label="End")
+        ax.plot(slam_poses[:,0], slam_poses[:,1], '.', label="SLAM", c='orange')
+        ax.plot(*points.T, c='violet', label='path')
+        blue_mask = self.slam.landmarks[:,2] == DataClasses.BLUE
+        ax.plot(self.slam.landmarks[blue_mask,0], self.slam.landmarks[blue_mask,1], '.', c="blue", label="Blue cones")
+        green_mask = self.slam.landmarks[:,2] == DataClasses.GREEN
+        ax.plot(self.slam.landmarks[green_mask,0], self.slam.landmarks[green_mask,1], '.', c="green", label="Green cones")
+        red_mask = self.slam.landmarks[:,2] == DataClasses.RED
+        ax.plot(self.slam.landmarks[red_mask,0], self.slam.landmarks[red_mask,1], '.', c="red", label="Red cones")
+        ax.plot(*ball[:2], '.', label="Ball", c='cyan')
         ax.legend()
         ax.grid()
         plt.show()
