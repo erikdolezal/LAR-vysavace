@@ -50,7 +50,7 @@ class MainControl:
 
         self.end_event = Event()
         self.start_event = Event()
-        self.velocity_control = VelocityControl(self.turtle)
+        self.velocity_control = VelocityControl()
         self.camera = OnnxCamera("yolo/v11s_v2_300e_160p.onnx", verbose=False, cam_K=self.turtle.get_rgb_K(), depth_K=self.turtle.get_depth_K(), conf_thresh=0.30)
         self.slam = UKF_SLAM(x_size=3, alpha=0.001, beta=2, kappa=0)
         self.odo = Odometry(self.turtle)
