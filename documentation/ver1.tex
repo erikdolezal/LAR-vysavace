@@ -38,13 +38,14 @@
 \presetkeys{todonotes}{inline}{}
 
 
-\title{Řešení úkolu pro TurtleBot s detekcí objektů a SLAM}
+\title{Řešení úlohy pro TurtleBot s detekcí objektů a SLAM}
 \author{Michal Bouda, Erik Doležal, Ondřej Váňa}
 \date{\today}
 
 \begin{document}
 
 \maketitle
+\newpage
 
 \tableofcontents
 
@@ -65,26 +66,30 @@ Za bránou může být neomezený počet pilířů.
 
 \subsection{Úloha 3}
 Od Úlohy 2 se Úloha 3 liší tím, že míč může být vzdálen od osy branky $c = 300$ mm. Vzdálenost míče od branky může být až $b = 2$ m.
-Největším rozdílem je možnost výskytu až dvou překážek před čarou. Ty jsou umístěny tak, že pokaždé existuje cesta od míe k brance o minimální šířce $600$ mm.
+Největším rozdílem je možnost výskytu až dvou překážek před čarou. Ty jsou umístěny tak, že pokaždé existuje cesta od míče k brance o minimální šířce $600$ mm.
 
 \section{Řešení}
-Naše řešení jsme rozdělili na tři hlavní části. První část je zpracování obrazu, druhá část je SLAM a třetí část je plánování a pohyb robota. Tyto části běží v hlavní smyčce programu. 
-Po naimportování knihoven čeká robot na stisk tlačítka, které spustí hlavní smyčku. Splnění úkolu oznámí zvukovým signálem.
 
+Naše řešení jsme rozdělili na tři hlavní části. První část je zpracování obrazu, druhá část je SLAM a třetí část je plánování a pohyb robota. Tyto části běží v hlavní smyčce programu. 
+Po naimportování knihoven čeká robot na stisk tlačítka, které spustí hlavní smyčku. Splnění úkolu oznámí zvukovým signálem.\\
 Naše řešení je dimenzováno pro řešení třetí úlohy. Z nedostataku času pro ošetření všech možných přídapů, jsme se ale rozhodli řešit druhou úlohu. 
 Při řešení problému bylo využíváno nástroje GitHub Copilot pro jednoduché úkony pro zrychlení práce. 
+
 \subsection{Zpracování obrazu}
+
 Detekci objektů děláme pomocí konvoluční neuronové sítě YOLO \cite{YOLO} (You Only Look Once), kterou poté konvertujeme do ONNX \cite{ONNX}. Důvodem k použití CNN bylo, aby náše řešení dobře zvládalo změny v osvětlení a jiné rušivé vstupy jako například špinavý žlutý míč. Segementace obrazu pomocí barev, by mohla být v tomto ohledu nespolehlivá. Jako vstup používáme obraz z Intel RealSense D435 kamery.
+
 \subsubsection{Trénování CNN}
+
 YOLO model jsme museli nejdříve natrénovat na rozponávání pilířů a míče. Učinili jsme tak na více než 670 obrázcích,
-které jsme pořídili pomocí kamery na robotovi. Dalších 120 jsme použili pro validaci. Obrázky jsme ručně anotovali pomocí programu Label Studio. Jak vypadá anotace je vidět v obrázku \ref{fig:label_studio}.
+které jsme pořídili pomocí kamery na robotovi. Dalších 120 jsme použili pro validaci. Obrázky jsme ručně anotovali pomocí programu Label Studio. Jak vypadá anotace je vidět v obrázku \ref{fig:label_studio}.\\
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{pictures/label_studio.png}
     \caption{Anotování v Label Studiu}
     \label{fig:label_studio}	
 \end{figure}
-Pro anotaci jsme použili nastavení \textit{Object Detection with Bounding Boxes}, tedy jsme anotavali pomocí obdelníků. Zvolili jsme možnost bez rotace, všechny obdelníky mají tedy rovnoběžné strany se stranami obrazu. 
+\noindent Pro anotaci jsme použili nastavení \textit{Object Detection with Bounding Boxes}, tedy jsme anotavali pomocí obdelníků. Zvolili jsme možnost bez rotace, všechny obdelníky mají tedy rovnoběžné strany se stranami obrazu. 
 Možnost segmentace, myšleno maskou jsme zamítli z různých důvodou, např. pracné anotace. 
 Anotovaný data set byl poté vyexportován ve formátu YOLO.
 Pomocí Python kódu a knihovny od Ultralitics \cite{Ultralitics} jsme natrénovali model. Vyzkoušeli jsme YOLO verze v8 a 11. Ukázalo se, že verze 11 je mnohem přesnější, zvláště při změně osvětlení. 
@@ -106,36 +111,42 @@ I pro model 11n jsme zkoušeli různé rozlišení. Rozlišení 160p a 240p bylo
     \label{fig:confusion_matrix_240p}
 \end{figure}
 
-Model 160p (Obrázek \ref{fig:confusion_matrix_160p}) je v některých podmínkách znatelně horší oproti 240p (Obrázek \ref{fig:confusion_matrix_240p}) v rozpoznávání modrých pilířů.
+\noindent Model 160p (Obrázek \ref{fig:confusion_matrix_160p}) je v některých podmínkách znatelně horší oproti 240p (Obrázek \ref{fig:confusion_matrix_240p}) v rozpoznávání modrých pilířů.
 To může způsobit velké problémy, protože modré pilíře tvoří branku. Nejčastějším objektem, který byl zaměněn s pozadím, je zelený pilíř, který, když je detekován navíc, minimálně překaží úspěšnému vyřešení problému.
 
 \subsubsection{Rozpoznávání obrazu}
+
 K rozpoznávání použiváme buď model YOLO 11n při rozlišení 160p nebo při 240p v závislosti na prostředí a pokud více benefitujeme z rychlejší detekce nebo její přesnosti.
 Na robotovi zajišťuje rozpoznávání class \texttt{Camera}. Třída má metodu \texttt{get detections}, která získá obraz z kamery. 
 Seznam objektů vracíme pro potřeby SLAM jako numpy array poloha x, poloha y, objekt. Poloha x, y je poloha relativně k robotovi v prostoru.
 
-K detekci nepoužíváme samotnou knihovnu YOLO. Model nejdříve konvertujeme do ONXX (Open Neural Network Exchange). Důvodem pro toto rozhodnutí je dlouhá doba, kdy YOLO knihovna zpracovála obraz. ONNX to zvládá rychleji z části díky tomu, že je optimalizovaná pro spouštění na procesoru.
+\noindent K detekci nepoužíváme samotnou knihovnu YOLO. Model nejdříve konvertujeme do ONXX (Open Neural Network Exchange). Důvodem pro toto rozhodnutí je dlouhá doba, kdy YOLO knihovna zpracovála obraz. ONNX to zvládá rychleji z části díky tomu, že je optimalizovaná pro spouštění na procesoru.
 Používání ONNX ale přineslo spoustu výzev, protože YOLO knihovna řešila spoustu věci za nás. Museli jsme naimplementovat počítaní pravděpodobností detekce pomocí softmax. 
 Poté pomocí Non-Maximum Suppression z knihovny TorchVision řešíme odstranění duplicitních detekcí. A samozřejmostí je nepracování s detekcemi, které nedosahují nějaké hranice jistoty.
 
 \subsubsection{Pozice objektů v prostoru}
+
 \label{sec:point_cloud}
 Z počátku jsme využívali k určování pozice objektů point cloud, který jsme získali z kamery.
 To se ukázalo jako velice časově náročné. Proto jsme se rozhodli, že budeme počítat pozici objektů přímo z hloubkové kamery.
+
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.5\textwidth]{pictures/detect.png}
     \caption{Obrázek z RGB kamery s rozpoznanými objekty}
     \label{fig:detect}
 \end{figure}
+
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\textwidth]{pictures/depth_detect.png}
     \caption{Obrázek z hloubkové kamery s rozpoznanými objekty}
     \label{fig:depth_detect}
 \end{figure}
-Hloubková kamera vrací pouze pixely s hloubkou. Aby byla poloha objektů spočítána co nejrychleji, pracujeme pouze s pixely z hloubkové kamery (Obrázek \ref{fig:depth_detect}), které jsou detekovány jako objekty z RGB kamery (Obrázek \ref{fig:detect}).
+
+\noindent Hloubková kamera vrací pouze pixely s hloubkou. Aby byla poloha objektů spočítána co nejrychleji, pracujeme pouze s pixely z hloubkové kamery (Obrázek \ref{fig:depth_detect}), které jsou detekovány jako objekty z RGB kamery (Obrázek \ref{fig:detect}).
 Nejdříve vytvoříme transformační matici, která převadí mezi souřadnicemi kamery a hloubkové kamery podle 
+
 \begin{equation}
     \mathbf T = \mathbf{K_{depth}} \cdot \mathbf{K_{rgb}}^-1 + \begin{bmatrix}
         0 & 0 & -10\\
@@ -143,10 +154,12 @@ Nejdříve vytvoříme transformační matici, která převadí mezi souřadnice
         0 & 0 & 0\\
     \end{bmatrix}
 \end{equation}
-Hodnota $-10$ je zvolena tak, aby byl co nejmenší rozdíl mezi pozicemi v souřadnicích hloubkové a RGB kamery.
 
-Poté se vypočítá median vzdáleností v bounding boxu, což řeší problém s obdelníky přesně nepasujícími na detekované objekty. 
+\noindent Hodnota $-10$ je zvolena tak, aby byl co nejmenší rozdíl mezi pozicemi v souřadnicích hloubkové a RGB kamery.
+
+\noindent Poté se vypočítá median vzdáleností v bounding boxu, což řeší problém s obdelníky přesně nepasujícími na detekované objekty. 
 Medián vzdálenosti přenásobíme konstantou 1.04, abychom korigovali nepřesnost depth kamery. Souřadnice detekce v prostoru spočítáme pak pomocí středu bounding boxu se souřadnicemi $(cx,cy)$ v hloubkové kameře a mediánové vzdálenosti $d$ podle vzorce
+
 \begin{equation}
     \begin{bmatrix}
         x \\
@@ -171,7 +184,9 @@ Medián vzdálenosti přenásobíme konstantou 1.04, abychom korigovali nepřesn
         z \\
     \end{bmatrix} \cdot \frac{d}{z}
 \end{equation}
+
 Tím dostaneme směrový vektor s délkou $d$ v souřadnicovém systému hloubkové kamery. Pro konverci do souřadnicového systému robota použijeme 
+
 \begin{equation}
     \begin{bmatrix}
         x_{robot} \\
@@ -184,19 +199,24 @@ Tím dostaneme směrový vektor s délkou $d$ v souřadnicovém systému hloubko
         y \\
     \end{bmatrix}
 \end{equation}
-Poté ještě nahradíme $z_{robot}$ za třídu detekce, protože nás zajímají pouze 2D souřadnice.
+
+\noindent Poté ještě nahradíme $z_{robot}$ za třídu detekce, protože nás zajímají pouze 2D souřadnice.
 
 
 
 \subsection{Lokalizace a mapování}
+
 Jelikož je plocha, po které se pohybujeme rovná, je možné používat pouze 2D souřadnice. Pro lokalizaci robota a mapování používáme SLAM algoritmus z rodiny 
 Kalman filtrů, kvůli nelinearitě transformace z globálních souřadnic do lokálních bylo potřeba použít Kalman filtr, který si umí s nelinearitami poradit. 
 Tedy se nabízí dvě možnosti, Extended Kalman Filter (EKF) a Unscented Kalman Filter (UKF). Pro náš účel jsme zvolili UKF, který je přesnější a při malém počtu landmarků není výpočetně náročný.
+
 \subsubsection{Unscented Kalman filter}
+
 \label{sec:ukf}
 Unscented Kalman Filter je založen na Unscented transformaci, která pomocí sigma bodů aproximuje nové normální rozdělení po transformaci. Vzorce v této kapitole jsou převzaty z \cite{UKF}. \\
 
-Sigma body se počítají podle vzorce
+\noindent Sigma body se počítají podle vzorce
+
 \begin{equation}
     \boldsymbol{\chi}_{i} = \begin{cases}
         \mathbf{\bar{x}} & i = 0 \\
@@ -204,28 +224,38 @@ Sigma body se počítají podle vzorce
         \mathbf{\bar{x}} - (\sqrt{(n + \lambda) \mathbf P})_{i-1} & n + 1 \leq i \leq 2n
     \end{cases}
 \end{equation}
-kde $\mathbf{\bar{x}}$ je odhad střední hodnoty, $\mathbf P$ je kovarianční matice a $\lambda$ je parametr, který určuje rozptyl sigma bodů a vypočítá se podle
+
+\noindent kde $\mathbf{\bar{x}}$ je odhad střední hodnoty, $\mathbf P$ je kovarianční matice a $\lambda$ je parametr, který určuje rozptyl sigma bodů a vypočítá se podle
+
 \begin{equation}
     \lambda = \alpha^2(n + \kappa) - n
 \end{equation}
-kde $\alpha$ a $\kappa = 3 - n$ jsou vstupní parametry určující rozptyl sigma a $n$ je dimenze stavového vektoru kalman filtru. 
-Pro výpočet Unscented transformace jsou poutřeba ještě váhy jednotlivých sigma bodů. 
+
+\noindent kde $\alpha$ a $\kappa = 3 - n$ jsou vstupní parametry určující rozptyl sigma a $n$ je dimenze stavového vektoru kalman filtru. 
+\noindent Pro výpočet Unscented transformace jsou poutřeba ještě váhy jednotlivých sigma bodů. 
 Výpočet váhy aktuální střední hodnoty pro odhad nové je dělán podle: 
+
 \begin{equation}
     w^{m}_0 = \frac{\lambda}{n + \lambda}
 \end{equation}
-Pro ostatní body pak podle 
+
+\noindent Pro ostatní body pak podle 
+
 \begin{equation}
     w^m_i = \frac{1}{2(n+\lambda)} \;\;\; i = 1...2n
     \label{eq:mean_weights}
 \end{equation}
-Výpočet váhy aktuální střední hodnoty pro odhad nové kovarianční matice je prováděn podle vzorce
+
+\noindent Výpočet váhy aktuální střední hodnoty pro odhad nové kovarianční matice je prováděn podle vzorce
+
 \begin{equation}
    w^c_0 = \frac{\lambda}{n + \lambda} + 1 - \alpha^2 + \beta
 \end{equation}
-váhy pro ostatní body pak stejně jako pro odhad střední hodnoty, tedy podle (\ref{eq:mean_weights})
+
+\noindent váhy pro ostatní body pak stejně jako pro odhad střední hodnoty, tedy podle (\ref{eq:mean_weights})
 \\
-Po vytvoření sigma bodů a jejich vah, je možné pomocí Unscented transformace určit nový odhad střední hodnoty a kovarianční matice pro funkční hodnoty dané transformace $f$ pro všechny sigma body.
+
+\noindent Po vytvoření sigma bodů a jejich vah, je možné pomocí Unscented transformace určit nový odhad střední hodnoty a kovarianční matice pro funkční hodnoty dané transformace $f$ pro všechny sigma body.
 \begin{equation}
     \begin{aligned}
     \boldsymbol{\mathcal{Y}} &= f(\boldsymbol{\chi}) \\
@@ -235,11 +265,13 @@ Po vytvoření sigma bodů a jejich vah, je možné pomocí Unscented transforma
     \label{eq:ukf_transform}
 \end{equation}
 \\
-Kalman filtr má pak dva hlavní kroky, predikci a aktualizaci.\\
 
-Predikce je provedena pomocí funkce $f$ a sigma bodů. Sigma body se transformují do nového prostoru pomocí funkce $f$ a odhadne se nová střední hodnota a kovarianční matice.
+\noindent Kalman filtr má pak dva hlavní kroky, predikci a aktualizaci.\\
+
+\noindent Predikce je provedena pomocí funkce $f$ a sigma bodů. Sigma body se transformují do nového prostoru pomocí funkce $f$ a odhadne se nová střední hodnota a kovarianční matice.
 Pro UKF se pak používá Unscented transformace (\ref{eq:ukf_transform}) pro výpočet nové střední hodnoty a kovarianční matice, 
 navíc je k nové kovarianční matici přičtena matice $\mathbf Q$, která je matice šumu procesu. Dostaneme tedy
+
 \begin{equation}
     \begin{aligned}
         \boldsymbol{\mathcal Y} &= f(\boldsymbol\chi) \\
@@ -249,9 +281,10 @@ navíc je k nové kovarianční matici přičtena matice $\mathbf Q$, která je 
     \label{eq:ukf_predict}
 \end{equation}
 
-Aktualizace je prováděna pomocí měření ze senzorů, je tedy potřeba převést sigma body do prostoru měření, 
+\noindent Aktualizace je prováděna pomocí měření ze senzorů, je tedy potřeba převést sigma body do prostoru měření, 
 to se provádí pomocí funkce $h$ a jelikož žádné měření není přesné, tak šum měření je modelován maticí $\mathbf R$.
 Pro odhad nové střední hodnoty a kovarianční matice se používá 
+
 \begin{equation}
     \begin{aligned}
         \boldsymbol{\mathcal Z} &=  h(\boldsymbol{\mathcal{Y}}) \\
@@ -265,7 +298,9 @@ Pro odhad nové střední hodnoty a kovarianční matice se používá
 \end{equation}
 
 \subsubsection{SLAM struktura}
+
 Stavový vektor ve SLAMu obsahuje pozici robota a pozice landmarků, které robot vidí, tedy 
+
 \begin{equation}
     \mathbf x = \begin{bmatrix}
         x \\
@@ -280,13 +315,16 @@ Stavový vektor ve SLAMu obsahuje pozici robota a pozice landmarků, které robo
         y_n 
     \end{bmatrix}
 \end{equation}
-kde $(x,y, \theta)$ je pozice robota a $(x_i,y_i)$ je pozice $i$-tého landmarku.
+
+\noindent kde $(x,y, \theta)$ je pozice robota a $(x_i,y_i)$ je pozice $i$-tého landmarku.
 Jelikož máme více typů landmarků, které se liší svojí třídou, je potřeba mít pro každý landmark uloženou třídu mimo stavový vektor, 
 jelikož jejich chování na ní není závislé a zbytečně by se zvedala dimenze stavového vektoru.
 
 \subsubsection{Predikce Kalman filtru ve SLAMu}
+
 Predikce může být provedena podle fyzikálního modelu robota v závislosti na kontolních vstupech $\mathbf u$, to je však v našem případě zbytečné,
 jelikož robot nabízí odometrii, která může model nahradit. Jelikož polohy landmarků se nemění v čase, mění se pouze poloha robota. Dostaneme tedy
+
 \begin{equation}
     f(\mathbf x,\mathbf u) = \mathbf x + \begin{bmatrix}
                                     \Delta x \\
@@ -389,7 +427,7 @@ V Kalman filtru však musíme transformovat souřadnice landmarků z lokálních
     \label{eq:global_to_local}
 \end{equation}
 
-Nejdůležitějším krokem v aktualizaci z landmarků z kamery je správná asociace landmarků z kamery a landmarků v mapě. 
+\noindent Nejdůležitějším krokem v aktualizaci z landmarků z kamery je správná asociace landmarků z kamery a landmarků v mapě. 
 To provádíme pomocí eukleidovské vzdálenosti mezi landmarky z kamery a landmarky v mapě.
 Pokud jsou splněny podmínky v (\ref{eq:association}) pro daný landmark z kamery $L^c_i$ a landmark z mapy $L^m_j$, pak je asociace provedena podle vzorce
 \begin{equation}
@@ -469,9 +507,9 @@ Tento kolmý vektor je dále upraven (posunut a případně rotován) tak, aby s
 \subsubsection{Hlavní logika}
 Druhou částí plánovacího procesu je hlavní logika, která je na Obrázku \ref{fig:fig_plan_dig} vyznačena zeleně. Tato část rozhodovacího mechanismu na základě informací z fáze identifikace a aktuální polohy robota určuje, kde se bude nacházet další cílový bod, na který má robot směřovat.\\
 
-První možnou situací, která může nastat, je potřeba aktivního hledání brány a míče. V takovém případě je robot naváděn pomocí vektoru kolmého na svůj aktuální směrový vektor, což způsobí jeho rotaci na místě s cílem rozhlédnutí se.\\
+\noindent První možnou situací, která může nastat, je potřeba aktivního hledání brány a míče. V takovém případě je robot naváděn pomocí vektoru kolmého na svůj aktuální směrový vektor, což způsobí jeho rotaci na místě s cílem rozhlédnutí se.\\
 
-Pokud jsou současně detekovatelné jak brána, tak i míč, přechází systém do fáze plánování trajektorie míče (blíže popsáno v následující části). Po úspěšném naplánování této trajektorie se ověřuje, zda se robot již nachází v pozici vhodné k provedení kopu. Tato situace nastává tehdy, pokud robot splňuje dvě podmínky:
+\noindent Pokud jsou současně detekovatelné jak brána, tak i míč, přechází systém do fáze plánování trajektorie míče (blíže popsáno v následující části). Po úspěšném naplánování této trajektorie se ověřuje, zda se robot již nachází v pozici vhodné k provedení kopu. Tato situace nastává tehdy, pokud robot splňuje dvě podmínky:
 \begin{itemize}
 	\item 
 	Robot se nachází v těsné, předem definované oblasti okolo bodu, ze kterého začíná akcelerace směrem k míči.
@@ -501,7 +539,7 @@ V případě detekce kolize vrací funkce pro kontrolu kolizí také konkrétní
 	\label{fig:fig_tangent}
 \end{figure}
 
-Funkce pro generování alternativní trajektorie akceptuje tři body: počáteční bod, koncový bod a střed kolizního okolí, spolu s poloměrem tohoto okolí. Nejprve jsou vygenerovány směrové vektory tečen ke kružnici, a to pro každý bod kromě středu, čímž vzniknou celkem čtyři tečny. Tyto tečny se vypočítávají pomocí rotace normalizovaného vektoru $d$, který spojuje daný bod se středem kružnice, o úhel $\alpha$. Tento úhel spolu svírá právě vektor $d$ a poloměr kružnice.\\
+\noindent Funkce pro generování alternativní trajektorie akceptuje tři body: počáteční bod, koncový bod a střed kolizního okolí, spolu s poloměrem tohoto okolí. Nejprve jsou vygenerovány směrové vektory tečen ke kružnici, a to pro každý bod kromě středu, čímž vzniknou celkem čtyři tečny. Tyto tečny se vypočítávají pomocí rotace normalizovaného vektoru $d$, který spojuje daný bod se středem kružnice, o úhel $\alpha$. Tento úhel spolu svírá právě vektor $d$ a poloměr kružnice.\\
 Úhel $\alpha$ je získán pomocí inverzní funkce kosinu, a to za předpokladu, že tečna je kolmá na poloměr, viz rovnice \ref{eq:eq_tan_angle}:
 
 \begin{equation}
@@ -509,7 +547,7 @@ Funkce pro generování alternativní trajektorie akceptuje tři body: počáte�
 	\label{eq:eq_tan_angle}
 \end{equation} 
 
-Pro každý bod existují dvě tečny, a proto je vektor $d$ rotován jak o úhel $+\alpha$, tak o úhel $-\alpha$. Výsledné jednotkové vektory tečen jsou dány rovnicemi \ref{eq:eq_tan_rot}:
+\noindent Pro každý bod existují dvě tečny, a proto je vektor $d$ rotován jak o úhel $+\alpha$, tak o úhel $-\alpha$. Výsledné jednotkové vektory tečen jsou dány rovnicemi \ref{eq:eq_tan_rot}:
 
 \begin{equation}
 	\begin{aligned}
@@ -529,9 +567,9 @@ Pro každý bod existují dvě tečny, a proto je vektor $d$ rotován jak o úhe
 	\label{eq:eq_tan_rot}
 \end{equation}
 
-Tyto jednotkové vektory jsou dále posunuty a škálovány tak, aby ukazovaly na konkrétní body na kružnici. Viz modré vektory na Obrázku \ref{fig:fig_tangent}.
+\noindent Tyto jednotkové vektory jsou dále posunuty a škálovány tak, aby ukazovaly na konkrétní body na kružnici. Viz modré vektory na Obrázku \ref{fig:fig_tangent}.
 
-Následně jsou vytvořeny čtyři možné kombinace vzniklých tečen a hledají se jejich průsečíky pomocí soustavy lineárních rovnic, viz rovnice \ref{eq:eq_inter}. Zde $\mathbf{v}_1$ a $\mathbf{v}_2$ představují směrové vektory obou tečen a $\mathbf{A}_1$, $\mathbf{B}_1$ jejich počáteční body:
+\noindent Následně jsou vytvořeny čtyři možné kombinace vzniklých tečen a hledají se jejich průsečíky pomocí soustavy lineárních rovnic, viz rovnice \ref{eq:eq_inter}. Zde $\mathbf{v}_1$ a $\mathbf{v}_2$ představují směrové vektory obou tečen a $\mathbf{A}_1$, $\mathbf{B}_1$ jejich počáteční body:
 
 \begin{equation}
 	\begin{bmatrix}
@@ -546,20 +584,20 @@ Následně jsou vytvořeny čtyři možné kombinace vzniklých tečen a hledaj�
 	\label{eq:eq_inter}
 \end{equation}
 
-Polohu průsečíku $\mathbf{P}_{\text{inter}}$ lze poté spočítat dle rovnice \ref{eq:eq_line_inter}:
+\noindent Polohu průsečíku $\mathbf{P}_{\text{inter}}$ lze poté spočítat dle rovnice \ref{eq:eq_line_inter}:
 
 \begin{equation}
 	\mathbf{P}_{\text{inter}} = \mathbf{A}_1 + t \cdot \mathbf{v}_1
 	\label{eq:eq_line_inter}
 \end{equation}
 
-Pro výběr nejoptimálnější trajektorie je následně ze všech možností zvolena ta, která má nejmenší celkovou délku. Výsledná trajektorie je tvořena lomenou čarou procházející body počátku $\mathbf{A}_1$, průsečíkem tečen $\mathbf{P}_{\text{inter}_i}$ a koncovým bodem $\mathbf{B}_1$. Tato optimální trajektorie je v obrázku \ref{fig:fig_tangent} znázorněna červeně.
+\noindent Pro výběr nejoptimálnější trajektorie je následně ze všech možností zvolena ta, která má nejmenší celkovou délku. Výsledná trajektorie je tvořena lomenou čarou procházející body počátku $\mathbf{A}_1$, průsečíkem tečen $\mathbf{P}_{\text{inter}_i}$ a koncovým bodem $\mathbf{B}_1$. Tato optimální trajektorie je v obrázku \ref{fig:fig_tangent} znázorněna červeně.
 
 \subsubsection{Plánování trajektorie robota}
 
 Poslední, čtvrtou částí plánovacího procesu je generování trajektorie pro pohyb robota. I v tomto případě je využita metoda vyhýbání překážkám pomocí tečen, jak byla popsána v předchozí kapitole. Zásadní rozdíl však spočívá v tom, že cílovým bodem zde není střed brány, ale tzv. shoot point – bod nacházející se za míčem na přímce spojující míč se středem brány.\\
 
-Při plánování trajektorie k tomuto bodu je navíc do systému detekce kolizí zahrnuta i poloha míče, čímž se zamezí jeho nechtěnému kontaktu při přípravné fázi pohybu. Tato kontrola kolize s míčem je po dosažení cílového bodu deaktivována, aby bylo možné provést samotný kop.
+\noindent Při plánování trajektorie k tomuto bodu je navíc do systému detekce kolizí zahrnuta i poloha míče, čímž se zamezí jeho nechtěnému kontaktu při přípravné fázi pohybu. Tato kontrola kolize s míčem je po dosažení cílového bodu deaktivována, aby bylo možné provést samotný kop.
 
 \subsubsection{Simulátor}
 Pro potřeby ladění plánovacího algoritmu byl implementován jednoduchý simulátor, který automaticky generuje náhodná rozložení trubek a polohu robota dle pravidel úlohy 3. Simulátor byl vytvořen v prostředí Pygame, které umožňuje snadnou vizualizaci a zároveň ovládání pomocí uživatelských vstupů z klávesnice. V aktuální verzi simulace je dostupný pouze manuální režim řízení, tedy ovládání robota pomocí klávesnice – konkrétně pomocí kláves W, S, A a D.\\
@@ -626,7 +664,7 @@ Potom už jen omezíme rychlost na maximální povolenou rychlost robota $v_{max
 
 \section{Testování}
 \subsection{Vidění}
-I když jsou modely naučené na rozpoznávání žlutého i červeného míče, testovali jsem výhradně míč žlutý. Anotování obrázků obbélníky bez rotace představilo problém, který jde vidět v obrázku \eqref{fig:detected_image}. Díky zakřivení obrazu z kamery, obdelníky nesedí přímo na pilíře, což byl lehce vyřešitelný problém. Vzdálenost překážky bereme jako medián vzdáleností z obdelníku.
+Veškeré impementace byly testovány na robotovi číslo 13. I když jsou modely naučené na rozpoznávání žlutého i červeného míče, testovali jsem výhradně míč žlutý. Anotování obrázků obbélníky bez rotace představilo problém, který jde vidět v obrázku \eqref{fig:detected_image}. Díky zakřivení obrazu z kamery, obdelníky nesedí přímo na pilíře, což byl lehce vyřešitelný problém. Vzdálenost překážky bereme jako medián vzdáleností z obdelníku.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\textwidth]{pictures/rozpoznane.jpg}
@@ -634,7 +672,7 @@ I když jsou modely naučené na rozpoznávání žlutého i červeného míče,
     \label{fig:detected_image}
 \end{figure}
 
-V obrázku \eqref{fig:detected_image} si ještě můžeme všimnout, že model dobře zvládá rozpoznávání objektů, které mají zaměnitelné barvy nebo tvar s objekty, které detekuje.
+\noindent V obrázku \ref{fig:detected_image} si ještě můžeme všimnout, že model dobře zvládá nedetekovat objekty, které mají zaměnitelné barvy nebo tvar s objekty které detekuje.
 Model také například rozpoznal míč, když je z části za pilířem, nebo objekty, když jsou ve stínu pod stolem. Problémy občas tvoří objekty, které nebyly v trénovacím datasetu.
 Boty s určitým vzorem mohou například být rozpoznány jako míč.
 
@@ -658,11 +696,11 @@ což vedlo k tomu, že se poloha byla ze začátku velmi chaotická. Po několik
 \end{bmatrix}
 \]
 Poté bylo potřeba odhadnout rozptyl pro odometrii, tedy $\mathbf Q$, abychom byli schopni spolehlivě odhadnout polohu robota, i když nevidíme žádné sloupky. Tam jsme se setkali s problémem, 
-že byla použita moc velká nejistota pro úhel, takže poloha ve SLAMu nekorespodovala při otáčení s reálnou polohou robota. Po několika pokusech jsme došli k hodnotě $\sigma_\theta^2 = 0.001 \text{ rad}^2$ a pro polohu jsme došli k hodnotám $\sigma_{x}^2 = \sigma_{y}^2 = 0.2 \text{ m}^2$.\\
+že byla použita moc velká nejistota pro úhel, takže poloha ve SLAMu nekorespodovala při otáčení s reálnou polohou robota. Po několika pokusech jsme došli k hodnotě $\sigma_\theta^2 = 0.001 \text{ rad}^2$ a pro polohu jsme došli k hodnotám $\sigma_{x}^2 = \sigma_{y}^2 = 0.02 \text{ m}^2$.\\
 
-Ve SLAMu také původně nebyla žádné opatření proti false detekcím, což vedlo k tomu, že se SLAM snažil mapovat objekty, které nebyly v reálném světě, proto jsme přidali uchazeče od landmarky popsané v kapitole \ref{sec:update_map}. Po testování jsme došli k nastavení $t_{max} = 1$ a $n_{min} = 2$\\
+\noindent Ve SLAMu také původně nebyla žádné opatření proti false detekcím, což vedlo k tomu, že se SLAM snažil mapovat objekty, které nebyly v reálném světě, proto jsme přidali uchazeče od landmarky popsané v kapitole \ref{sec:update_map}. Po testování jsme došli k nastavení $t_{max} = 1$ a $n_{min} = 2$\\
 
-Pro testování SLAMu jsme původně používali offline řešení pomocí matplotlib grafu na obrázku \ref{fig:slam_end}. \\
+\noindent Pro testování SLAMu jsme původně používali offline řešení pomocí matplotlib grafu na obrázku \ref{fig:slam_end}. \\
 
 \begin{figure}[H]
     \centering
@@ -671,7 +709,7 @@ Pro testování SLAMu jsme původně používali offline řešení pomocí matpl
     \label{fig:slam_end}
 \end{figure}
 
-To však nebylo schopné dobře popsat chování v reálném čase, proto jsme použili vizualizaci v reálném čase pomocí opencv okna na obrázku \ref{fig:slam_in_game}.
+\noindent To však nebylo schopné dobře popsat chování v reálném čase, proto jsme použili vizualizaci v reálném čase pomocí opencv okna na obrázku \ref{fig:slam_in_game}.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.5\textwidth]{pictures/map3.png}
@@ -696,8 +734,19 @@ Pro pohyb jsme ladili hlavně maximální ryhlost $\omega_{max}$. Bylo potřeba,
 Vyhnuli jsme se také používání vysokých akcelerací, zase z důvodu aby se robot dobře orientoval. Velká zrychlení mohla vyvovlat nechtěné kývání robota.
 \section{Závěr}
 
+Cílem úlohy bylo implementovat systém pro autonomní navigaci robota v prostředí s překážkami a schopnost provádět střelbu míčem na bránu. 
+Tento systém byl postaven na kombinaci několika technologií, včetně detekce objektů pomocí neuronových sítí, SLAM algoritmu pro mapování a lokalizaci, a plánování trajektorie pro pohyb robota.\\
 
+\noindent Úspěšně jsme implementovali detekci všech objektů v prostředí pomocí modelu YOLO, který byl trénován na vlastním datasetu. Pro lokalizaci robota a mapování prostředí byl použit UKF SLAM algoritmus, který byl schopen efektivně zpracovávat data z odometrie a detekce objektů, díky robustnímu zamítání chybných detekcí.\\
 
+\noindent Plánování trajektorie robota bylo realizováno pomocí metody vyhýbání se překážkám pomocí tečen, která umožnila efektivní navigaci v prostředí s překážkami, čehož není velmi využíváno, jelikož se finální systém primárně zaměřuje na řešení úholy 2.\\
+
+\noindent Celý systém byl úspěšně testován v simulátoru a na reálném robotovi, přičemž bylo dosaženo dobrých výsledků při navigaci a střelbě v rámci úlohy 2.\\
+
+\section{Úloha na příští rok}
+Úloha by se nazývala opičí dráha a její pointou je projetí vytičené trasy pomocí barevných sloupků s tím, že každý barevný sloupek bude mít speciální vlastnost. Modrým bude vytyčen start a cíl. Mezi startem a cílem se budou nacházet zelené a červené sloupky. Zelený sloupek bude muset být obkroužen po směru hodinových ručiček aspoň o jednu celou otočku. Červený sloupek bude muset být obkroužen proti směru hodinových ručiček aspoň o jednu celou otočku.\\
+
+\newpage
 \begin{thebibliography}{5}
 
     \bibitem{YOLO}

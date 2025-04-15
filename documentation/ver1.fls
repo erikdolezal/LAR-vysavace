@@ -313,6 +313,8 @@ INPUT /usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm10.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm10.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm7.tfm
+INPUT /var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map
+INPUT /usr/share/texmf/fonts/enc/dvips/lm/lm-ec.enc
 INPUT /usr/share/texmf/fonts/tfm/public/lm/ec-lmr17.tfm
 INPUT /usr/share/texmf/fonts/tfm/public/lm/ec-lmbx12.tfm
 INPUT ./ver1.toc
@@ -340,15 +342,13 @@ INPUT ./pictures/map.png
 INPUT ./pictures/map.png
 INPUT ./pictures/map.png
 INPUT ./pictures/map.png
-INPUT /var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map
-INPUT /usr/share/texmf/fonts/enc/dvips/lm/lm-ec.enc
+INPUT /usr/share/texmf/fonts/tfm/public/lm/ec-lmro12.tfm
 INPUT /usr/share/texmf/fonts/tfm/public/lm/ec-lmbx12.tfm
 INPUT ./pictures/label_studio.png
 INPUT ./pictures/label_studio.png
 INPUT ./pictures/label_studio.png
 INPUT ./pictures/label_studio.png
 INPUT ./pictures/label_studio.png
-INPUT /usr/share/texmf/fonts/tfm/public/lm/ec-lmro12.tfm
 INPUT /usr/share/texmf/fonts/enc/dvips/lm/lm-rm.enc
 INPUT /usr/share/texmf/fonts/enc/dvips/lm/lm-mathit.enc
 INPUT /usr/share/texmf/fonts/tfm/public/lm/ec-lmri12.tfm
@@ -407,9 +407,9 @@ INPUT ./pictures/tangent_test-eps-converted-to.pdf
 INPUT ./pictures/tangent_test-eps-converted-to.pdf
 INPUT ./pictures/tangent_test-eps-converted-to.pdf
 INPUT ./pictures/tangent_test-eps-converted-to.pdf
+INPUT /usr/share/texmf/fonts/enc/dvips/lm/lm-ts1.enc
 INPUT /usr/share/texmf/fonts/tfm/public/lm/ec-lmr8.tfm
 INPUT /usr/share/texmf/fonts/tfm/public/lm/ec-lmr6.tfm
-INPUT /usr/share/texmf/fonts/enc/dvips/lm/lm-ts1.enc
 INPUT ./pictures/sim_002.png
 INPUT ./pictures/sim_002.png
 INPUT ./pictures/sim_002.png
