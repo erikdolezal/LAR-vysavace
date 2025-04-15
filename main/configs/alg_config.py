@@ -43,9 +43,11 @@ vision_config = {
                    DataClasses.BLUE: (255, 0, 0), 
                    DataClasses.BALL: (0, 255, 255)},
     "class_map": {0: DataClasses.BALL, 
-                   1: DataClasses.RED, 
+                   1: DataClasses.BALL, 
                    2: DataClasses.BLUE, 
-                   3: DataClasses.GREEN},
+                   3: DataClasses.GREEN,
+                   4: DataClasses.RED
+    }
 }
 
 velocity_control_config = {

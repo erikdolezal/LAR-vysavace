@@ -154,14 +154,9 @@ class Planning:
             if self.is_goal():
                 return ErrorCodes.IS_GOAL_ERR
         elif blue_count == 1 and self.goal_targer is not None:
-            return ErrorCodes.ZERO_BLUE_ERR
-            if self.are_points_in_proximity(self.goal_targer, center_sum, PlanningParm.GOAL_POX):
-                self.goal_targer = self.goal_targer  # Sets a position of the blue tube as a goal target
-            else:
-                self.goal_targer = center_sum
+            self.goal_targer = self.goal_targer
         elif blue_count == 1:
             return ErrorCodes.ZERO_BLUE_ERR
-            self.goal_targer = center_sum
         else:
             if self.goal_targer is None:
                 return ErrorCodes.ZERO_BLUE_ERR
