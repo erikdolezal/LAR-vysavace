@@ -6,19 +6,22 @@
 \contentsline {subsection}{\numberline {2.1}Zpracování obrazu}{2}{subsection.2.1}%
 \contentsline {subsubsection}{\numberline {2.1.1}Trénování CNN}{3}{subsubsection.2.1.1}%
 \contentsline {subsubsection}{\numberline {2.1.2}Rozpoznávání obrazu}{5}{subsubsection.2.1.2}%
-\contentsline {subsubsection}{\numberline {2.1.3}Pozice objektů v prostoru}{6}{subsubsection.2.1.3}%
+\contentsline {subsubsection}{\numberline {2.1.3}Pozice objektů v prostoru}{5}{subsubsection.2.1.3}%
 \contentsline {subsection}{\numberline {2.2}Lokalizace a mapování}{6}{subsection.2.2}%
-\contentsline {subsubsection}{\numberline {2.2.1}Unscented Kalman filter}{7}{subsubsection.2.2.1}%
+\contentsline {subsubsection}{\numberline {2.2.1}Unscented Kalman filter}{6}{subsubsection.2.2.1}%
 \contentsline {subsubsection}{\numberline {2.2.2}SLAM struktura}{8}{subsubsection.2.2.2}%
 \contentsline {subsubsection}{\numberline {2.2.3}Predikce Kalman filtru ve SLAMu}{8}{subsubsection.2.2.3}%
 \contentsline {subsubsection}{\numberline {2.2.4}Aktualizace Kalman filtru ve SLAMu}{9}{subsubsection.2.2.4}%
 \contentsline {subsubsection}{\numberline {2.2.5}Aktualizace mapy}{10}{subsubsection.2.2.5}%
-\contentsline {subsection}{\numberline {2.3}Plánování}{11}{subsection.2.3}%
-\contentsline {subsubsection}{\numberline {2.3.1}Identifikace a přeřazení objektů}{11}{subsubsection.2.3.1}%
-\contentsline {subsubsection}{\numberline {2.3.2}Hlavní logika}{11}{subsubsection.2.3.2}%
+\contentsline {subsection}{\numberline {2.3}Plánování}{10}{subsection.2.3}%
+\contentsline {subsubsection}{\numberline {2.3.1}Identifikace a přeřazení objektů}{10}{subsubsection.2.3.1}%
+\contentsline {subsubsection}{\numberline {2.3.2}Hlavní logika}{12}{subsubsection.2.3.2}%
 \contentsline {subsubsection}{\numberline {2.3.3}Plánování trajektorie míče}{13}{subsubsection.2.3.3}%
 \contentsline {subsubsection}{\numberline {2.3.4}Plánování trajektorie robota}{14}{subsubsection.2.3.4}%
-\contentsline {subsubsection}{\numberline {2.3.5}Simulátor}{15}{subsubsection.2.3.5}%
-\contentsline {subsubsection}{\numberline {2.3.6}Testování}{15}{subsubsection.2.3.6}%
-\contentsline {subsection}{\numberline {2.4}Pohyb}{16}{subsection.2.4}%
-\contentsline {section}{\numberline {3}Závěr}{16}{section.3}%
+\contentsline {subsubsection}{\numberline {2.3.5}Simulátor}{14}{subsubsection.2.3.5}%
+\contentsline {subsection}{\numberline {2.4}Pohyb}{15}{subsection.2.4}%
+\contentsline {section}{\numberline {3}Testování}{15}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Vidění}{15}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}SLAM}{16}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Plánování}{17}{subsection.3.3}%
+\contentsline {section}{\numberline {4}Závěr}{18}{section.4}%

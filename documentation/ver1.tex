@@ -71,10 +71,10 @@ Největším rozdílem je možnost výskutu až dvou překážek před čarou. T
 Naše řešení jsme rozdělili na tři hlavní části. První část je zpracování obrazu, druhá část je SLAM a třetí část je plánování a pohyb robota. Tyto části běží v hlavní smyčce programu. Naše řešení je dimenzováno pro řešení třetí úlohy. Z nedostataku času pro ošetření všech možných přídapů, jsme se ale rozhodli řešit druhou úlohu. 
 Při řešení problému bylo využíváno nástroje GitHub Copilot pro jednoduché úkony pro zrychlení práce. 
 \subsection{Zpracování obrazu}
-Detekci objektů děláme pomocí konvoluční neuronové sítě \href{https://docs.ultralytics.com/models/}{YOLO} (You Only Look Once), kterou poté konvertujeme do \href{https://onnx.ai/}{ONNX}. Důvodem k použití CNN bylo, aby náše řešení dobře zvládalo změny v osvětlení a jiné rušivé vstupy jako například špinavý žlutý míč. Segementace obrazu pomocí barev, by mohla být v tomto ohledu nespolehlivá. Jako vstup používáme obraz z Intel RealSense D435 kamery.
+Detekci objektů děláme pomocí konvoluční neuronové sítě YOLO (You Only Look Once), kterou poté konvertujeme do ONNX. Důvodem k použití CNN bylo, aby náše řešení dobře zvládalo změny v osvětlení a jiné rušivé vstupy jako například špinavý žlutý míč. Segementace obrazu pomocí barev, by mohla být v tomto ohledu nespolehlivá. Jako vstup používáme obraz z Intel RealSense D435 kamery.
 \subsubsection{Trénování CNN}
 YOLO model jsme museli nejdříve natrénovat na rozponávání pilířů a míče. Učinili jsme tak na více než 670 obrázcích,
-které jsme pořídili pomocí kamery na robotovi. Dalších 120 jsme použili pro validaci. Obrázky jsme ručně anotovali pomocí programu \href{https://labelstud.io/}{Label Studio}. Jak vypadá anotace je vidět v obrázku \eqref{fig:label_studio}.
+které jsme pořídili pomocí kamery na robotovi. Dalších 120 jsme použili pro validaci. Obrázky jsme ručně anotovali pomocí programu Label Studio. Jak vypadá anotace je vidět v obrázku \eqref{fig:label_studio}.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{pictures/label_studio.png}
@@ -82,19 +82,12 @@ které jsme pořídili pomocí kamery na robotovi. Dalších 120 jsme použili p
     \label{fig:label_studio}	
 \end{figure}
 Pro anotaci jsme použili nastavení \textit{Object Detection with Bounding Boxes}, tedy jsme anotavali pomocí obdelníků. Zvolili jsme možnost bez rotace, všechny obdelníky mají tedy rovnoběžné strany se stranami obrazu. 
-Toto představilo problém, který jde vidět v obrázku \eqref{fig:detected_image}. Díky zakřivení obrazu z kamery, obdelníky nesedí přímo na pilíře, což byl lehce vyřešitelný problém \eqref{sec:point_cloud}. Možnost segmentace, myšleno maskou jsme zamítli z různých důvodou, např. pracné anotace. 
+Možnost segmentace, myšleno maskou jsme zamítli z různých důvodou, např. pracné anotace. 
 Anotovaný data set byl poté vyexportován ve formátu YOLO.
-Pomocí Python kódu a knihovny od \href{https://docs.ultralytics.com/}{Ultralitics} jsme natrénovali model. Vyzkoušeli jsme YOLO verze v8 a 11. Ukázalo se, že verze 11 je mnohem přesnější, zvláště při změně osvětlení. 
-Protože detekce musí probíhat rychle, zkoušeli jsme modeli 11s a 11n. I když je model 11s přesnější, používáme ho jen výjimečně, protože může způsobit problémy pro SLAM svojí dlouhou časovou náročností. 
+Pomocí Python kódu a knihovny od Ultralitics jsme natrénovali model. Vyzkoušeli jsme YOLO verze v8 a 11. Ukázalo se, že verze 11 je mnohem přesnější, zvláště při změně osvětlení. 
+Protože detekce musí probíhat rychle, zkoušeli jsme modeli 11s a 11n. I když je model 11s přesnější, používáme ho jen výjimečně, protože může způsobit problémy pro SLAM svojí dlouhou časovou náročností. I přesto máme natrénované dva modely v rozlišení 160p a 240p.
 I pro model 11n jsme zkoušeli různé rozlišení. Rozlišení 160p a 240p bylo zpracováno dostatečně rychle a s uspokojivími výsledky. Oba modely byly natrénovany na 300 epochách.
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.7\textwidth]{pictures/rozpoznane.jpg}
-    \caption{Rozpoznané objekty pomocí YO
-    LO 11n při rozlišení 240p}
-    \label{fig:detected_image}
-\end{figure}
 
 \begin{figure}[H]
     \centering
@@ -112,8 +105,6 @@ I pro model 11n jsme zkoušeli různé rozlišení. Rozlišení 160p a 240p bylo
 
 Model 160p (Obrázek \eqref{fig:confusion_matrix_160p}) je v některých podmínkách znatelně horší oproti 240p (Obrázek \eqref{fig:confusion_matrix_240p}) v rozpoznávání modrých pilířů.
 To může způsobit velké problémy, protože modré pilíře tvoří branku. Nejčastějším objektem, který byl zaměněn s pozadím, je zelený pilíř, který, když je detekován navíc, minimálně překaží úspěšnému vyřešení problému.
-V obrázku \eqref{fig:detected_image} si ještě můžeme všimnout, že model dobře zvládá rozpoznávání objektů, které mají zaměnitelné barvy nebo tvar s objekty, které detekuje.
-Model také například rozpoznal míč, když je z části za pilířem, nebo objekty, když jsou ve stínu pod stolem.
 
 \subsubsection{Rozpoznávání obrazu}
 K rozpoznávání použiváme buď model YOLO 11n při rozlišení 160p nebo při 240p v závislosti na prostředí a pokud více benefitujeme z rychlejší detekce nebo její přesnosti.
@@ -539,14 +530,47 @@ Modrá čára znázorňuje plánovanou trajektorii pro střelbu, zatímco červe
 	\caption{Náhled jednoduchého simulátoru pro úlohu 3}
 \end{figure} 
 
-\subsubsection{Testování}
+
+\subsection{Pohyb}
+
+\section{Testování}
+\subsection{Vidění}
+Anotování obrázků obbélníky bez rotace představilo problém, který jde vidět v obrázku \eqref{fig:detected_image}. Díky zakřivení obrazu z kamery, obdelníky nesedí přímo na pilíře, což byl lehce vyřešitelný problém. Vzdálenost překážky bereme jako medián vzdáleností z obdelníku.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{pictures/rozpoznane.jpg}
+    \caption{Rozpoznané objekty pomocí YOLO 11n při rozlišení 240p}
+    \label{fig:detected_image}
+\end{figure}
+
+V obrázku \eqref{fig:detected_image} si ještě můžeme všimnout, že model dobře zvládá rozpoznávání objektů, které mají zaměnitelné barvy nebo tvar s objekty, které detekuje.
+Model také například rozpoznal míč, když je z části za pilířem, nebo objekty, když jsou ve stínu pod stolem. Problémy občas tvoří objekty, které nebyly v trénovacím datasetu.
+Boty s určitým vzorem mohou například být rozpoznány jako míč.
+
+\subsection{SLAM}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{pictures/map3.png}
+    \caption{Vizualizace problému v průběhu řešení úlohy}
+    \label{fig:slam_in_game}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{pictures/slam3ok.png}
+    \caption{Záznam proběhnuté trasy robota a detekovaných landmarků}
+    \label{fig:slam_end}
+\end{figure}
+
+\subsection{Plánování}
 Při testování plánovače byl zpočátku primárně využíván simulátor, ve kterém byla laděna logika programu. Při přechodu k testování na reálném robotu se však objevily časté problémy spojené s chováním míče. Vlivem jeho nepřesného tvaru a nerovností hracího povrchu dochází k výrazným odchylkám od naplánované trajektorie míče. Díky flexibilnímu chování plánovače je však možné tyto nepředvídatelné situace řešit přeplánováním trajektorie míče, čímž dochází ke korekci jeho pohybu. Pokud míč nedorazí do brány nebo se příliš odchýlí od požadované trajektorie, a zároveň nedojde ke kolizi s žádným z objektů, plánovač automaticky vygeneruje novou trajektorii. Tento proces se opakuje, dokud není dosaženo vstřelení gólu.\\
 Toto chování bylo plně odladěno pro podmínky uvedené v zadání 2, kde se nevyskytují problémy spojené s kolizemi. Při testování na konfiguracích ze zadání 3 se však objevovaly potíže spojené s častou ztrátou viditelnosti objektů. To vedlo k častým změnám v plánované trajektorii, což mělo za následek prudké a dynamické pohyby robota. Tyto pohyby dále zvyšovaly nepřesnosti v měření a ztěžovaly stabilní navigaci. Možným řešením tohoto problému by bylo implementovat pokročilejší mechanismus pro dohledávání ztracených objektů.\\
 Dalším problémem, který brání plynulé implementaci úlohy 3, je časté srážení míče s překážkovými trubkami při snaze je obstřelit. Tento problém je důsledkem již zmíněného chování míče. Možným řešením by bylo zavedení přesnějšího a přísnějšího polohování robota při střelbě. Tento přístup však naráží na komplikaci při určování přesných poloh, neboť při pouhém zmenšení tolerančních okolí pro jednotlivé navštívené body může docházet k zacyklení, kdy robot není schopen dosáhnout těchto bodů, kvůli časté malá změně jich polohy.\\
 Plánovač není zcela dokonalý a v konfiguraci hracího pole ze zadání 3 se ukazuje jako velmi nespolehlivý v mnoha případech. Při použití konfigurace hracího pole ze zadání 2 však mnoho těchto problémů vymizí, což činí plánovač použitelným.
 
 
-\subsection{Pohyb}
+
 \section{Závěr}
 
 
