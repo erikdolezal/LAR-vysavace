@@ -4,7 +4,7 @@ import random
 from Sim.SimObjects import *
 from Sim.SimConfig import SimParm
 from Sim.SimConfig import DataClasses
-from planning.PathPlanning import Planning
+from algorithms.PathPlanning import Planning
 
 
 class Simulation:
@@ -172,7 +172,7 @@ class Simulation:
         iter = 0
         while iter < count:
             pos = np.array([random.uniform(0, SimParm.SIDE_REAL), random.uniform(SimParm.GATE_Y_START + SimParm.MAX_DIS_START, SimParm.SIDE_REAL)])
-            if self.check_collisions(pos, 0.5) == False:
+            if self.check_collisions(pos, 0.5) is False:
                 iter += 1
                 self.objects[DataClasses.GREEN].append(Tube(self, DataClasses.GREEN, pos[0], pos[1], SimParm.GREEN))
 
@@ -190,7 +190,7 @@ class Simulation:
         pos = np.empty(2)
         while True:
             pos = np.array([random.uniform(0, SimParm.SIDE_REAL), random.uniform(SimParm.MAX_DIS_START, SimParm.SIDE_REAL)])
-            if self.check_collisions(pos, SimParm.MIN_DIS_START) == False:
+            if self.check_collisions(pos, SimParm.MIN_DIS_START) is False:
                 break
         self.objects[DataClasses.TURTLE] = [(Turtle(self, DataClasses.TURTLE, pos[0], pos[1], np.pi / 2))]
 
