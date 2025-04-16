@@ -8,7 +8,7 @@ from configs.value_enums import DataClasses
 
 class UKF_SLAM:
     """
-    Unscented Kalman Filter SLAM for estimatin robots position nad mapping landmarks
+    Unscented Kalman Filter SLAM for estimating robots position and mapping landmarks
     Attributes:
         x (np.ndarray): State vector of the robot and landmarks.
         P (np.ndarray): Covariance matrix of the state.
