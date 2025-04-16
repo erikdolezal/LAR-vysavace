@@ -124,7 +124,7 @@
 </span><span id="L-8"><a href="#L-8"><span class="linenos">  8</span></a>
 </span><span id="L-9"><a href="#L-9"><span class="linenos">  9</span></a><span class="k">class</span><span class="w"> </span><span class="nc">UKF_SLAM</span><span class="p">:</span>
 </span><span id="L-10"><a href="#L-10"><span class="linenos"> 10</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="L-11"><a href="#L-11"><span class="linenos"> 11</span></a><span class="sd">    Unscented Kalman Filter for estimating speed of the robot.</span>
+</span><span id="L-11"><a href="#L-11"><span class="linenos"> 11</span></a><span class="sd">    Unscented Kalman Filter SLAM for estimatin robots position nad mapping landmarks</span>
 </span><span id="L-12"><a href="#L-12"><span class="linenos"> 12</span></a><span class="sd">    Attributes:</span>
 </span><span id="L-13"><a href="#L-13"><span class="linenos"> 13</span></a><span class="sd">        x (np.ndarray): State vector of the robot and landmarks.</span>
 </span><span id="L-14"><a href="#L-14"><span class="linenos"> 14</span></a><span class="sd">        P (np.ndarray): Covariance matrix of the state.</span>
@@ -176,7 +176,7 @@
 </span><span id="L-60"><a href="#L-60"><span class="linenos"> 60</span></a>
 </span><span id="L-61"><a href="#L-61"><span class="linenos"> 61</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">sigma_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">P</span><span class="p">):</span>
 </span><span id="L-62"><a href="#L-62"><span class="linenos"> 62</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="L-63"><a href="#L-63"><span class="linenos"> 63</span></a><span class="sd">        Compute sigma points.</span>
+</span><span id="L-63"><a href="#L-63"><span class="linenos"> 63</span></a><span class="sd">        Compute sigma points for calculating Unscented transform.</span>
 </span><span id="L-64"><a href="#L-64"><span class="linenos"> 64</span></a><span class="sd">        Args:</span>
 </span><span id="L-65"><a href="#L-65"><span class="linenos"> 65</span></a><span class="sd">            x (np.ndarray): mean</span>
 </span><span id="L-66"><a href="#L-66"><span class="linenos"> 66</span></a><span class="sd">            P (np.ndarray): covariance</span>
@@ -203,7 +203,7 @@
 </span><span id="L-87"><a href="#L-87"><span class="linenos"> 87</span></a>
 </span><span id="L-88"><a href="#L-88"><span class="linenos"> 88</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">old_u</span><span class="p">):</span>
 </span><span id="L-89"><a href="#L-89"><span class="linenos"> 89</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="L-90"><a href="#L-90"><span class="linenos"> 90</span></a><span class="sd">        Predict step</span>
+</span><span id="L-90"><a href="#L-90"><span class="linenos"> 90</span></a><span class="sd">        Predict step of Kalman filter.</span>
 </span><span id="L-91"><a href="#L-91"><span class="linenos"> 91</span></a><span class="sd">        Args:</span>
 </span><span id="L-92"><a href="#L-92"><span class="linenos"> 92</span></a><span class="sd">            u (np.ndarray): odometry</span>
 </span><span id="L-93"><a href="#L-93"><span class="linenos"> 93</span></a><span class="sd">            old_u (np.ndarray): previous odometry</span>
@@ -239,7 +239,7 @@
 </span><span id="L-123"><a href="#L-123"><span class="linenos">123</span></a>
 </span><span id="L-124"><a href="#L-124"><span class="linenos">124</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">R</span><span class="p">):</span>
 </span><span id="L-125"><a href="#L-125"><span class="linenos">125</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="L-126"><a href="#L-126"><span class="linenos">126</span></a><span class="sd">        Update step.</span>
+</span><span id="L-126"><a href="#L-126"><span class="linenos">126</span></a><span class="sd">        Update step of Kalman Filter.</span>
 </span><span id="L-127"><a href="#L-127"><span class="linenos">127</span></a><span class="sd">        Args:</span>
 </span><span id="L-128"><a href="#L-128"><span class="linenos">128</span></a><span class="sd">            z (np.ndarray): measurement</span>
 </span><span id="L-129"><a href="#L-129"><span class="linenos">129</span></a><span class="sd">            h (function): measurement function - returns in the same shape as z</span>
@@ -276,7 +276,7 @@
 </span><span id="L-160"><a href="#L-160"><span class="linenos">160</span></a>
 </span><span id="L-161"><a href="#L-161"><span class="linenos">161</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">data_association</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">percep_data</span><span class="p">):</span>
 </span><span id="L-162"><a href="#L-162"><span class="linenos">162</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="L-163"><a href="#L-163"><span class="linenos">163</span></a><span class="sd">        Perform data association.</span>
+</span><span id="L-163"><a href="#L-163"><span class="linenos">163</span></a><span class="sd">        Perform data association based on minimal distance between perceived data and landmarks.</span>
 </span><span id="L-164"><a href="#L-164"><span class="linenos">164</span></a><span class="sd">        Args:</span>
 </span><span id="L-165"><a href="#L-165"><span class="linenos">165</span></a><span class="sd">            percep_data (np.ndarray): perceived data</span>
 </span><span id="L-166"><a href="#L-166"><span class="linenos">166</span></a><span class="sd">        Returns:</span>
@@ -306,7 +306,7 @@
 </span><span id="L-190"><a href="#L-190"><span class="linenos">190</span></a>
 </span><span id="L-191"><a href="#L-191"><span class="linenos">191</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">update_from_detections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">percep_data</span><span class="p">,</span> <span class="n">time</span><span class="p">):</span>
 </span><span id="L-192"><a href="#L-192"><span class="linenos">192</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="L-193"><a href="#L-193"><span class="linenos">193</span></a><span class="sd">        Updates the state of the SLAM system based on perception data and the current time.</span>
+</span><span id="L-193"><a href="#L-193"><span class="linenos">193</span></a><span class="sd">        Updates the state of the SLAM system based on perception data and create map of landmarks.</span>
 </span><span id="L-194"><a href="#L-194"><span class="linenos">194</span></a><span class="sd">        Args:</span>
 </span><span id="L-195"><a href="#L-195"><span class="linenos">195</span></a><span class="sd">            percep_data (numpy.ndarray): A 2D array containing perception data.</span>
 </span><span id="L-196"><a href="#L-196"><span class="linenos">196</span></a><span class="sd">            time (float): The current timestamp.</span>
@@ -420,7 +420,7 @@
     <a class="headerlink" href="#UKF_SLAM"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="UKF_SLAM-10"><a href="#UKF_SLAM-10"><span class="linenos"> 10</span></a><span class="k">class</span><span class="w"> </span><span class="nc">UKF_SLAM</span><span class="p">:</span>
 </span><span id="UKF_SLAM-11"><a href="#UKF_SLAM-11"><span class="linenos"> 11</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="UKF_SLAM-12"><a href="#UKF_SLAM-12"><span class="linenos"> 12</span></a><span class="sd">    Unscented Kalman Filter for estimating speed of the robot.</span>
+</span><span id="UKF_SLAM-12"><a href="#UKF_SLAM-12"><span class="linenos"> 12</span></a><span class="sd">    Unscented Kalman Filter SLAM for estimatin robots position nad mapping landmarks</span>
 </span><span id="UKF_SLAM-13"><a href="#UKF_SLAM-13"><span class="linenos"> 13</span></a><span class="sd">    Attributes:</span>
 </span><span id="UKF_SLAM-14"><a href="#UKF_SLAM-14"><span class="linenos"> 14</span></a><span class="sd">        x (np.ndarray): State vector of the robot and landmarks.</span>
 </span><span id="UKF_SLAM-15"><a href="#UKF_SLAM-15"><span class="linenos"> 15</span></a><span class="sd">        P (np.ndarray): Covariance matrix of the state.</span>
@@ -472,7 +472,7 @@
 </span><span id="UKF_SLAM-61"><a href="#UKF_SLAM-61"><span class="linenos"> 61</span></a>
 </span><span id="UKF_SLAM-62"><a href="#UKF_SLAM-62"><span class="linenos"> 62</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">sigma_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">P</span><span class="p">):</span>
 </span><span id="UKF_SLAM-63"><a href="#UKF_SLAM-63"><span class="linenos"> 63</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="UKF_SLAM-64"><a href="#UKF_SLAM-64"><span class="linenos"> 64</span></a><span class="sd">        Compute sigma points.</span>
+</span><span id="UKF_SLAM-64"><a href="#UKF_SLAM-64"><span class="linenos"> 64</span></a><span class="sd">        Compute sigma points for calculating Unscented transform.</span>
 </span><span id="UKF_SLAM-65"><a href="#UKF_SLAM-65"><span class="linenos"> 65</span></a><span class="sd">        Args:</span>
 </span><span id="UKF_SLAM-66"><a href="#UKF_SLAM-66"><span class="linenos"> 66</span></a><span class="sd">            x (np.ndarray): mean</span>
 </span><span id="UKF_SLAM-67"><a href="#UKF_SLAM-67"><span class="linenos"> 67</span></a><span class="sd">            P (np.ndarray): covariance</span>
@@ -499,7 +499,7 @@
 </span><span id="UKF_SLAM-88"><a href="#UKF_SLAM-88"><span class="linenos"> 88</span></a>
 </span><span id="UKF_SLAM-89"><a href="#UKF_SLAM-89"><span class="linenos"> 89</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">old_u</span><span class="p">):</span>
 </span><span id="UKF_SLAM-90"><a href="#UKF_SLAM-90"><span class="linenos"> 90</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="UKF_SLAM-91"><a href="#UKF_SLAM-91"><span class="linenos"> 91</span></a><span class="sd">        Predict step</span>
+</span><span id="UKF_SLAM-91"><a href="#UKF_SLAM-91"><span class="linenos"> 91</span></a><span class="sd">        Predict step of Kalman filter.</span>
 </span><span id="UKF_SLAM-92"><a href="#UKF_SLAM-92"><span class="linenos"> 92</span></a><span class="sd">        Args:</span>
 </span><span id="UKF_SLAM-93"><a href="#UKF_SLAM-93"><span class="linenos"> 93</span></a><span class="sd">            u (np.ndarray): odometry</span>
 </span><span id="UKF_SLAM-94"><a href="#UKF_SLAM-94"><span class="linenos"> 94</span></a><span class="sd">            old_u (np.ndarray): previous odometry</span>
@@ -535,7 +535,7 @@
 </span><span id="UKF_SLAM-124"><a href="#UKF_SLAM-124"><span class="linenos">124</span></a>
 </span><span id="UKF_SLAM-125"><a href="#UKF_SLAM-125"><span class="linenos">125</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">R</span><span class="p">):</span>
 </span><span id="UKF_SLAM-126"><a href="#UKF_SLAM-126"><span class="linenos">126</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="UKF_SLAM-127"><a href="#UKF_SLAM-127"><span class="linenos">127</span></a><span class="sd">        Update step.</span>
+</span><span id="UKF_SLAM-127"><a href="#UKF_SLAM-127"><span class="linenos">127</span></a><span class="sd">        Update step of Kalman Filter.</span>
 </span><span id="UKF_SLAM-128"><a href="#UKF_SLAM-128"><span class="linenos">128</span></a><span class="sd">        Args:</span>
 </span><span id="UKF_SLAM-129"><a href="#UKF_SLAM-129"><span class="linenos">129</span></a><span class="sd">            z (np.ndarray): measurement</span>
 </span><span id="UKF_SLAM-130"><a href="#UKF_SLAM-130"><span class="linenos">130</span></a><span class="sd">            h (function): measurement function - returns in the same shape as z</span>
@@ -572,7 +572,7 @@
 </span><span id="UKF_SLAM-161"><a href="#UKF_SLAM-161"><span class="linenos">161</span></a>
 </span><span id="UKF_SLAM-162"><a href="#UKF_SLAM-162"><span class="linenos">162</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">data_association</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">percep_data</span><span class="p">):</span>
 </span><span id="UKF_SLAM-163"><a href="#UKF_SLAM-163"><span class="linenos">163</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="UKF_SLAM-164"><a href="#UKF_SLAM-164"><span class="linenos">164</span></a><span class="sd">        Perform data association.</span>
+</span><span id="UKF_SLAM-164"><a href="#UKF_SLAM-164"><span class="linenos">164</span></a><span class="sd">        Perform data association based on minimal distance between perceived data and landmarks.</span>
 </span><span id="UKF_SLAM-165"><a href="#UKF_SLAM-165"><span class="linenos">165</span></a><span class="sd">        Args:</span>
 </span><span id="UKF_SLAM-166"><a href="#UKF_SLAM-166"><span class="linenos">166</span></a><span class="sd">            percep_data (np.ndarray): perceived data</span>
 </span><span id="UKF_SLAM-167"><a href="#UKF_SLAM-167"><span class="linenos">167</span></a><span class="sd">        Returns:</span>
@@ -602,7 +602,7 @@
 </span><span id="UKF_SLAM-191"><a href="#UKF_SLAM-191"><span class="linenos">191</span></a>
 </span><span id="UKF_SLAM-192"><a href="#UKF_SLAM-192"><span class="linenos">192</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">update_from_detections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">percep_data</span><span class="p">,</span> <span class="n">time</span><span class="p">):</span>
 </span><span id="UKF_SLAM-193"><a href="#UKF_SLAM-193"><span class="linenos">193</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="UKF_SLAM-194"><a href="#UKF_SLAM-194"><span class="linenos">194</span></a><span class="sd">        Updates the state of the SLAM system based on perception data and the current time.</span>
+</span><span id="UKF_SLAM-194"><a href="#UKF_SLAM-194"><span class="linenos">194</span></a><span class="sd">        Updates the state of the SLAM system based on perception data and create map of landmarks.</span>
 </span><span id="UKF_SLAM-195"><a href="#UKF_SLAM-195"><span class="linenos">195</span></a><span class="sd">        Args:</span>
 </span><span id="UKF_SLAM-196"><a href="#UKF_SLAM-196"><span class="linenos">196</span></a><span class="sd">            percep_data (numpy.ndarray): A 2D array containing perception data.</span>
 </span><span id="UKF_SLAM-197"><a href="#UKF_SLAM-197"><span class="linenos">197</span></a><span class="sd">            time (float): The current timestamp.</span>
@@ -702,7 +702,7 @@
 </span></pre></div>
 
 
-            <div class="docstring"><p>Unscented Kalman Filter for estimating speed of the robot.</p>
+            <div class="docstring"><p>Unscented Kalman Filter SLAM for estimatin robots position nad mapping landmarks</p>
 
 <h6 id="attributes">Attributes:</h6>
 
@@ -921,7 +921,7 @@
     <a class="headerlink" href="#UKF_SLAM.sigma_points"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="UKF_SLAM.sigma_points-62"><a href="#UKF_SLAM.sigma_points-62"><span class="linenos">62</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">sigma_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">P</span><span class="p">):</span>
 </span><span id="UKF_SLAM.sigma_points-63"><a href="#UKF_SLAM.sigma_points-63"><span class="linenos">63</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="UKF_SLAM.sigma_points-64"><a href="#UKF_SLAM.sigma_points-64"><span class="linenos">64</span></a><span class="sd">        Compute sigma points.</span>
+</span><span id="UKF_SLAM.sigma_points-64"><a href="#UKF_SLAM.sigma_points-64"><span class="linenos">64</span></a><span class="sd">        Compute sigma points for calculating Unscented transform.</span>
 </span><span id="UKF_SLAM.sigma_points-65"><a href="#UKF_SLAM.sigma_points-65"><span class="linenos">65</span></a><span class="sd">        Args:</span>
 </span><span id="UKF_SLAM.sigma_points-66"><a href="#UKF_SLAM.sigma_points-66"><span class="linenos">66</span></a><span class="sd">            x (np.ndarray): mean</span>
 </span><span id="UKF_SLAM.sigma_points-67"><a href="#UKF_SLAM.sigma_points-67"><span class="linenos">67</span></a><span class="sd">            P (np.ndarray): covariance</span>
@@ -938,7 +938,7 @@
 </span></pre></div>
 
 
-            <div class="docstring"><p>Compute sigma points.</p>
+            <div class="docstring"><p>Compute sigma points for calculating Unscented transform.</p>
 
 <h6 id="arguments">Arguments:</h6>
 
@@ -998,7 +998,7 @@
     <a class="headerlink" href="#UKF_SLAM.predict"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="UKF_SLAM.predict-89"><a href="#UKF_SLAM.predict-89"><span class="linenos"> 89</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">old_u</span><span class="p">):</span>
 </span><span id="UKF_SLAM.predict-90"><a href="#UKF_SLAM.predict-90"><span class="linenos"> 90</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="UKF_SLAM.predict-91"><a href="#UKF_SLAM.predict-91"><span class="linenos"> 91</span></a><span class="sd">        Predict step</span>
+</span><span id="UKF_SLAM.predict-91"><a href="#UKF_SLAM.predict-91"><span class="linenos"> 91</span></a><span class="sd">        Predict step of Kalman filter.</span>
 </span><span id="UKF_SLAM.predict-92"><a href="#UKF_SLAM.predict-92"><span class="linenos"> 92</span></a><span class="sd">        Args:</span>
 </span><span id="UKF_SLAM.predict-93"><a href="#UKF_SLAM.predict-93"><span class="linenos"> 93</span></a><span class="sd">            u (np.ndarray): odometry</span>
 </span><span id="UKF_SLAM.predict-94"><a href="#UKF_SLAM.predict-94"><span class="linenos"> 94</span></a><span class="sd">            old_u (np.ndarray): previous odometry</span>
@@ -1034,7 +1034,7 @@
 </span></pre></div>
 
 
-            <div class="docstring"><p>Predict step</p>
+            <div class="docstring"><p>Predict step of Kalman filter.</p>
 
 <h6 id="arguments">Arguments:</h6>
 
@@ -1059,7 +1059,7 @@
     <a class="headerlink" href="#UKF_SLAM.update"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="UKF_SLAM.update-125"><a href="#UKF_SLAM.update-125"><span class="linenos">125</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">R</span><span class="p">):</span>
 </span><span id="UKF_SLAM.update-126"><a href="#UKF_SLAM.update-126"><span class="linenos">126</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="UKF_SLAM.update-127"><a href="#UKF_SLAM.update-127"><span class="linenos">127</span></a><span class="sd">        Update step.</span>
+</span><span id="UKF_SLAM.update-127"><a href="#UKF_SLAM.update-127"><span class="linenos">127</span></a><span class="sd">        Update step of Kalman Filter.</span>
 </span><span id="UKF_SLAM.update-128"><a href="#UKF_SLAM.update-128"><span class="linenos">128</span></a><span class="sd">        Args:</span>
 </span><span id="UKF_SLAM.update-129"><a href="#UKF_SLAM.update-129"><span class="linenos">129</span></a><span class="sd">            z (np.ndarray): measurement</span>
 </span><span id="UKF_SLAM.update-130"><a href="#UKF_SLAM.update-130"><span class="linenos">130</span></a><span class="sd">            h (function): measurement function - returns in the same shape as z</span>
@@ -1096,7 +1096,7 @@
 </span></pre></div>
 
 
-            <div class="docstring"><p>Update step.</p>
+            <div class="docstring"><p>Update step of Kalman Filter.</p>
 
 <h6 id="arguments">Arguments:</h6>
 
@@ -1122,7 +1122,7 @@
     <a class="headerlink" href="#UKF_SLAM.data_association"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="UKF_SLAM.data_association-162"><a href="#UKF_SLAM.data_association-162"><span class="linenos">162</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">data_association</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">percep_data</span><span class="p">):</span>
 </span><span id="UKF_SLAM.data_association-163"><a href="#UKF_SLAM.data_association-163"><span class="linenos">163</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="UKF_SLAM.data_association-164"><a href="#UKF_SLAM.data_association-164"><span class="linenos">164</span></a><span class="sd">        Perform data association.</span>
+</span><span id="UKF_SLAM.data_association-164"><a href="#UKF_SLAM.data_association-164"><span class="linenos">164</span></a><span class="sd">        Perform data association based on minimal distance between perceived data and landmarks.</span>
 </span><span id="UKF_SLAM.data_association-165"><a href="#UKF_SLAM.data_association-165"><span class="linenos">165</span></a><span class="sd">        Args:</span>
 </span><span id="UKF_SLAM.data_association-166"><a href="#UKF_SLAM.data_association-166"><span class="linenos">166</span></a><span class="sd">            percep_data (np.ndarray): perceived data</span>
 </span><span id="UKF_SLAM.data_association-167"><a href="#UKF_SLAM.data_association-167"><span class="linenos">167</span></a><span class="sd">        Returns:</span>
@@ -1152,7 +1152,7 @@
 </span></pre></div>
 
 
-            <div class="docstring"><p>Perform data association.</p>
+            <div class="docstring"><p>Perform data association based on minimal distance between perceived data and landmarks.</p>
 
 <h6 id="arguments">Arguments:</h6>
 
@@ -1184,7 +1184,7 @@
     <a class="headerlink" href="#UKF_SLAM.update_from_detections"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="UKF_SLAM.update_from_detections-192"><a href="#UKF_SLAM.update_from_detections-192"><span class="linenos">192</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">update_from_detections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">percep_data</span><span class="p">,</span> <span class="n">time</span><span class="p">):</span>
 </span><span id="UKF_SLAM.update_from_detections-193"><a href="#UKF_SLAM.update_from_detections-193"><span class="linenos">193</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="UKF_SLAM.update_from_detections-194"><a href="#UKF_SLAM.update_from_detections-194"><span class="linenos">194</span></a><span class="sd">        Updates the state of the SLAM system based on perception data and the current time.</span>
+</span><span id="UKF_SLAM.update_from_detections-194"><a href="#UKF_SLAM.update_from_detections-194"><span class="linenos">194</span></a><span class="sd">        Updates the state of the SLAM system based on perception data and create map of landmarks.</span>
 </span><span id="UKF_SLAM.update_from_detections-195"><a href="#UKF_SLAM.update_from_detections-195"><span class="linenos">195</span></a><span class="sd">        Args:</span>
 </span><span id="UKF_SLAM.update_from_detections-196"><a href="#UKF_SLAM.update_from_detections-196"><span class="linenos">196</span></a><span class="sd">            percep_data (numpy.ndarray): A 2D array containing perception data.</span>
 </span><span id="UKF_SLAM.update_from_detections-197"><a href="#UKF_SLAM.update_from_detections-197"><span class="linenos">197</span></a><span class="sd">            time (float): The current timestamp.</span>
@@ -1284,7 +1284,7 @@
 </span></pre></div>
 
 
-            <div class="docstring"><p>Updates the state of the SLAM system based on perception data and the current time.</p>
+            <div class="docstring"><p>Updates the state of the SLAM system based on perception data and create map of landmarks.</p>
 
 <h6 id="arguments">Arguments:</h6>
 
