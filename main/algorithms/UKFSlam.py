@@ -8,7 +8,7 @@ from configs.value_enums import DataClasses
 
 class UKF_SLAM:
     """
-    Unscented Kalman Filter for estimating speed of the robot.
+    Unscented Kalman Filter SLAM for estimatin robots position nad mapping landmarks
     Attributes:
         x (np.ndarray): State vector of the robot and landmarks.
         P (np.ndarray): Covariance matrix of the state.
@@ -60,7 +60,7 @@ class UKF_SLAM:
 
     def sigma_points(self, x, P):
         """
-        Compute sigma points.
+        Compute sigma points for calculating Unscented transform.
         Args:
             x (np.ndarray): mean
             P (np.ndarray): covariance
@@ -87,7 +87,7 @@ class UKF_SLAM:
 
     def predict(self, u, old_u):
         """
-        Predict step
+        Predict step of Kalman filter.
         Args:
             u (np.ndarray): odometry
             old_u (np.ndarray): previous odometry
@@ -123,7 +123,7 @@ class UKF_SLAM:
 
     def update(self, z, h, R):
         """
-        Update step.
+        Update step of Kalman Filter.
         Args:
             z (np.ndarray): measurement
             h (function): measurement function - returns in the same shape as z
@@ -160,7 +160,7 @@ class UKF_SLAM:
 
     def data_association(self, percep_data):
         """
-        Perform data association.
+        Perform data association based on minimal distance between perceived data and landmarks.
         Args:
             percep_data (np.ndarray): perceived data
         Returns:
@@ -190,7 +190,7 @@ class UKF_SLAM:
 
     def update_from_detections(self, percep_data, time):
         """
-        Updates the state of the SLAM system based on perception data and the current time.
+        Updates the state of the SLAM system based on perception data and create map of landmarks.
         Args:
             percep_data (numpy.ndarray): A 2D array containing perception data.
             time (float): The current timestamp.
